@@ -222,10 +222,13 @@ if __name__ == "__main__":
         #predict values
         predicted_values = model_builder.predict_price(model, test_x)
         
-        #plot model
-        model_builder.plot_result(test_y, predicted_values)
-        
         #save model
         model_builder.save_model(model, hub)
+
+        #plot model
+        try:
+            model_builder.plot_result(test_y, predicted_values, "Final Plot")
+        except:
+            pass
         
     print('model building finished!!')
