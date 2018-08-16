@@ -39,7 +39,7 @@ if __name__=='__main__':
     data = preprocess.load_data(filename)
     
     #pre process data
-    data = preprocess.preprocess(data)
+    data = preprocess.preprocess_data(data)
     
     
     #hub level data
@@ -50,25 +50,27 @@ if __name__=='__main__':
     
     for hub, hub_data in hub_level_data.items():
         print("Scoring {0} data!!".format(hub))
-        
+
         #sort the data
-        hub_data = hub_data.sort_values(ny=['year', 'month', 'day', 'hour']).reset_index(drop=True)
-        
+        hub_data = hub_data.sort_values(by=['year', 'month', 'day', 'hour']).reset_index(drop=True)
+
         #stack the daily data into predicting data
         data = preprocess.stack_daily_data_to_matrix(hub_data, sequence_length=23)
-        
+
         #load model for the hub
         model = model_builder.load_model(hub)
-        
+
+
         #predict price
-        predicted_values = model.predict_price(data)
-        
+        predicted_values = model_builder.predict_price(model, data.reshape(-1,23,1))
+
         #append the predicted values with actual data
-        hub_data['predicted_price'] = [None]*(hub_data.shape[0]-len(predicted_values)) + predicted_values
-        
+        hub_data['predicted_price'] = [None]*(hub_data.shape[0]-len(predicted_values)) + list(predicted_values.reshape(-1))
+
         #save the data
         if not os.path.exists("./scored"):
             os.makedirs("./scored")
+            
         hub_data.to_csv("./scored/" + hub + ".csv", index=False)
         
     print("Scoring done!!")
