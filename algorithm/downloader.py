@@ -155,6 +155,7 @@ class download:
                 historicPoints = pd.read_csv(os.path.join(self.savepath, "all_data.csv").replace("live", "historic"))['SettlementPointName']
                 df[df['SettlementPointName'].isin(historicPoints.unique())].reset_index(drop=True)
             except:
+                self.logger("Exception in reading from historic")
                 historicPoints = ['HB_BUSAVG', 'HB_HOUSTON', 'HB_HUBAVG', 'HB_NORTH', 'HB_SOUTH', 'HB_WEST', 'LZ_AEN', 'LZ_CPS', 'LZ_HOUSTON', 'LZ_LCRA', 'LZ_NORTH','LZ_RAYBN', 'LZ_SOUTH', 'LZ_WEST']
                 df[df['SettlementPointName'].isin(historicPoints)]
         elif (self.datatype == "historic"):
