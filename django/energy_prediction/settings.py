@@ -25,7 +25,7 @@ SECRET_KEY = '(h*6sqoh8xdmx(4eibojl%p@$y3+y%7c#m3%1g4or0(ca764m+'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['dash.quantorithm.com', 'www.dash.quantorithm.com', '127.0.0.1']
 
 
 # Application definition
