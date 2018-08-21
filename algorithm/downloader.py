@@ -65,12 +65,20 @@ class download:
         datatype (string):
         live or historic
         '''
+
+        if logger == None:
+            self.logger = get_logger(get_location() + "/logs/downloader.log")
+        else:
+            self.logger = logger
+
         self.datatype = datatype
 
         if (datatype == "historic"):
             savefolder = "data/historic"
+            self.logger.info("Downloading historic data")
         elif (datatype == "live"):
             savefolder = "data/live"
+            self.logger.info("Downloading live data")
 
         self.url = url
 
@@ -81,10 +89,7 @@ class download:
 
         self.HEADERS_LIST = ['Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.79 Safari/537.36', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:60.0) Gecko/20100101 Firefox/60.0', 'Mozilla/5.0 (X11; Linux x86_64; rv:58.0) Gecko/20100101 Firefox/58.0']
 
-        if logger == None:
-            self.logger = get_logger(get_location() + "/logs/downloader.log")
-        else:
-            self.logger = logger
+        
 
     def perform_download(self):
         start_time = time.time()
