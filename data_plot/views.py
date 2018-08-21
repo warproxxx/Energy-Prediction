@@ -12,7 +12,7 @@ from django.db.models import Count
 import pandas as pd
 
 def dashboard(request):
-    data = pd.read_csv('data/HB_HOUSTON.csv')
+    data = pd.read_csv('algorithm/data/HB_HOUSTON.csv')
     data = data[['price', 'predicted_price']]
     #trend_data = data[['Date', 'Trend', 'Trend_macd']]
     context = {
