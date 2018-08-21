@@ -55,7 +55,23 @@ def get_logger(fullLocation):
 
 
 class download:
-    def __init__(self, url, savefolder, logger=None):
+    def __init__(self, url, datatype, logger=None):
+        '''
+        Parameters:
+        ___________
+        url (string):
+        The URL to download from
+
+        datatype (string):
+        live or historic
+        '''
+        self.datatype = datatype
+
+        if (datatype == "historic"):
+            savefolder = "data/historic"
+        elif (datatype == "live"):
+            savefolder = "data/live"
+
         self.url = url
 
         self.savepath = os.path.join(get_location(), savefolder)
@@ -72,7 +88,6 @@ class download:
 
     def perform_download(self):
         start_time = time.time()
-        user_agent = UserAgent()
         root = "http://mis.ercot.com"
 
         soup = self.try_get_page_soup(self.url)
@@ -93,8 +108,16 @@ class download:
                 filename = str(row.find_all("td", {"class": "labelOptional_ind"})[0].text)
                 #this is the valid data entry
                 #now check if the data is the csv data or the xml data
-                if "_csv.zip" in row.text:
+
+                if self.datatype == "historic":
+                    toFind = ".zip"
+                else:
+                    toFind = "_csv.zip"
+
+                if toFind in row.text:
                     #download the file
+                    self.logger.info("Downloading {}".format(filename))
+
                     page = self.get_response(root + row_link)
 
                     if(page != None):
@@ -120,9 +143,25 @@ class download:
         self.logger.info("total data points: {0}".format(sum([a.shape[0] for a in data])))
 
         data = pd.concat(data)
-        data.to_csv(os.path.join(self.save_path, "all_data.csv"), index=False)
+        data.to_csv(os.path.join(self.savepath, "rough.csv"), index=False) #temporary
+        data = self.clean_data(data)
+        data.to_csv(os.path.join(self.savepath, "all_data.csv"), index=False)
         end_time = time.time()
         self.logger.info("done in {}".format((end_time-start_time)/60))
+
+    def clean_data(self, df):
+        if (self.datatype == "live"):
+            try:
+                historicPoints = pd.read_csv(os.path.join(self.savepath, "all_data.csv").replace("live", "historic"))['SettlementPointName']
+                df[df['SettlementPointName'].isin(historicPoints.unique())].reset_index(drop=True)
+            except:
+                historicPoints = ['HB_BUSAVG', 'HB_HOUSTON', 'HB_HUBAVG', 'HB_NORTH', 'HB_SOUTH', 'HB_WEST', 'LZ_AEN', 'LZ_CPS', 'LZ_HOUSTON', 'LZ_LCRA', 'LZ_NORTH','LZ_RAYBN', 'LZ_SOUTH', 'LZ_WEST']
+                df[df['SettlementPointName'].isin(historicPoints)]
+        elif (self.datatype == "historic"):
+            df = df.rename(columns={'Delivery Date': 'DeliveryDate', 'Delivery Hour': 'DeliveryHour', 'Delivery Interval': 'DeliveryInterval', 'Repeated Hour Flag': 'DSTFlag', 'Settlement Point Name': 'SettlementPointName', 'Settlement Point Type': 'SettlementPointType', 'Settlement Point Price': 'SettlementPointPrice'})
+            df = df[['DeliveryDate', 'DeliveryHour', 'DeliveryInterval', 'DSTFlag', 'SettlementPointName', 'SettlementPointType', 'SettlementPointPrice']]
+        
+        return df
 
     def try_get_page_soup(self, page_url):
         soup = None
@@ -140,7 +179,7 @@ class download:
             if page.status_code != 200:
                 print("page failed: " + page_url)
             else:
-                soup = BeautifulSoup(page.text)
+                soup = BeautifulSoup(page.text, "lxml")
         except:
             soup = None
             
@@ -158,11 +197,18 @@ class download:
 
     def load_data(self, filename):
         df = None
+
         try:
-            df = pd.read_csv(filename, encoding='latin1')        
+            if (self.datatype == "live"):
+                df = pd.read_csv(filename, encoding='latin1')   
+            elif (self.datatype == "historic"):
+                df = pd.read_excel(filename)
         except:
             pass    
         return df
 
+historicDownloader = download("http://mis.ercot.com/misapp/GetReports.do?reportTypeId=13061&reportTitle=Historical%20RTM%20Load%20Zone%20and%20Hub%20Prices&showHTMLView=&mimicKey", "historic")
+historicDownloader.perform_download()
 
-download("http://mis.ercot.com/misapp/GetReports.do?reportTypeId=13061&reportTitle=Historical%20RTM%20Load%20Zone%20and%20Hub%20Prices&showHTMLView=&mimicKey", "historicdata").perform_download()
+# liveDownloader = download("http://mis.ercot.com/misapp/GetReports.do?reportTypeId=12301&reportTitle=Settlement%20Point%20Prices%20at%20Resource%20Nodes,%20Hubs%20and%20Load%20Zones&showHTMLView=&mimicKey", "live")
+# liveDownloader.perform_download()
