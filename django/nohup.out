@@ -1,0 +1,30 @@
+/usr/lib/python3.5/importlib/_bootstrap.py:222: RuntimeWarning: numpy.dtype size changed, may indicate binary incompatibility. Expected 96, got 88
+  return f(*args, **kwds)
+/usr/lib/python3.5/importlib/_bootstrap.py:222: RuntimeWarning: numpy.dtype size changed, may indicate binary incompatibility. Expected 96, got 88
+  return f(*args, **kwds)
+Not Found: /
+[21/Aug/2018 04:58:19] "GET / HTTP/1.0" 404 2048
+Not Found: /favicon.ico
+[21/Aug/2018 04:58:20] "GET /favicon.ico HTTP/1.0" 404 2099
+[21/Aug/2018 04:58:25] "GET /dashboard HTTP/1.0" 301 0
+[21/Aug/2018 04:58:26] "GET /dashboard/ HTTP/1.0" 200 970374
+[21/Aug/2018 04:58:27] "GET /static/assets/js/app.js HTTP/1.0" 404 1678
+[21/Aug/2018 04:58:27] "GET /static/global_assets/js/demo_pages/dashboard.js HTTP/1.0" 404 1750
+[21/Aug/2018 04:58:27] "GET /static/data_plot/assets/css/layout.min.css HTTP/1.0" 200 28420
+[21/Aug/2018 04:58:27] "GET /static/data_plot/assets/css/bootstrap_limitless.min.css HTTP/1.0" 200 78788
+[21/Aug/2018 04:58:27] "GET /static/data_plot/assets/css/components.min.css HTTP/1.0" 200 307949
+[21/Aug/2018 04:58:27] "GET /static/data_plot/assets/css/base.css HTTP/1.0" 200 54488
+[21/Aug/2018 04:58:27] "GET /static/data_plot/assets/css/bootstrap.min.css HTTP/1.0" 200 134686
+[21/Aug/2018 04:58:27] "GET /static/data_plot/global_assets/css/icons/icomoon/styles.css HTTP/1.0" 200 47588
+[21/Aug/2018 04:58:27] "GET /static/data_plot/global_assets/js/plugins/visualization/d3/d3.min.js HTTP/1.0" 200 151725
+[21/Aug/2018 04:58:27] "GET /static/data_plot/global_assets/js/main/jquery.min.js HTTP/1.0" 200 86927
+[21/Aug/2018 04:58:27] "GET /static/data_plot/global_assets/js/plugins/visualization/d3/d3_tooltip.js HTTP/1.0" 200 8383
+[21/Aug/2018 04:58:27] "GET /static/data_plot/global_assets/js/plugins/ui/moment/moment.min.js HTTP/1.0" 200 51654
+[21/Aug/2018 04:58:27] "GET /static/data_plot/global_assets/js/plugins/loaders/blockui.min.js HTTP/1.0" 200 9164
+[21/Aug/2018 04:58:27] "GET /static/data_plot/assets/css/colors.min.css HTTP/1.0" 200 37537
+[21/Aug/2018 04:58:27] "GET /static/data_plot/global_assets/js/plugins/forms/styling/switchery.min.js HTTP/1.0" 200 24502
+[21/Aug/2018 04:58:27] "GET /static/data_plot/global_assets/js/plugins/forms/selects/bootstrap_multiselect.js HTTP/1.0" 200 67616
+[21/Aug/2018 04:58:27] "GET /static/data_plot/global_assets/js/main/bootstrap.bundle.min.js HTTP/1.0" 200 70682
+[21/Aug/2018 04:58:50] "GET /dashboard/ HTTP/1.0" 200 970374
+Not Found: /favicon.ico
+[21/Aug/2018 04:58:51] "GET /favicon.ico HTTP/1.0" 404 2099
