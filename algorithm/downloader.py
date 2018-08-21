@@ -153,11 +153,11 @@ class download:
         if (self.datatype == "live"):
             try:
                 historicPoints = pd.read_csv(os.path.join(self.savepath, "all_data.csv").replace("live", "historic"))['SettlementPointName']
-                df[df['SettlementPointName'].isin(historicPoints.unique())].reset_index(drop=True)
+                df = df[df['SettlementPointName'].isin(historicPoints.unique())].reset_index(drop=True)
             except:
                 self.logger("Exception in reading from historic")
                 historicPoints = ['HB_BUSAVG', 'HB_HOUSTON', 'HB_HUBAVG', 'HB_NORTH', 'HB_SOUTH', 'HB_WEST', 'LZ_AEN', 'LZ_CPS', 'LZ_HOUSTON', 'LZ_LCRA', 'LZ_NORTH','LZ_RAYBN', 'LZ_SOUTH', 'LZ_WEST']
-                df[df['SettlementPointName'].isin(historicPoints)]
+                df = df[df['SettlementPointName'].isin(historicPoints)]
         elif (self.datatype == "historic"):
             df = df.rename(columns={'Delivery Date': 'DeliveryDate', 'Delivery Hour': 'DeliveryHour', 'Delivery Interval': 'DeliveryInterval', 'Repeated Hour Flag': 'DSTFlag', 'Settlement Point Name': 'SettlementPointName', 'Settlement Point Type': 'SettlementPointType', 'Settlement Point Price': 'SettlementPointPrice'})
             df = df[['DeliveryDate', 'DeliveryHour', 'DeliveryInterval', 'DSTFlag', 'SettlementPointName', 'SettlementPointType', 'SettlementPointPrice']]
@@ -208,8 +208,8 @@ class download:
             pass    
         return df
 
-# historicDownloader = download("http://mis.ercot.com/misapp/GetReports.do?reportTypeId=13061&reportTitle=Historical%20RTM%20Load%20Zone%20and%20Hub%20Prices&showHTMLView=&mimicKey", "historic")
-# historicDownloader.perform_download()
+historicDownloader = download("http://mis.ercot.com/misapp/GetReports.do?reportTypeId=13061&reportTitle=Historical%20RTM%20Load%20Zone%20and%20Hub%20Prices&showHTMLView=&mimicKey", "historic")
+historicDownloader.perform_download()
 
 liveDownloader = download("http://mis.ercot.com/misapp/GetReports.do?reportTypeId=12301&reportTitle=Settlement%20Point%20Prices%20at%20Resource%20Nodes,%20Hubs%20and%20Load%20Zones&showHTMLView=&mimicKey", "live")
 liveDownloader.perform_download()
