@@ -151,9 +151,12 @@ class download:
         self.logger.info("total data points: {0}".format(sum([a.shape[0] for a in data])))
 
         data = pd.concat(data)
-        data.to_csv(os.path.join(self.savepath, "rough.csv"), index=False) #temporary
         data = self.clean_data(data)
-        data.to_csv(os.path.join(self.savepath, "all_data.csv"), index=False)
+
+        
+        for settlementPoint in data['SettlementPointName'].unique():
+            data[data['SettlementPointName'] == settlementPoint].to_csv(os.path.join(self.savepath, "{}.csv".format(settlementPoint)), index=False)
+        
         end_time = time.time()
         self.logger.info("done in {}".format((end_time-start_time)/60))
 
