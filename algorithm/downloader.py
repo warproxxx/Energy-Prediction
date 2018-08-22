@@ -49,7 +49,7 @@ def get_logger(fullLocation):
 
     logger = logging.getLogger(loggerName)
     logger.setLevel(logging.DEBUG)
-    handler = logging.FileHandler(fullLocation, 'w')
+    handler = logging.FileHandler(fullLocation, 'a')
     logger.addHandler(handler)
     return logger
 
@@ -107,7 +107,6 @@ class download:
 
             #get the text written in the row
             row_link = row.find_all("a")
-            self.logger.info("Row Link {}".format(row_link))
             
             if len(row_link) > 0:
                 row_link = row_link[0].get("href")
@@ -212,7 +211,9 @@ class download:
             if (self.datatype == "live"):
                 df = pd.read_csv(filename, encoding='latin1')   
             elif (self.datatype == "historic"):
-                df = pd.read_excel(filename)
+                xls = pd.ExcelFile(filename)
+                names = xls.sheet_names
+                df = pd.concat([xls.parse(name) for name in names]).reset_index(drop=True)
         except:
             pass    
         return df
