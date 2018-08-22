@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<title>Dashboard</title>
+	{% load staticfiles %}
+	<!-- Global stylesheets -->
+	<link href="https://fonts.googleapis.com/css?family=Roboto:400,300,100,500,700,900" rel="stylesheet" type="text/css">
+	<link href="{% static 'data_plot/global_assets/css/icons/icomoon/styles.css' %}" rel="stylesheet" type="text/css">
+	<link href="{% static 'data_plot/assets/css/bootstrap.min.css' %}" rel="stylesheet" type="text/css">
+	<link href="{% static 'data_plot/assets/css/bootstrap_limitless.min.css' %}" rel="stylesheet" type="text/css">
+	<link href="{% static 'data_plot/assets/css/layout.min.css' %}" rel="stylesheet" type="text/css">
+	<link href="{% static 'data_plot/assets/css/components.min.css' %}" rel="stylesheet" type="text/css">
+	<link href="{% static 'data_plot/assets/css/colors.min.css' %}" rel="stylesheet" type="text/css">
+	<link href="{% static 'data_plot/assets/css/base.css' %}" rel="stylesheet" type="text/css">
+	<!-- /global stylesheets -->
+	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
+
+	<!-- Core JS files -->
+	<script src="{% static 'data_plot/global_assets/js/main/jquery.min.js' %}"></script>
+	<script src="{% static 'data_plot/global_assets/js/main/bootstrap.bundle.min.js' %}"></script>
+	<script src="{% static 'data_plot/global_assets/js/plugins/loaders/blockui.min.js' %}"></script>
+	<!-- /core JS files -->
+
+	<!-- Theme JS files -->
+	<script src="{% static 'data_plot/global_assets/js/plugins/visualization/d3/d3.min.js' %}"></script>
+	<script src="{% static 'data_plot/global_assets/js/plugins/visualization/d3/d3_tooltip.js' %}"></script>
+	<script src="{% static 'data_plot/global_assets/js/plugins/forms/styling/switchery.min.js' %}"></script>
+	<script src="{% static 'data_plot/global_assets/js/plugins/forms/selects/bootstrap_multiselect.js' %}"></script>
+	<script src="{% static 'data_plot/global_assets/js/plugins/ui/moment/moment.min.js' %}"></script>
+
+	<script src="{% static 'assets/js/app.js' %}"></script>
+	<script src="{% static 'global_assets/js/demo_pages/dashboard.js' %}"></script>
+	<!-- /theme JS files -->
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css" />
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.bundle.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.min.js"></script>
+
+		<!--Chart Files CDN -->
+		<!---->
+
+		<script src="https://cdn.anychart.com/releases/8.2.1/js/anychart-base.min.js" type="text/javascript"></script>
+		<script src="https://cdn.anychart.com/releases/8.2.1/themes/dark_blue.min.js"></script>
+		<script src="https://cdn.anychart.com/releases/8.2.1/js/anychart-ui.min.js"></script>
+		<script src="https://cdn.anychart.com/releases/8.2.1/js/anychart-exports.min.js"></script>
+		<script src="https://cdn.anychart.com/releases/8.2.1/js/anychart-core.min.js"></script>
+		<script src="https://cdn.anychart.com/releases/8.2.1/js/anychart-stock.min.js"></script>
+		<script src="https://cdn.anychart.com/releases/8.2.1/js/anychart-data-adapter.min.js"></script>
+		  
+		<link rel="stylesheet" href="https://cdn.anychart.com/releases/8.2.1/css/anychart-ui.min.css" />
+		<link rel="stylesheet" href="https://cdn.anychart.com/releases/8.2.1/fonts/css/anychart-font.min.css" />
+		
+		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/waypoints/4.0.1/jquery.waypoints.min.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Counter-Up/1.0.0/jquery.counterup.min.js"></script>
+        
+
+
+</head>
+
+<body id="bdy">
+<div class="col-xl-12 col-md-12 col-lg-12">
+	<select>
+		<option value="">HB_BUSAVG</option>
+		<option value="">HB_HOUSTON</option>
+		<option value="">HB_HUBAVG</option>
+		<option value="">HB_NORTH</option>
+		<option value="">HB_SOUTH</option>
+		<option value="">HB_WEST</option>
+		<option value="">LZ_AEN</option>
+		<option value="">LZ_CPS</option>
+		<option value="">LZ_LCRA</option>
+		<option value="">LZ_NORTH</option>
+		<option value="">LZ_RAYBN</option>
+		<option value="">LZ_SOUTH</option>
+		<option value="">LZ_WEST</option>
+		<option value="">LZ_HOUSTON</option>
+
+	</select>
+
+</div>
+<div class="col-xl-10 col-md-10 col-lg-10">
+	<div class="col-xl-6 col-md-6 col-lg-6">
+				<div class="row c-bg">
+						<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 padding-one" id="rangeSelector_container">
+					  </div>
+					  <div id="trainSetChart" class="bg-white c-bg col-xs-12 col-sm-12 col-md-12 col-lg-12 no-padding" style="height: 400px;">			  
+
+					  </div>
+				</div>
+		<!-- /Main chart sources -->
+	</div>
+	<div class="col-xl-6 col-md-6 col-lg-6">
+
+	<!-- Main chart sources -->
+			<div class="row c-bg">
+					<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 padding-one" id="rangeSelector_container">
+				  </div>
+				  <div id="testSetChart" class="bg-white c-bg col-xs-12 col-sm-12 col-md-12 col-lg-12 no-padding" style="height: 400px;">			  
+
+				  </div>
+			</div>
+
+	<!-- /Main chart sources -->
+	</div>
+		<div class="col-xl-6 col-md-6 col-lg-6">
+
+	<!-- Main chart sources -->
+			<div class="row c-bg">
+					<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 padding-one" id="rangeSelector_container">
+				  </div>
+				  <div id="bidirectionalChart" class="bg-white c-bg col-xs-12 col-sm-12 col-md-12 col-lg-12 no-padding" style="height: 400px;">			  
+
+				  </div>
+			</div>
+
+	<!-- /Main chart sources -->
+	</div>
+
+
+</body>
+</html>
+
+
+ <script type="text/javascript">
+ 
+ // create data table on loaded data
+var dataTable = anychart.data.table();
+{% if data %}
+	var j_data = {{ data|safe }};
+	dataTable.addData(j_data);
+{% else %}
+	<h3> Error 404. Requested page could not be found </h3>
+{% endif %}
+</script>
+<script type="text/javascript">
+//**********************training set chart plotting************************************
+
+anychart.onDocumentReady(function() {
+anychart.licenseKey("songzcorp-7ce21725-824e1b3b");
+
+	anychart.data.loadCsvFile('https://cdn.anychart.com/csv-data/csco-daily.csv', function(data) {
+    var dataTable = anychart.data.table();
+    dataTable.addData(data);
+
+    // create stock chart
+    var chart = anychart.stock();
+
+    // set chart title
+    chart.title('Training Set');
+
+    // create plot on the chart
+    var plot = chart.plot(0);
+
+    // create plot series with mapped data
+
+    plot.line(dataTable.mapAs({
+      'value': 2
+    })).name('Price');
+
+    // create scroller series with mapped data
+    chart.scroller().line(dataTable.mapAs({
+      'value': 1
+    }));
+
+    // set tooltip title formatter for the chart
+    chart.tooltip().titleFormat(function() {
+      return window.anychart.format.dateTime(this.hoveredDate, 'HH:mm:ss.SSS');
+    });
+
+    // set container id for the chart
+    chart.container('trainSetChart');
+    // initiate chart drawing
+    chart.draw();
+
+    // create range picker
+    var rangePicker = anychart.ui.rangePicker();
+    // init range picker
+    rangePicker.render(chart);
+
+    // create range selector
+    var rangeSelector = anychart.ui.rangeSelector();
+    // init range selector
+    rangeSelector.render(chart);
+	
+
+  });
+});
+
+//**********************test set chart plotting************************************
+
+anychart.onDocumentReady(function() {
+anychart.licenseKey("songzcorp-7ce21725-824e1b3b");
+
+	anychart.data.loadCsvFile('https://cdn.anychart.com/csv-data/csco-daily.csv', function(data) {
+    var dataTable = anychart.data.table();
+    dataTable.addData(data);
+
+    // create stock chart
+    var chart = anychart.stock();
+
+    // set chart title
+    chart.title('Test Set');
+
+    // create plot on the chart
+    var plot = chart.plot(0);
+
+    // create plot series with mapped data
+    plot.line(dataTable.mapAs({
+      'value': 2
+    })).name('Price').stroke('1.5 #ef6c00');
+	
+    // create scroller series with mapped data
+    chart.scroller().line(dataTable.mapAs({
+      'value': 1
+    }));
+
+    // set tooltip title formatter for the chart
+    chart.tooltip().titleFormat(function() {
+      return window.anychart.format.dateTime(this.hoveredDate, 'HH:mm:ss.SSS');
+    });
+
+    // set container id for the chart
+    chart.container('testSetChart');
+    // initiate chart drawing
+    chart.draw();
+
+    // create range picker
+    var rangePicker = anychart.ui.rangePicker();
+    // init range picker
+    rangePicker.render(chart);
+
+    // create range selector
+    var rangeSelector = anychart.ui.rangeSelector();
+    // init range selector
+    rangeSelector.render(chart);
+	
+
+  });
+});
+
+
+
+//**********************directional accuracy************************************
+
+anychart.onDocumentReady(function() {
+anychart.licenseKey("songzcorp-7ce21725-824e1b3b");
+
+	anychart.data.loadCsvFile('https://cdn.anychart.com/csv-data/csco-daily.csv', function(data) {
+    var dataTable = anychart.data.table();
+    dataTable.addData(data);
+
+    // create stock chart
+    var chart = anychart.stock();
+
+    // set chart title
+    chart.title('Training Set');
+
+    // create plot on the chart
+    var plot = chart.plot(0);
+
+    // create plot series with mapped data
+
+    plot.line(dataTable.mapAs({
+      'value': 3
+    })).name('Actual Direction');
+
+	plot.line(dataTable.mapAs({
+      'value': 4
+    })).name('Predicted Direction');
+
+	
+    // create scroller series with mapped data
+    chart.scroller().line(dataTable.mapAs({
+      'value': 1
+    }));
+
+    // set tooltip title formatter for the chart
+    chart.tooltip().titleFormat(function() {
+      return window.anychart.format.dateTime(this.hoveredDate, 'HH:mm:ss.SSS');
+    });
+
+    // set container id for the chart
+    chart.container('bidirectionalChart');
+    // initiate chart drawing
+    chart.draw();
+
+    // create range picker
+    var rangePicker = anychart.ui.rangePicker();
+    // init range picker
+    rangePicker.render(chart);
+
+    // create range selector
+    var rangeSelector = anychart.ui.rangeSelector();
+    // init range selector
+    rangeSelector.render(chart);
+	
+
+  });
+});
+    </script>
+
