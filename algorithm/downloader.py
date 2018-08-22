@@ -1,58 +1,14 @@
 import requests
 import re
 import os
-import inspect
 from bs4 import BeautifulSoup
 import pandas as pd
 import time
 import pickle
 import zipfile
-import logging
 from glob import glob
 import random
-
-def get_name():
-    frame = inspect.stack()[1]
-    module = inspect.getmodule(frame[0])
-    filename = module.__file__
-
-    full_path = os.path.realpath(filename)
-
-    return full_path
-
-def get_location():
-    '''
-    Returns the directory of located script
-    
-    Parameters:
-    ___________
-    datadir: The current root directory
-
-    Returns:
-    ________
-    dir_location
-    '''
-
-    path = get_name()
-    dir_location = os.path.dirname(path)
-    return dir_location
-
-def get_logger(fullLocation):
-    '''
-    fullLocation (string):
-    Name of file along with Full location. Alternatively just file name
-    '''
-    
-    try:
-        loggerName = fullLocation.split("/")[-1]
-    except:
-        loggerName = fullLocation
-
-    logger = logging.getLogger(loggerName)
-    logger.setLevel(logging.DEBUG)
-    handler = logging.FileHandler(fullLocation, 'a')
-    logger.addHandler(handler)
-    return logger
+from basic_utils import get_location, get_logger
 
 
 class download:
@@ -89,8 +45,6 @@ class download:
             os.makedirs(self.savepath)
 
         self.HEADERS_LIST = ['Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.79 Safari/537.36', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:60.0) Gecko/20100101 Firefox/60.0', 'Mozilla/5.0 (X11; Linux x86_64; rv:58.0) Gecko/20100101 Firefox/58.0']
-
-        
 
     def perform_download(self):
         start_time = time.time()
@@ -229,9 +183,3 @@ class download:
         except:
             pass    
         return df
-
-# historicDownloader = download("http://mis.ercot.com/misapp/GetReports.do?reportTypeId=13061&reportTitle=Historical%20RTM%20Load%20Zone%20and%20Hub%20Prices&showHTMLView=&mimicKey", "historic")
-# historicDownloader.perform_download()
-
-liveDownloader = download("http://mis.ercot.com/misapp/GetReports.do?reportTypeId=12301&reportTitle=Settlement%20Point%20Prices%20at%20Resource%20Nodes,%20Hubs%20and%20Load%20Zones&showHTMLView=&mimicKey", "live")
-liveDownloader.perform_download()
