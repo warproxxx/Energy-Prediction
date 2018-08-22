@@ -1,3 +1,7 @@
+from downloader import download
+from cleaner import cleaner
+
+
 # historicDownloader = download("http://mis.ercot.com/misapp/GetReports.do?reportTypeId=13061&reportTitle=Historical%20RTM%20Load%20Zone%20and%20Hub%20Prices&showHTMLView=&mimicKey", "historic")
 # historicDownloader.perform_download()
 
