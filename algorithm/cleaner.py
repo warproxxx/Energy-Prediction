@@ -86,5 +86,3 @@ class cleaner:
 
             os.remove('data/live/{}.csv'.format(location))
             self.logger.info("data/live/{}.csv removed".format(location))
-
-cleaner().clean()
