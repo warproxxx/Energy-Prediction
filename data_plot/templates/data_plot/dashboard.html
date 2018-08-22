@@ -60,6 +60,7 @@
 </head>
 
 <body id="bdy">
+
 <div class="col-xl-12 col-md-12 col-lg-12">
 	<select>
 		<option value="">HB_BUSAVG</option>
@@ -118,7 +119,6 @@
 	<!-- /Main chart sources -->
 	</div>
 
-
 </body>
 </html>
 
@@ -135,6 +135,7 @@ var dataTable = anychart.data.table();
 {% endif %}
 </script>
 <script type="text/javascript">
+
 //**********************training set chart plotting************************************
 
 anychart.onDocumentReady(function() {
@@ -154,7 +155,6 @@ anychart.licenseKey("songzcorp-7ce21725-824e1b3b");
     var plot = chart.plot(0);
 
     // create plot series with mapped data
-
     plot.line(dataTable.mapAs({
       'value': 2
     })).name('Price');
@@ -269,8 +269,7 @@ anychart.licenseKey("songzcorp-7ce21725-824e1b3b");
 	plot.line(dataTable.mapAs({
       'value': 4
     })).name('Predicted Direction');
-
-	
+    
     // create scroller series with mapped data
     chart.scroller().line(dataTable.mapAs({
       'value': 1
