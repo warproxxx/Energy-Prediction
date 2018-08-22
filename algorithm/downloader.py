@@ -156,7 +156,8 @@ class download:
 
         
         for settlementPoint in data['SettlementPointName'].unique():
-            data[data['SettlementPointName'] == settlementPoint].to_csv(os.path.join(self.savepath, "{}.csv".format(settlementPoint)), index=False)
+            if (settlementPoint != 'nan'):
+                data[data['SettlementPointName'] == settlementPoint].to_csv(os.path.join(self.savepath, "{}.csv".format(settlementPoint)), index=False)
         
         end_time = time.time()
         self.logger.info("done in {}".format((end_time-start_time)/60))
