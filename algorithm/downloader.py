@@ -10,7 +10,6 @@ from glob import glob
 import random
 from basic_utils import get_location, get_logger
 
-
 class download:
     def __init__(self, url, datatype, starting, logger=None):
         '''
@@ -74,6 +73,36 @@ class download:
         else:
             return False
 
+    def clean_data(self, df):
+        if (self.datatype == "live"):
+            try:
+                locations = []
+
+                files = glob('data/live/*')
+
+                if len(files) < 2:
+                    files = glob('data/historic/*')
+
+                    if len(files) < 2:
+                        files = glob('data/processed/*')
+
+                for f in files:
+                    location = os.path.basename(f).replace('.csv', '')
+                    
+                    if (location != "nan"):
+                        locations.append(location)
+
+                df = df[df['SettlementPointName'].isin(locations)].reset_index(drop=True)
+            except:
+                self.logger.info("Exception in reading from historic")
+                historicPoints = ['HB_BUSAVG', 'HB_HOUSTON', 'HB_HUBAVG', 'HB_NORTH', 'HB_SOUTH', 'HB_WEST', 'LZ_AEN', 'LZ_CPS', 'LZ_HOUSTON', 'LZ_LCRA', 'LZ_NORTH','LZ_RAYBN', 'LZ_SOUTH', 'LZ_WEST']
+                df = df[df['SettlementPointName'].isin(historicPoints)]
+        elif (self.datatype == "historic"):
+            df = df.rename(columns={'Delivery Date': 'DeliveryDate', 'Delivery Hour': 'DeliveryHour', 'Delivery Interval': 'DeliveryInterval', 'Repeated Hour Flag': 'DSTFlag', 'Settlement Point Name': 'SettlementPointName', 'Settlement Point Type': 'SettlementPointType', 'Settlement Point Price': 'SettlementPointPrice'})
+            df = df[['DeliveryDate', 'DeliveryHour', 'DeliveryInterval', 'DSTFlag', 'SettlementPointName', 'SettlementPointType', 'SettlementPointPrice']]
+        
+        return df
+
     def perform_download(self):
         start_time = time.time()
         root = "http://mis.ercot.com"
@@ -85,16 +114,11 @@ class download:
         data = []
 
         for i, row in enumerate(rows):
-            if i% 100 == 0:
-                self.logger.info("{}/{}".format(i, len(rows)))
-
             row_link = row.find_all("a")
             
             if len(row_link) > 0:
                 row_link = row_link[0].get("href")
                 filename = str(row.find_all("td", {"class": "labelOptional_ind"})[0].text)
-
-                self.logger.info(filename)
 
                 if self.datatype == "historic":
                     toFind = ".zip"
@@ -106,7 +130,6 @@ class download:
                         self.logger.info("Downloading {}".format(filename))
 
                         page = self.get_response(root + row_link)
-                        self.logger.info(root + row_link)
 
                         if(page != None):
                             with open(os.path.join(self.savepath, filename), "wb") as f:
@@ -131,39 +154,21 @@ class download:
         
         self.logger.info("total data points: {0}".format(sum([a.shape[0] for a in data])))
 
-        data = pd.concat(data)
-        data = self.clean_data(data)
+        try:
+            data = pd.concat(data)
+            data = self.clean_data(data)
 
-        for settlementPoint in data['SettlementPointName'].unique():
-            fname = "{}.csv".format(settlementPoint)
+            for settlementPoint in data['SettlementPointName'].unique():
+                fname = "{}.csv".format(settlementPoint)
 
-            if (fname != "nan.csv"):
-                data[data['SettlementPointName'] == settlementPoint].to_csv(os.path.join(self.savepath, fname), index=False)
-        
-        end_time = time.time()
-        self.logger.info("done in {}".format((end_time-start_time)/60))
+                if (fname != "nan.csv"):
+                    data[data['SettlementPointName'] == settlementPoint].to_csv(os.path.join(self.savepath, fname), index=False)
+                    self.logger.info("Saved to {}".format(os.path.join(self.savepath, fname)))
 
-    def clean_data(self, df):
-        if (self.datatype == "live"):
-            try:
-                locations = []
-
-                for f in glob('data/historic/*'):
-                    location = os.path.basename(f).replace('.csv', '')
-                    
-                    if (location != "nan"):
-                        locations.append(location)
-
-                df = df[df['SettlementPointName'].isin(locations)].reset_index(drop=True)
-            except:
-                self.logger.info("Exception in reading from historic")
-                historicPoints = ['HB_BUSAVG', 'HB_HOUSTON', 'HB_HUBAVG', 'HB_NORTH', 'HB_SOUTH', 'HB_WEST', 'LZ_AEN', 'LZ_CPS', 'LZ_HOUSTON', 'LZ_LCRA', 'LZ_NORTH','LZ_RAYBN', 'LZ_SOUTH', 'LZ_WEST']
-                df = df[df['SettlementPointName'].isin(historicPoints)]
-        elif (self.datatype == "historic"):
-            df = df.rename(columns={'Delivery Date': 'DeliveryDate', 'Delivery Hour': 'DeliveryHour', 'Delivery Interval': 'DeliveryInterval', 'Repeated Hour Flag': 'DSTFlag', 'Settlement Point Name': 'SettlementPointName', 'Settlement Point Type': 'SettlementPointType', 'Settlement Point Price': 'SettlementPointPrice'})
-            df = df[['DeliveryDate', 'DeliveryHour', 'DeliveryInterval', 'DSTFlag', 'SettlementPointName', 'SettlementPointType', 'SettlementPointPrice']]
-        
-        return df
+            end_time = time.time()
+            self.logger.info("done in {} seconds".format((end_time-start_time)/60))
+        except Exception as e:
+            self.logger.info("Got Exception - {}".format(str(e)))
 
     def try_get_page_soup(self, page_url):
         soup = None
