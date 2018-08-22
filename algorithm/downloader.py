@@ -12,7 +12,7 @@ from basic_utils import get_location, get_logger
 
 
 class download:
-    def __init__(self, url, datatype, logger=None):
+    def __init__(self, url, datatype, starting, logger=None):
         '''
         Parameters:
         ___________
@@ -21,6 +21,9 @@ class download:
 
         datatype (string):
         live or historic
+
+        starting (pandas datetime):
+        The starting date to download from
         '''
 
         if logger == None:
@@ -29,6 +32,7 @@ class download:
             self.logger = logger
 
         self.datatype = datatype
+        self.starting = starting
 
         if (datatype == "historic"):
             savefolder = "data/historic"
@@ -46,6 +50,30 @@ class download:
 
         self.HEADERS_LIST = ['Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.79 Safari/537.36', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:60.0) Gecko/20100101 Firefox/60.0', 'Mozilla/5.0 (X11; Linux x86_64; rv:58.0) Gecko/20100101 Firefox/58.0']
 
+    def to_download(self, filename):
+        '''
+        Find out wether to download the file or not
+
+        Parameters:
+        ___________
+        filename (string): The filename in the website
+        '''
+
+        splittedName = filename.split('.')
+        
+        if self.datatype == 'historic':
+            currTime = pd.to_datetime(splittedName[3])
+        elif self.datatype == 'live':
+            date = splittedName[3]
+            time = splittedName[5].split('_')[-2]
+
+            currTime = pd.to_datetime(date + " " + time)
+        
+        if (currTime > self.starting):
+            return True
+        else:
+            return False
+
     def perform_download(self):
         start_time = time.time()
         root = "http://mis.ercot.com"
@@ -60,14 +88,12 @@ class download:
             if i% 100 == 0:
                 self.logger.info("{}/{}".format(i, len(rows)))
 
-            #get the text written in the row
             row_link = row.find_all("a")
             
             if len(row_link) > 0:
                 row_link = row_link[0].get("href")
                 filename = str(row.find_all("td", {"class": "labelOptional_ind"})[0].text)
-                #this is the valid data entry
-                #now check if the data is the csv data or the xml data
+
                 self.logger.info(filename)
 
                 if self.datatype == "historic":
@@ -76,42 +102,43 @@ class download:
                     toFind = "_csv.zip"
 
                 if toFind in row.text:
-                    #download the file
-                    self.logger.info("Downloading {}".format(filename))
+                    if (self.to_download(filename)):
+                        self.logger.info("Downloading {}".format(filename))
 
-                    page = self.get_response(root + row_link)
-                    self.logger.info(root + row_link)
+                        page = self.get_response(root + row_link)
+                        self.logger.info(root + row_link)
 
-                    if(page != None):
-                        with open(os.path.join(self.savepath, filename), "wb") as f:
-                            f.write(page.content)
-                        zf = zipfile.ZipFile(os.path.join(self.savepath, filename))
-                        zf.extractall(self.savepath)
-                        zfile = os.path.join(self.savepath, zf.infolist()[0].filename)
-                        zf.close()
+                        if(page != None):
+                            with open(os.path.join(self.savepath, filename), "wb") as f:
+                                f.write(page.content)
+                            zf = zipfile.ZipFile(os.path.join(self.savepath, filename))
+                            zf.extractall(self.savepath)
+                            zfile = os.path.join(self.savepath, zf.infolist()[0].filename)
+                            zf.close()
 
-                        #delete the zip file
-                        os.remove(os.path.join(self.savepath, filename))
-                        self.logger.info("Removed {}".format(os.path.join(self.savepath, filename)))
+                            #delete the zip file
+                            os.remove(os.path.join(self.savepath, filename))
+                            self.logger.info("Removed {}".format(os.path.join(self.savepath, filename)))
 
-                        #load the data
-                        df = self.load_data(zfile)                
-                        
-                        #delete the csv file
-                        os.remove(zfile)
-                        
-                        if df is not None:
-                            data.append(df)
+                            #load the data
+                            df = self.load_data(zfile)                
+                            
+                            #delete the csv file
+                            os.remove(zfile)
+                            
+                            if df is not None:
+                                data.append(df)
         
         self.logger.info("total data points: {0}".format(sum([a.shape[0] for a in data])))
 
         data = pd.concat(data)
         data = self.clean_data(data)
 
-        
         for settlementPoint in data['SettlementPointName'].unique():
-            if (settlementPoint != 'nan'):
-                data[data['SettlementPointName'] == settlementPoint].to_csv(os.path.join(self.savepath, "{}.csv".format(settlementPoint)), index=False)
+            fname = "{}.csv".format(settlementPoint)
+
+            if (fname != "nan.csv"):
+                data[data['SettlementPointName'] == settlementPoint].to_csv(os.path.join(self.savepath, fname), index=False)
         
         end_time = time.time()
         self.logger.info("done in {}".format((end_time-start_time)/60))
@@ -148,6 +175,7 @@ class download:
             while(page.status_code != 200):
                 if retry > 3:
                     break
+
                 time.sleep(10)
                 page = requests.get(page_url, headers=headers)
                 retry += 1
