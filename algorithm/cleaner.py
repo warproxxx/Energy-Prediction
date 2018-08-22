@@ -10,23 +10,23 @@ class cleaner:
         else:
             self.logger = logger
 
-        historicLocations = []
-        liveLocations = []
+        self.historicLocations = []
+        self.liveLocations = []
 
         for f in glob('data/historic/*'):
             location = os.path.basename(f).replace('.csv', '')
             
             if (location != "nan"):
-                historicLocations.append(location)
+                self.historicLocations.append(location)
 
         for f in glob('data/live/*'):
             location = os.path.basename(f).replace('.csv', '')
             
             if (location != "nan"):
-                liveLocations.append(location)
+                self.liveLocations.append(location)
 
 
-        self.locations = list(set(historicLocations).intersection(liveLocations))
+        self.locations = list(set(self.historicLocations).intersection(self.liveLocations))
 
     def fix_data(self, df):
         '''
@@ -69,20 +69,32 @@ class cleaner:
         return full_data.reset_index()
 
     def clean(self):
-        for location in self.locations:
-            historic = pd.read_csv('data/historic/{}.csv'.format(location))
-            live = pd.read_csv('data/live/{}.csv'.format(location))
+        if (len(self.locations) > 2):
+            for location in self.locations:
+                historic = pd.read_csv('data/historic/{}.csv'.format(location))
+                live = pd.read_csv('data/live/{}.csv'.format(location))
 
-            live = self.fix_data(live)
-            historic = self.fix_data(historic)
+                live = self.fix_data(live)
+                historic = self.fix_data(historic)
 
-            df = self.fixJoin(live, historic)
+                df = self.fixJoin(live, historic)
 
-            df.to_csv('data/processed/{}.csv'.format(location), index=False, mode='a')
-            self.logger.info("Saved to data/processed/{}.csv".format(location))
-             
-            os.remove('data/historic/{}.csv'.format(location))
-            self.logger.info("data/historic/{}.csv removed".format(location))
+                df.to_csv('data/processed/{}.csv'.format(location), index=False, mode='a')
+                self.logger.info("Saved to data/processed/{}.csv".format(location))
+                
+                os.remove('data/historic/{}.csv'.format(location))
+                self.logger.info("data/historic/{}.csv removed".format(location))
 
-            os.remove('data/live/{}.csv'.format(location))
-            self.logger.info("data/live/{}.csv removed".format(location))
+                os.remove('data/live/{}.csv'.format(location))
+                self.logger.info("data/live/{}.csv removed".format(location))
+        else:
+            for location in self.liveLocations:
+                live = pd.read_csv('data/live/{}.csv'.format(location))
+
+                live = self.fix_data(live)
+                
+                live.to_csv('data/processed/{}.csv'.format(location), index=False, header=None, mode='a')
+                self.logger.info("Appended to data/processed/{}.csv".format(location))
+
+                os.remove('data/live/{}.csv'.format(location))
+                self.logger.info("data/live/{}.csv removed".format(location))

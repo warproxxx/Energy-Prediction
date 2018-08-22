@@ -40,16 +40,7 @@ liveDownloader.perform_download()
 
 #assert downloaded if required later
 
-# cleaner().clean()
-#assert the cleaned data exists
+cleaner().clean()
 
-
-
-
-
-#assert downloading has completed
-
-
-#assert files are removed, new file is created
-
-#Then add those conditional checks
+#assert the cleaned data exists and is clean
+#totalMissing = sum((df['Date'].shift(-1)[:-1] - df['Date'][:-1]).astype('timedelta64[m]') != 15)
