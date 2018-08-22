@@ -6,4 +6,3 @@ Keras>=2.2.0
 tensorflow>=1.10.0
 beautifulsoup4>=4.6.3
 django>=2.1
-gunicorn>=19.9.0

@@ -1,61 +1,42 @@
 import requests
 import re
 import os
-import inspect
 from bs4 import BeautifulSoup
 import pandas as pd
 import time
 import pickle
 import zipfile
-import logging
+from glob import glob
 import random
-
-def get_name():
-    frame = inspect.stack()[1]
-    module = inspect.getmodule(frame[0])
-    filename = module.__file__
-
-    full_path = os.path.realpath(filename)
-
-    return full_path
-
-def get_location():
-    '''
-    Returns the directory of located script
-    
-    Parameters:
-    ___________
-    datadir: The current root directory
-
-    Returns:
-    ________
-    dir_location
-    '''
-
-    path = get_name()
-    dir_location = os.path.dirname(path)
-    return dir_location
-
-def get_logger(fullLocation):
-    '''
-    fullLocation (string):
-    Name of file along with Full location. Alternatively just file name
-    '''
-    
-    try:
-        loggerName = fullLocation.split("/")[-1]
-    except:
-        loggerName = fullLocation
-
-    logger = logging.getLogger(loggerName)
-    logger.setLevel(logging.DEBUG)
-    handler = logging.FileHandler(fullLocation, 'w')
-    logger.addHandler(handler)
-    return logger
+from basic_utils import get_location, get_logger
 
 
 class download:
-    def __init__(self, url, savefolder, logger=None):
+    def __init__(self, url, datatype, logger=None):
+        '''
+        Parameters:
+        ___________
+        url (string):
+        The URL to download from
+
+        datatype (string):
+        live or historic
+        '''
+
+        if logger == None:
+            self.logger = get_logger(get_location() + "/logs/downloader.log")
+        else:
+            self.logger = logger
+
+        self.datatype = datatype
+
+        if (datatype == "historic"):
+            savefolder = "data/historic"
+            self.logger.info("Downloading historic data")
+        elif (datatype == "live"):
+            savefolder = "data/live"
+            self.logger.info("Downloading live data")
+
         self.url = url
 
         self.savepath = os.path.join(get_location(), savefolder)
@@ -65,14 +46,8 @@ class download:
 
         self.HEADERS_LIST = ['Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.79 Safari/537.36', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:60.0) Gecko/20100101 Firefox/60.0', 'Mozilla/5.0 (X11; Linux x86_64; rv:58.0) Gecko/20100101 Firefox/58.0']
 
-        if logger == None:
-            self.logger = get_logger(get_location() + "/logs/downloader.log")
-        else:
-            self.logger = logger
-
     def perform_download(self):
         start_time = time.time()
-        user_agent = UserAgent()
         root = "http://mis.ercot.com"
 
         soup = self.try_get_page_soup(self.url)
@@ -93,9 +68,19 @@ class download:
                 filename = str(row.find_all("td", {"class": "labelOptional_ind"})[0].text)
                 #this is the valid data entry
                 #now check if the data is the csv data or the xml data
-                if "_csv.zip" in row.text:
+                self.logger.info(filename)
+
+                if self.datatype == "historic":
+                    toFind = ".zip"
+                else:
+                    toFind = "_csv.zip"
+
+                if toFind in row.text:
                     #download the file
+                    self.logger.info("Downloading {}".format(filename))
+
                     page = self.get_response(root + row_link)
+                    self.logger.info(root + row_link)
 
                     if(page != None):
                         with open(os.path.join(self.savepath, filename), "wb") as f:
@@ -107,6 +92,7 @@ class download:
 
                         #delete the zip file
                         os.remove(os.path.join(self.savepath, filename))
+                        self.logger.info("Removed {}".format(os.path.join(self.savepath, filename)))
 
                         #load the data
                         df = self.load_data(zfile)                
@@ -120,9 +106,37 @@ class download:
         self.logger.info("total data points: {0}".format(sum([a.shape[0] for a in data])))
 
         data = pd.concat(data)
-        data.to_csv(os.path.join(self.save_path, "all_data.csv"), index=False)
+        data = self.clean_data(data)
+
+        
+        for settlementPoint in data['SettlementPointName'].unique():
+            if (settlementPoint != 'nan'):
+                data[data['SettlementPointName'] == settlementPoint].to_csv(os.path.join(self.savepath, "{}.csv".format(settlementPoint)), index=False)
+        
         end_time = time.time()
         self.logger.info("done in {}".format((end_time-start_time)/60))
+
+    def clean_data(self, df):
+        if (self.datatype == "live"):
+            try:
+                locations = []
+
+                for f in glob('data/historic/*'):
+                    location = os.path.basename(f).replace('.csv', '')
+                    
+                    if (location != "nan"):
+                        locations.append(location)
+
+                df = df[df['SettlementPointName'].isin(locations)].reset_index(drop=True)
+            except:
+                self.logger.info("Exception in reading from historic")
+                historicPoints = ['HB_BUSAVG', 'HB_HOUSTON', 'HB_HUBAVG', 'HB_NORTH', 'HB_SOUTH', 'HB_WEST', 'LZ_AEN', 'LZ_CPS', 'LZ_HOUSTON', 'LZ_LCRA', 'LZ_NORTH','LZ_RAYBN', 'LZ_SOUTH', 'LZ_WEST']
+                df = df[df['SettlementPointName'].isin(historicPoints)]
+        elif (self.datatype == "historic"):
+            df = df.rename(columns={'Delivery Date': 'DeliveryDate', 'Delivery Hour': 'DeliveryHour', 'Delivery Interval': 'DeliveryInterval', 'Repeated Hour Flag': 'DSTFlag', 'Settlement Point Name': 'SettlementPointName', 'Settlement Point Type': 'SettlementPointType', 'Settlement Point Price': 'SettlementPointPrice'})
+            df = df[['DeliveryDate', 'DeliveryHour', 'DeliveryInterval', 'DSTFlag', 'SettlementPointName', 'SettlementPointType', 'SettlementPointPrice']]
+        
+        return df
 
     def try_get_page_soup(self, page_url):
         soup = None
@@ -140,7 +154,7 @@ class download:
             if page.status_code != 200:
                 print("page failed: " + page_url)
             else:
-                soup = BeautifulSoup(page.text)
+                soup = BeautifulSoup(page.text, "lxml")
         except:
             soup = None
             
@@ -158,11 +172,14 @@ class download:
 
     def load_data(self, filename):
         df = None
+
         try:
-            df = pd.read_csv(filename, encoding='latin1')        
+            if (self.datatype == "live"):
+                df = pd.read_csv(filename, encoding='latin1')   
+            elif (self.datatype == "historic"):
+                xls = pd.ExcelFile(filename)
+                names = xls.sheet_names
+                df = pd.concat([xls.parse(name) for name in names]).reset_index(drop=True)
         except:
             pass    
         return df
-
-
-download("http://mis.ercot.com/misapp/GetReports.do?reportTypeId=13061&reportTitle=Historical%20RTM%20Load%20Zone%20and%20Hub%20Prices&showHTMLView=&mimicKey", "historicdata").perform_download()
