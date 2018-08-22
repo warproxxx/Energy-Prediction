@@ -138,6 +138,7 @@ class download:
 
                         #delete the zip file
                         os.remove(os.path.join(self.savepath, filename))
+                        self.logger.info("Removed {}".format(os.path.join(self.savepath, filename)))
 
                         #load the data
                         df = self.load_data(zfile)                
