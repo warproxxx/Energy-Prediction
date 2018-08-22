@@ -107,12 +107,14 @@ class download:
 
             #get the text written in the row
             row_link = row.find_all("a")
+            self.logger.info("Row Link {}".format(row_link))
             
             if len(row_link) > 0:
                 row_link = row_link[0].get("href")
                 filename = str(row.find_all("td", {"class": "labelOptional_ind"})[0].text)
                 #this is the valid data entry
                 #now check if the data is the csv data or the xml data
+                self.logger.info(filename)
 
                 if self.datatype == "historic":
                     toFind = ".zip"
@@ -124,6 +126,7 @@ class download:
                     self.logger.info("Downloading {}".format(filename))
 
                     page = self.get_response(root + row_link)
+                    self.logger.info(root + row_link)
 
                     if(page != None):
                         with open(os.path.join(self.savepath, filename), "wb") as f:
@@ -216,5 +219,5 @@ class download:
 historicDownloader = download("http://mis.ercot.com/misapp/GetReports.do?reportTypeId=13061&reportTitle=Historical%20RTM%20Load%20Zone%20and%20Hub%20Prices&showHTMLView=&mimicKey", "historic")
 historicDownloader.perform_download()
 
-liveDownloader = download("http://mis.ercot.com/misapp/GetReports.do?reportTypeId=12301&reportTitle=Settlement%20Point%20Prices%20at%20Resource%20Nodes,%20Hubs%20and%20Load%20Zones&showHTMLView=&mimicKey", "live")
-liveDownloader.perform_download()
+# liveDownloader = download("http://mis.ercot.com/misapp/GetReports.do?reportTypeId=12301&reportTitle=Settlement%20Point%20Prices%20at%20Resource%20Nodes,%20Hubs%20and%20Load%20Zones&showHTMLView=&mimicKey", "live")
+# liveDownloader.perform_download()
