@@ -8,6 +8,7 @@ import time
 import pickle
 import zipfile
 import logging
+from glob import glob
 import random
 
 def get_name():
@@ -163,10 +164,17 @@ class download:
     def clean_data(self, df):
         if (self.datatype == "live"):
             try:
-                historicPoints = pd.read_csv(os.path.join(self.savepath, "all_data.csv").replace("live", "historic"))['SettlementPointName']
-                df = df[df['SettlementPointName'].isin(historicPoints.unique())].reset_index(drop=True)
+                locations = []
+
+                for f in glob('data/historic/*'):
+                    location = os.path.basename(f).replace('.csv', '')
+                    
+                    if (location != "nan"):
+                        locations.append(location)
+
+                df = df[df['SettlementPointName'].isin(locations)].reset_index(drop=True)
             except:
-                self.logger("Exception in reading from historic")
+                self.logger.info("Exception in reading from historic")
                 historicPoints = ['HB_BUSAVG', 'HB_HOUSTON', 'HB_HUBAVG', 'HB_NORTH', 'HB_SOUTH', 'HB_WEST', 'LZ_AEN', 'LZ_CPS', 'LZ_HOUSTON', 'LZ_LCRA', 'LZ_NORTH','LZ_RAYBN', 'LZ_SOUTH', 'LZ_WEST']
                 df = df[df['SettlementPointName'].isin(historicPoints)]
         elif (self.datatype == "historic"):
@@ -221,8 +229,8 @@ class download:
             pass    
         return df
 
-historicDownloader = download("http://mis.ercot.com/misapp/GetReports.do?reportTypeId=13061&reportTitle=Historical%20RTM%20Load%20Zone%20and%20Hub%20Prices&showHTMLView=&mimicKey", "historic")
-historicDownloader.perform_download()
+# historicDownloader = download("http://mis.ercot.com/misapp/GetReports.do?reportTypeId=13061&reportTitle=Historical%20RTM%20Load%20Zone%20and%20Hub%20Prices&showHTMLView=&mimicKey", "historic")
+# historicDownloader.perform_download()
 
 liveDownloader = download("http://mis.ercot.com/misapp/GetReports.do?reportTypeId=12301&reportTitle=Settlement%20Point%20Prices%20at%20Resource%20Nodes,%20Hubs%20and%20Load%20Zones&showHTMLView=&mimicKey", "live")
 liveDownloader.perform_download()
