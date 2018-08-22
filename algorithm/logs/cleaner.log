@@ -110,3 +110,31 @@ The Missing dates are around: [Timestamp('2011-03-13 02:00:00'), Timestamp('2012
 Saved to data/processed/HB_HOUSTON.csv
 data/historic/HB_HOUSTON.csv removed
 data/live/HB_HOUSTON.csv removed
+Appended to data/processed/HB_NORTH.csv
+data/live/HB_NORTH.csv removed
+Appended to data/processed/LZ_NORTH.csv
+data/live/LZ_NORTH.csv removed
+Appended to data/processed/HB_HOUSTON.csv
+data/live/HB_HOUSTON.csv removed
+Appended to data/processed/HB_BUSAVG.csv
+data/live/HB_BUSAVG.csv removed
+Appended to data/processed/LZ_WEST.csv
+data/live/LZ_WEST.csv removed
+Appended to data/processed/LZ_LCRA.csv
+data/live/LZ_LCRA.csv removed
+Appended to data/processed/HB_HUBAVG.csv
+data/live/HB_HUBAVG.csv removed
+Appended to data/processed/LZ_AEN.csv
+data/live/LZ_AEN.csv removed
+Appended to data/processed/HB_SOUTH.csv
+data/live/HB_SOUTH.csv removed
+Appended to data/processed/LZ_SOUTH.csv
+data/live/LZ_SOUTH.csv removed
+Appended to data/processed/LZ_CPS.csv
+data/live/LZ_CPS.csv removed
+Appended to data/processed/LZ_HOUSTON.csv
+data/live/LZ_HOUSTON.csv removed
+Appended to data/processed/LZ_RAYBN.csv
+data/live/LZ_RAYBN.csv removed
+Appended to data/processed/HB_WEST.csv
+data/live/HB_WEST.csv removed

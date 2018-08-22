@@ -2296,3 +2296,59 @@ Saved to C:\Users\BITT Server\Desktop\Daniel\Energy-Prediction\algorithm\data/li
 Saved to C:\Users\BITT Server\Desktop\Daniel\Energy-Prediction\algorithm\data/live\LZ_WEST.csv
 done in 1.5612428585688274 seconds
 done in 1.5612428585688274 seconds
+Downloading historic data
+Total Rows: 19
+total data points: 0
+Got Exception - No objects to concatenate
+Downloading live data
+Downloading live data
+Total Rows: 1055
+Total Rows: 1055
+Downloading cdr.00012301.0000000000000000.20180822.111703830.SPPHLZNP6905_20180822_1115_csv.zip
+Downloading cdr.00012301.0000000000000000.20180822.111703830.SPPHLZNP6905_20180822_1115_csv.zip
+Removed /home/warproxxx/Desktop/Projects/Energy-Prediction/algorithm/data/live/cdr.00012301.0000000000000000.20180822.111703830.SPPHLZNP6905_20180822_1115_csv.zip
+Removed /home/warproxxx/Desktop/Projects/Energy-Prediction/algorithm/data/live/cdr.00012301.0000000000000000.20180822.111703830.SPPHLZNP6905_20180822_1115_csv.zip
+Downloading cdr.00012301.0000000000000000.20180822.111703830.SPPHLZNP6905_20180822_1115_csv.zip
+Downloading cdr.00012301.0000000000000000.20180822.111703830.SPPHLZNP6905_20180822_1115_csv.zip
+Removed /home/warproxxx/Desktop/Projects/Energy-Prediction/algorithm/data/live/cdr.00012301.0000000000000000.20180822.111703830.SPPHLZNP6905_20180822_1115_csv.zip
+Removed /home/warproxxx/Desktop/Projects/Energy-Prediction/algorithm/data/live/cdr.00012301.0000000000000000.20180822.111703830.SPPHLZNP6905_20180822_1115_csv.zip
+Downloading cdr.00012301.0000000000000000.20180822.110205061.SPPHLZNP6905_20180822_1100_csv.zip
+Downloading cdr.00012301.0000000000000000.20180822.110205061.SPPHLZNP6905_20180822_1100_csv.zip
+Removed /home/warproxxx/Desktop/Projects/Energy-Prediction/algorithm/data/live/cdr.00012301.0000000000000000.20180822.110205061.SPPHLZNP6905_20180822_1100_csv.zip
+Removed /home/warproxxx/Desktop/Projects/Energy-Prediction/algorithm/data/live/cdr.00012301.0000000000000000.20180822.110205061.SPPHLZNP6905_20180822_1100_csv.zip
+Downloading cdr.00012301.0000000000000000.20180822.104703293.SPPHLZNP6905_20180822_1045_csv.zip
+Downloading cdr.00012301.0000000000000000.20180822.104703293.SPPHLZNP6905_20180822_1045_csv.zip
+Removed /home/warproxxx/Desktop/Projects/Energy-Prediction/algorithm/data/live/cdr.00012301.0000000000000000.20180822.104703293.SPPHLZNP6905_20180822_1045_csv.zip
+Removed /home/warproxxx/Desktop/Projects/Energy-Prediction/algorithm/data/live/cdr.00012301.0000000000000000.20180822.104703293.SPPHLZNP6905_20180822_1045_csv.zip
+total data points: 2596
+total data points: 2596
+Saved to /home/warproxxx/Desktop/Projects/Energy-Prediction/algorithm/data/live/HB_BUSAVG.csv
+Saved to /home/warproxxx/Desktop/Projects/Energy-Prediction/algorithm/data/live/HB_BUSAVG.csv
+Saved to /home/warproxxx/Desktop/Projects/Energy-Prediction/algorithm/data/live/HB_HOUSTON.csv
+Saved to /home/warproxxx/Desktop/Projects/Energy-Prediction/algorithm/data/live/HB_HOUSTON.csv
+Saved to /home/warproxxx/Desktop/Projects/Energy-Prediction/algorithm/data/live/HB_HUBAVG.csv
+Saved to /home/warproxxx/Desktop/Projects/Energy-Prediction/algorithm/data/live/HB_HUBAVG.csv
+Saved to /home/warproxxx/Desktop/Projects/Energy-Prediction/algorithm/data/live/HB_NORTH.csv
+Saved to /home/warproxxx/Desktop/Projects/Energy-Prediction/algorithm/data/live/HB_NORTH.csv
+Saved to /home/warproxxx/Desktop/Projects/Energy-Prediction/algorithm/data/live/HB_SOUTH.csv
+Saved to /home/warproxxx/Desktop/Projects/Energy-Prediction/algorithm/data/live/HB_SOUTH.csv
+Saved to /home/warproxxx/Desktop/Projects/Energy-Prediction/algorithm/data/live/HB_WEST.csv
+Saved to /home/warproxxx/Desktop/Projects/Energy-Prediction/algorithm/data/live/HB_WEST.csv
+Saved to /home/warproxxx/Desktop/Projects/Energy-Prediction/algorithm/data/live/LZ_AEN.csv
+Saved to /home/warproxxx/Desktop/Projects/Energy-Prediction/algorithm/data/live/LZ_AEN.csv
+Saved to /home/warproxxx/Desktop/Projects/Energy-Prediction/algorithm/data/live/LZ_CPS.csv
+Saved to /home/warproxxx/Desktop/Projects/Energy-Prediction/algorithm/data/live/LZ_CPS.csv
+Saved to /home/warproxxx/Desktop/Projects/Energy-Prediction/algorithm/data/live/LZ_HOUSTON.csv
+Saved to /home/warproxxx/Desktop/Projects/Energy-Prediction/algorithm/data/live/LZ_HOUSTON.csv
+Saved to /home/warproxxx/Desktop/Projects/Energy-Prediction/algorithm/data/live/LZ_LCRA.csv
+Saved to /home/warproxxx/Desktop/Projects/Energy-Prediction/algorithm/data/live/LZ_LCRA.csv
+Saved to /home/warproxxx/Desktop/Projects/Energy-Prediction/algorithm/data/live/LZ_NORTH.csv
+Saved to /home/warproxxx/Desktop/Projects/Energy-Prediction/algorithm/data/live/LZ_NORTH.csv
+Saved to /home/warproxxx/Desktop/Projects/Energy-Prediction/algorithm/data/live/LZ_RAYBN.csv
+Saved to /home/warproxxx/Desktop/Projects/Energy-Prediction/algorithm/data/live/LZ_RAYBN.csv
+Saved to /home/warproxxx/Desktop/Projects/Energy-Prediction/algorithm/data/live/LZ_SOUTH.csv
+Saved to /home/warproxxx/Desktop/Projects/Energy-Prediction/algorithm/data/live/LZ_SOUTH.csv
+Saved to /home/warproxxx/Desktop/Projects/Energy-Prediction/algorithm/data/live/LZ_WEST.csv
+Saved to /home/warproxxx/Desktop/Projects/Energy-Prediction/algorithm/data/live/LZ_WEST.csv
+done in 0.35525161027908325 seconds
+done in 0.35525161027908325 seconds
