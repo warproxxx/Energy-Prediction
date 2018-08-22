@@ -61,27 +61,64 @@
 
 <body id="bdy">
 
-	<div class="col-xl-12 col-md-12 col-lg-12">
+<div class="col-xl-12 col-md-12 col-lg-12">
+	<select>
+		<option value="">HB_BUSAVG</option>
+		<option value="">HB_HOUSTON</option>
+		<option value="">HB_HUBAVG</option>
+		<option value="">HB_NORTH</option>
+		<option value="">HB_SOUTH</option>
+		<option value="">HB_WEST</option>
+		<option value="">LZ_AEN</option>
+		<option value="">LZ_CPS</option>
+		<option value="">LZ_LCRA</option>
+		<option value="">LZ_NORTH</option>
+		<option value="">LZ_RAYBN</option>
+		<option value="">LZ_SOUTH</option>
+		<option value="">LZ_WEST</option>
+		<option value="">LZ_HOUSTON</option>
 
-						<!-- Main chart sources -->
-						<div class="card t-bg text-white">
-							<div class="card-header header-elements-inline padding-two">
-								<h6 class="card-title">Chart</h6>
-							</div>
+	</select>
 
-							<div class="card-body py-0 padding-two c-bg">
-								<div class="row c-bg">
-										<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 padding-one" id="rangeSelector_container">
-									  </div>
-									  <div id="priceChart" class="bg-white c-bg col-xs-12 col-sm-12 col-md-12 col-lg-12 no-padding" style="width: 100%; height: 480px;">			  
+</div>
+<div class="col-xl-10 col-md-10 col-lg-10">
+	<div class="col-xl-6 col-md-6 col-lg-6">
+				<div class="row c-bg">
+						<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 padding-one" id="rangeSelector_container">
+					  </div>
+					  <div id="trainSetChart" class="bg-white c-bg col-xs-12 col-sm-12 col-md-12 col-lg-12 no-padding" style="height: 400px;">			  
 
-									  </div>
-								</div>
-							</div>
-						</div>
-						<!-- /Main chart sources -->
+					  </div>
+				</div>
+		<!-- /Main chart sources -->
 	</div>
-		
+	<div class="col-xl-6 col-md-6 col-lg-6">
+
+	<!-- Main chart sources -->
+			<div class="row c-bg">
+					<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 padding-one" id="rangeSelector_container">
+				  </div>
+				  <div id="testSetChart" class="bg-white c-bg col-xs-12 col-sm-12 col-md-12 col-lg-12 no-padding" style="height: 400px;">			  
+
+				  </div>
+			</div>
+
+	<!-- /Main chart sources -->
+	</div>
+		<div class="col-xl-6 col-md-6 col-lg-6">
+
+	<!-- Main chart sources -->
+			<div class="row c-bg">
+					<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 padding-one" id="rangeSelector_container">
+				  </div>
+				  <div id="bidirectionalChart" class="bg-white c-bg col-xs-12 col-sm-12 col-md-12 col-lg-12 no-padding" style="height: 400px;">			  
+
+				  </div>
+			</div>
+
+	<!-- /Main chart sources -->
+	</div>
+
 </body>
 </html>
 
@@ -99,6 +136,8 @@ var dataTable = anychart.data.table();
 </script>
 <script type="text/javascript">
 
+//**********************training set chart plotting************************************
+
 anychart.onDocumentReady(function() {
 anychart.licenseKey("songzcorp-7ce21725-824e1b3b");
 
@@ -110,19 +149,15 @@ anychart.licenseKey("songzcorp-7ce21725-824e1b3b");
     var chart = anychart.stock();
 
     // set chart title
-    chart.title('Price Analysis');
+    chart.title('Training Set');
 
     // create plot on the chart
     var plot = chart.plot(0);
 
     // create plot series with mapped data
     plot.line(dataTable.mapAs({
-      'value': 1
-    })).name('Price').stroke('1.5 #ef6c00');
-	
-    plot.line(dataTable.mapAs({
       'value': 2
-    })).name('Predicted price');
+    })).name('Price');
 
     // create scroller series with mapped data
     chart.scroller().line(dataTable.mapAs({
@@ -135,7 +170,118 @@ anychart.licenseKey("songzcorp-7ce21725-824e1b3b");
     });
 
     // set container id for the chart
-    chart.container('priceChart');
+    chart.container('trainSetChart');
+    // initiate chart drawing
+    chart.draw();
+
+    // create range picker
+    var rangePicker = anychart.ui.rangePicker();
+    // init range picker
+    rangePicker.render(chart);
+
+    // create range selector
+    var rangeSelector = anychart.ui.rangeSelector();
+    // init range selector
+    rangeSelector.render(chart);
+	
+
+  });
+});
+
+//**********************test set chart plotting************************************
+
+anychart.onDocumentReady(function() {
+anychart.licenseKey("songzcorp-7ce21725-824e1b3b");
+
+	anychart.data.loadCsvFile('https://cdn.anychart.com/csv-data/csco-daily.csv', function(data) {
+    var dataTable = anychart.data.table();
+    dataTable.addData(data);
+
+    // create stock chart
+    var chart = anychart.stock();
+
+    // set chart title
+    chart.title('Test Set');
+
+    // create plot on the chart
+    var plot = chart.plot(0);
+
+    // create plot series with mapped data
+    plot.line(dataTable.mapAs({
+      'value': 2
+    })).name('Price').stroke('1.5 #ef6c00');
+	
+    // create scroller series with mapped data
+    chart.scroller().line(dataTable.mapAs({
+      'value': 1
+    }));
+
+    // set tooltip title formatter for the chart
+    chart.tooltip().titleFormat(function() {
+      return window.anychart.format.dateTime(this.hoveredDate, 'HH:mm:ss.SSS');
+    });
+
+    // set container id for the chart
+    chart.container('testSetChart');
+    // initiate chart drawing
+    chart.draw();
+
+    // create range picker
+    var rangePicker = anychart.ui.rangePicker();
+    // init range picker
+    rangePicker.render(chart);
+
+    // create range selector
+    var rangeSelector = anychart.ui.rangeSelector();
+    // init range selector
+    rangeSelector.render(chart);
+	
+
+  });
+});
+
+
+
+//**********************directional accuracy************************************
+
+anychart.onDocumentReady(function() {
+anychart.licenseKey("songzcorp-7ce21725-824e1b3b");
+
+	anychart.data.loadCsvFile('https://cdn.anychart.com/csv-data/csco-daily.csv', function(data) {
+    var dataTable = anychart.data.table();
+    dataTable.addData(data);
+
+    // create stock chart
+    var chart = anychart.stock();
+
+    // set chart title
+    chart.title('Training Set');
+
+    // create plot on the chart
+    var plot = chart.plot(0);
+
+    // create plot series with mapped data
+
+    plot.line(dataTable.mapAs({
+      'value': 3
+    })).name('Actual Direction');
+
+	plot.line(dataTable.mapAs({
+      'value': 4
+    })).name('Predicted Direction');
+    
+    // create scroller series with mapped data
+    chart.scroller().line(dataTable.mapAs({
+      'value': 1
+    }));
+
+    // set tooltip title formatter for the chart
+    chart.tooltip().titleFormat(function() {
+      return window.anychart.format.dateTime(this.hoveredDate, 'HH:mm:ss.SSS');
+    });
+
+    // set container id for the chart
+    chart.container('bidirectionalChart');
     // initiate chart drawing
     chart.draw();
 
