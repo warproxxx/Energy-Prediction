@@ -33,6 +33,10 @@ def get_logger(fullLocation):
     fullLocation (string):
     Name of file along with Full location. Alternatively just file name
     '''
+    saveIn = os.path.dirname(fullLocation)
+
+    if not os.path.exists(saveIn):
+        os.makedirs(saveIn)
     
     try:
         loggerName = fullLocation.split("/")[-1]
