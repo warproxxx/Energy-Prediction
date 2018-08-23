@@ -15,16 +15,23 @@ for f in glob('data/processed/*'):
 
     logger.info("Read {}".format(f))
 
-    model_builder = model_building("tri_model_15_minute")
-    data = model_builder.get_data(df)
+    models = ['tri_model_15_minute', 'tri_model_1_hours']
 
-    logger.info("Got data of size {}".format(data.shape))
+    for model in models:
+        model_builder = model_building(model)
+        data = model_builder.get_data(df)
 
-    train_x, train_y, test_x, test_y = model_builder.split_train_test(data, 0.1)
+        logger.info("Got data of size {}".format(data.shape))
 
-    logger.info("Train X: {} Train Y: {} Test X: {} Test Y: {}. Now training".format(train_x.shape, train_y.shape, test_x.shape, test_y.shape))
+        train_x, train_y, test_x, test_y = model_builder.split_train_test(data, 0.1)
 
-    model = model_builder.get_model(train_x, train_y, 512,  10)
-    logger.info("Model trained")
+        logger.info("Train X: {} Train Y: {} Test X: {} Test Y: {}. Now training".format(train_x.shape, train_y.shape, test_x.shape, test_y.shape))
 
-    model_builder.save_model(model, location)
+        if (model == "tri_model_15_minute"):
+            model = model_builder.get_model(train_x, train_y, batch_size=512,  epochs=10)
+        elif (model == "tri_model_1_hours"):
+            model = model_builder.get_model(train_x, train_y, batch_size=512,  epochs=50)
+            
+        logger.info("Model trained")
+
+        model_builder.save_model(model, location)
