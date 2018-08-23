@@ -16,7 +16,7 @@ class download:
         '''
         Parameters:
         ___________
-        url (string):
+        url (string):   
         The URL to download from
 
         datatype (string):
