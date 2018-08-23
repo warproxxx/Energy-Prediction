@@ -15,9 +15,10 @@ except:
     import cpickle
 
 class model_building(object):
-    def __init__(self):
+    def __init__(self, logger):
         self.sequence_length = 24
         self.mean = 0
+        self.logger = logger
 
     def get_data_from_pd(self, df):
         '''
@@ -82,7 +83,7 @@ class model_building(object):
     def evaluate_model(self, model, test_x, test_y):
         # evaluate the result 
         test_mse = model.evaluate(test_x, test_y, verbose=1)
-        print ('\nThe mean squared error (MSE) on the test data set is %.3f over %d test samples.' % (test_mse, len(test_y)))
+        self.logger.info ('\nThe mean squared error (MSE) on the test data set is %.3f over %d test samples.' % (test_mse, len(test_y)))
         return test_mse
         
     def predict_price(self, model, test_x):
@@ -120,9 +121,9 @@ class model_building(object):
             if not os.path.exists("./models"):
                 os.makedirs("./models")
             model.save(os.path.join("./models/{}".format(dirname), model_name + '.h5'))
-            print(model_name + " model saved!")
+            self.logger.info(model_name + " model saved!")
         except:
-            print(model_name + " model saving failed!!")
+            self.logger.info(model_name + " model saving failed!!")
         
     def load_model(self, model_name):
         model = None
@@ -131,7 +132,7 @@ class model_building(object):
             if os.path.exists(os.path.join("./models", model_name + '.h5')):
                 model = load_model(os.path.join("./models", model_name + '.h5'))
             else:
-                print(model_name + " model not found!")
+                self.logger.info(model_name + " model not found!")
         except:
-            print(model_name + " model loading failed!!")
+            self.logger.info(model_name + " model loading failed!!")
         return model
