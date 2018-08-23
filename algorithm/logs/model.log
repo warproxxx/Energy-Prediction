@@ -7,3 +7,15 @@ Train X: (243755, 23, 1) Train Y: (243755,) Test X: (27084, 23, 1) Test Y: (2708
 Read data/processed/HB_NORTH.csv
 Got data of size (270839, 24)
 Train X: (243755, 23, 1) Train Y: (243755,) Test X: (27084, 23, 1) Test Y: (27084,). Now training
+Read data/processed/HB_HUBAVG.csv
+Got data of size (270839, 24)
+Train X: (243755, 23, 1) Train Y: (243755,) Test X: (27084, 23, 1) Test Y: (27084,). Now training
+Read data/processed/HB_HUBAVG.csv
+Got data of size (270839, 24)
+Train X: (243755, 23, 1) Train Y: (243755,) Test X: (27084, 23, 1) Test Y: (27084,). Now training
+Read data/processed/HB_HUBAVG.csv
+Got data of size (270839, 24)
+Train X: (243755, 23, 1) Train Y: (243755,) Test X: (27084, 23, 1) Test Y: (27084,). Now training
+Read data/processed/HB_HUBAVG.csv
+Got data of size (270839, 24)
+Train X: (243755, 23, 1) Train Y: (243755,) Test X: (27084, 23, 1) Test Y: (27084,). Now training

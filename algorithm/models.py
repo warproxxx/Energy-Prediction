@@ -76,7 +76,7 @@ class model_building(object):
         model.compile(loss="mse", optimizer="rmsprop")
         
         # train the model 
-        model.fit(train_x, train_y, batch_size=512, nb_epoch=50, validation_split=0.05, verbose=1)
+        model.fit(train_x, train_y, batch_size=512, nb_epoch=50, validation_split=0.05, verbose=2)
         
         return model
     
