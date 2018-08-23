@@ -15,8 +15,8 @@ for f in glob('data/processed/*'):
 
     logger.info("Read {}".format(f))
 
-    model_builder = model_building(logger)
-    data = model_builder.get_data_from_pd(df)
+    model_builder = model_building("tri_model_15_minute")
+    data = model_builder.get_data(df)
 
     logger.info("Got data of size {}".format(data.shape))
 
@@ -24,8 +24,7 @@ for f in glob('data/processed/*'):
 
     logger.info("Train X: {} Train Y: {} Test X: {} Test Y: {}. Now training".format(train_x.shape, train_y.shape, test_x.shape, test_y.shape))
 
-    model = model_builder.tri_model(train_x, train_y)
+    model = model_builder.get_model(train_x, train_y, 512,  10)
     logger.info("Model trained")
 
-    model_builder.save_model(model, location, "initial_15")
-    logger.info('model building finished!! Saved')
+    model_builder.save_model(model, location)
