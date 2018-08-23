@@ -66,7 +66,7 @@ class tri_model_1_hour(tri_model_15_minute):
         df = df.set_index('Date')
         df = df.resample('1H').agg({'Date': lambda x: x.iloc[0], 'SettlementPointPrice': lambda x: x.iloc[-1]})['Date']
         df = df.reset_index()
-        
+
         data = df['SettlementPointPrice'].values
         data_out = []
 
@@ -133,14 +133,14 @@ class model_building(object):
         city (string):
         The name of city to save in
         '''
-        saveIn = self.location + "/models/{}".format(self.model_name)
+        saveIn = self.location + "/data/processed/{}/models/{}/model.h5"
 
         try:
             if not os.path.exists(saveIn):
                 os.makedirs(saveIn)
 
-            model.save(os.path.join(saveIn, city + '.h5'))
-            self.logger.info("Model saved in {}".format(os.path.join(saveIn, city + '.h5')))
+            model.save(saveIn.format(city, self.model_name))
+            self.logger.info("Model saved in {}".format(saveIn.format(city, self.model_name)))
         except:
             self.logger.info("{} Model saving failed".format(city))
         
@@ -158,14 +158,14 @@ class model_building(object):
         The loaded model
         '''
 
-        location = self.location + "/models/{}/{}.h5".format(self.model_name, city)
+        location = self.location + "/data/processed/{}/models/{}/model.h5".format(city, self.model_name)
 
         try:
             if os.path.exists(location):
                 model = load_model(location)
             else:
-                self.logger.info("{}/{}.h5 not found!".format(self.model_name, city))
+                self.logger.info("{} not found!".format(location))
         except:
-            self.logger.info("Failed to load {}/{}.h5".format(self.model_name, city))
+            self.logger.info("Failed to load {}".format(location))
 
         return model

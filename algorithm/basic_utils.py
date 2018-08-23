@@ -48,3 +48,17 @@ def get_logger(fullLocation):
     handler = logging.FileHandler(fullLocation, 'a')
     logger.addHandler(handler)
     return logger
+
+def create_directory_structure(rootDir, cities):
+    '''
+    Create the required directory structure
+
+    Parameters:
+    ___________
+    rootDir (string)
+    '''
+    os.makedirs("{}/data/downloading/live".format(rootDir), exist_ok=True)
+    os.makedirs("{}/data/downloading/historic".format(rootDir), exist_ok=True)
+
+    for city in cities:
+        os.makedirs("{}/data/processed/{}/models".format(rootDir, city), exist_ok=True)

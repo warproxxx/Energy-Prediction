@@ -34,10 +34,10 @@ class download:
         self.starting = starting
 
         if (datatype == "historic"):
-            savefolder = "data/historic"
+            savefolder = "data/downloading/historic"
             self.logger.info("Downloading historic data")
         elif (datatype == "live"):
-            savefolder = "data/live"
+            savefolder = "data/downloading/live"
             self.logger.info("Downloading live data")
 
         self.url = url
@@ -74,29 +74,12 @@ class download:
             return False
 
     def clean_data(self, df):
+        with open(get_location() + "/cities.json") as json_file:
+            json_data = json.load(json_file)
+            cities = json_data['cities']
+
         if (self.datatype == "live"):
-            try:
-                locations = []
-
-                files = glob('data/live/*')
-
-                if len(files) < 2:
-                    files = glob('data/historic/*')
-
-                    if len(files) < 2:
-                        files = glob('data/processed/*')
-
-                for f in files:
-                    location = os.path.basename(f).replace('.csv', '')
-                    
-                    if (location != "nan"):
-                        locations.append(location)
-
-                df = df[df['SettlementPointName'].isin(locations)].reset_index(drop=True)
-            except:
-                self.logger.info("Exception in reading from historic")
-                historicPoints = ['HB_BUSAVG', 'HB_HOUSTON', 'HB_HUBAVG', 'HB_NORTH', 'HB_SOUTH', 'HB_WEST', 'LZ_AEN', 'LZ_CPS', 'LZ_HOUSTON', 'LZ_LCRA', 'LZ_NORTH','LZ_RAYBN', 'LZ_SOUTH', 'LZ_WEST']
-                df = df[df['SettlementPointName'].isin(historicPoints)]
+            df = df[df['SettlementPointName'].isin(cities)].reset_index(drop=True)
         elif (self.datatype == "historic"):
             df = df.rename(columns={'Delivery Date': 'DeliveryDate', 'Delivery Hour': 'DeliveryHour', 'Delivery Interval': 'DeliveryInterval', 'Repeated Hour Flag': 'DSTFlag', 'Settlement Point Name': 'SettlementPointName', 'Settlement Point Type': 'SettlementPointType', 'Settlement Point Price': 'SettlementPointPrice'})
             df = df[['DeliveryDate', 'DeliveryHour', 'DeliveryInterval', 'DSTFlag', 'SettlementPointName', 'SettlementPointType', 'SettlementPointPrice']]
