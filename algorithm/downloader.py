@@ -9,6 +9,7 @@ import zipfile
 from glob import glob
 import random
 from basic_utils import get_location, get_logger
+import json
 
 class download:
     def __init__(self, url, datatype, starting, logger=None):
