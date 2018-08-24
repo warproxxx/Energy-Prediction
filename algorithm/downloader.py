@@ -201,5 +201,5 @@ class download:
                 names = xls.sheet_names
                 df = pd.concat([xls.parse(name) for name in names]).reset_index(drop=True)
         except Exception as e:
-            self.logger("Exception while reading file: {}".format(str(e)))    
+            self.logger.info("Exception while reading file: {}".format(str(e)))    
         return df
