@@ -53,12 +53,10 @@ class cleaner:
 
         return df[['Date', 'SettlementPointPrice']]
 
-    def fixJoin(self, live, historic):
+    def fixDupliMissing(self, df):
         '''
-        Drop Duplicates and fix missing timelines
+        Fixes duplicate and missing data in the dataframe
         '''
-        
-        df = pd.concat([live, historic]).sort_values('Date')
         dupShape = df.shape[0]
 
         df = df.drop_duplicates('Date').reset_index(drop=True)
@@ -77,10 +75,17 @@ class cleaner:
         df.set_index('Date', inplace=True)
         dates.set_index('Date', inplace=True)
         
-        full_data = pd.concat([df, dates], axis=1).fillna(method='ffill')
+        full_data = pd.concat([df, dates], axis=1).ls(method='ffill')
         full_data.index.name = 'Date'
         
         return full_data.reset_index()
+
+    def fixJoin(self, live, historic):
+        '''
+        Drop Duplicates and fix missing timelines
+        '''
+        df = pd.concat([live, historic]).sort_values('Date')
+        return self.fixDupliMissing(df)
 
     def clean(self):
         processedDir = "data/processed/{}/" + self.runtype + "/data.csv"
@@ -108,9 +113,14 @@ class cleaner:
                 live = pd.read_csv('{}/{}.csv'.format(self.liveFolder, location))
 
                 live = self.fix_data(live)
+                live = self.fixDupliMissing(live)
                 
-                live.to_csv(processedDir.format(location), index=False, header=None, mode='a')
-                self.logger.info("Appended to " + processedDir.format(location))
+                if (os.path.exists(processedDir.format(location))):
+                    live.to_csv(processedDir.format(location), index=False, header=None, mode='a')
+                    self.logger.info("Appended to " + processedDir.format(location))
+                else:
+                    live.to_csv(processedDir.format(location), index=False)
+                    self.logger.info("Saved to " + processedDir.format(location))
 
                 os.remove('{}/{}.csv'.format(self.liveFolder, location))
                 self.logger.info("{}/{}.csv removed".format(self.liveFolder, location))

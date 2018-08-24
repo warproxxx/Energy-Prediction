@@ -220,7 +220,7 @@ class model_building(object):
     def save_predictions(self, model, city):
         finalDf, metrics = self.model.get_predictions(model)
         saveLocation = self.location + "/models/{}/{}".format(self.model_name, city)
-        finalDf.to_csv(saveLocation + "/predicted.csv")
+        finalDf.to_csv(saveLocation + "/predicted.csv", index=False)
         self.logger.info("Saved to {}".format(saveLocation + "/predicted.csv"))
 
         with open(saveLocation + "/metrics.json", 'wb') as fp:
