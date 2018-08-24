@@ -9,8 +9,9 @@ from basic_utils import get_logger, get_location
 
 logger = get_logger(get_location() + "/logs/model.log")
 
-for f in glob('data/processed/*'):
-    location = os.path.basename(f).replace('.csv', '')
+for location in glob('data/processed/*'):
+    city = location.replace("data/processed/", "")
+    f = location + "/data.csv"
     df = pd.read_csv(f)
 
     logger.info("Read {}".format(f))
@@ -34,4 +35,4 @@ for f in glob('data/processed/*'):
             
         logger.info("Model trained")
 
-        model_builder.save_model(model, location)
+        model_builder.save_model(model, city)
