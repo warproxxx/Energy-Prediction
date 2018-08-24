@@ -133,16 +133,16 @@ class model_building(object):
         city (string):
         The name of city to save in
         '''
-        saveIn = self.location + "/data/processed/{}/models/{}/model.h5"
+        saveIn = self.location + "/models/{}/{}.h5".format(self.model_name, city)
 
         try:
-            if not os.path.exists(saveIn):
-                os.makedirs(saveIn)
+            if not os.path.exists(self.location + "/models/{}".format(self.model_name)):
+                os.makedirs(self.location + "/models/{}".format(self.model_name))
 
-            model.save(saveIn.format(city, self.model_name))
-            self.logger.info("Model saved in {}".format(saveIn.format(city, self.model_name)))
-        except:
-            self.logger.info("{} Model saving failed".format(city))
+            model.save(saveIn)
+            self.logger.info("Model saved in {}".format(saveIn))
+        except Exception as e:
+            self.logger.info("Model Saving failed. Exception: {}".format(str(e)))
         
     def load_model(self, city):
         '''
@@ -157,15 +157,14 @@ class model_building(object):
         model (Keras model):
         The loaded model
         '''
-
-        location = self.location + "/data/processed/{}/models/{}/model.h5".format(city, self.model_name)
+        location = self.location + "/models/{}/{}.h5".format(self.model_name, city)
 
         try:
             if os.path.exists(location):
                 model = load_model(location)
             else:
                 self.logger.info("{} not found!".format(location))
-        except:
-            self.logger.info("Failed to load {}".format(location))
+        except Exception as e:
+            self.logger.info("Failed to load model. Exception: {}".format(str(e)))
 
         return model
