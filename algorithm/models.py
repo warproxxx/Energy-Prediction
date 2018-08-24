@@ -81,8 +81,11 @@ class tri_model_15_minute():
         
         metrics = {}
 
-        metrics['RMS Error'] = mean_squared_error(self.df['SettlementPointPrice'].shift(-1),predicted)
-        metrics['R2 Score'] = r2_score(self.df['SettlementPointPrice'].shift(-1),predicted)
+        # self.df = self.df.fillna(method='bfill')
+        # self.df = self.df.fillna(method='ffill')
+
+        # metrics['RMS Error'] = mean_squared_error(self.df['SettlementPointPrice'].shift(-1),self.df['Predicted'])
+        # metrics['R2 Score'] = r2_score(self.df['SettlementPointPrice'].shift(-1),self.df['Predicted'])
 
         metrics['Directional Accuracy'] = sum(self.df['Direction'] == actualDirection)/self.df['Direction'].shape[0]
         metrics['True Positive'] = np.sum(np.logical_and(self.df['Direction']==1, actualDirection==1))
@@ -178,11 +181,11 @@ class model_building(object):
         city (string):
         The name of city to save in
         '''
-        saveIn = self.location + "/models/{}/{}.h5".format(self.model_name, city)
+        saveIn = self.location + "/models/{}/{}/model.h5".format(self.model_name, city)
 
         try:
-            if not os.path.exists(self.location + "/models/{}".format(self.model_name)):
-                os.makedirs(self.location + "/models/{}".format(self.model_name))
+            if not os.path.exists(self.location + "/models/{}/{}".format(self.model_name, city)):
+                os.makedirs(self.location + "/models/{}/{}".format(self.model_name, city))
 
             model.save(saveIn)
             self.logger.info("Model saved in {}".format(saveIn))
@@ -202,7 +205,7 @@ class model_building(object):
         model (Keras model):
         The loaded model
         '''
-        location = self.location + "/models/{}/{}.h5".format(self.model_name, city)
+        location = self.location + "/models/{}/{}/model.h5".format(self.model_name, city)
 
         try:
             if os.path.exists(location):
@@ -214,5 +217,13 @@ class model_building(object):
 
         return model
     
-    def save_predictions(self, model):
+    def save_predictions(self, model, city):
         finalDf, metrics = self.model.get_predictions(model)
+        saveLocation = self.location + "/models/{}/{}".format(self.model_name, city)
+        finalDf.to_csv(saveLocation + "/predicted.csv")
+        self.logger.info("Saved to {}".format(saveLocation + "/predicted.csv"))
+
+        with open(saveLocation + "/metrics.json", 'wb') as fp:
+            pickle.dump(metrics, fp, protocol=pickle.HIGHEST_PROTOCOL)
+
+        self.logger.info("Saved to {}".format(saveLocation + "/metrics.json"))

@@ -36,4 +36,4 @@ for location in glob('data/processed/*'):
         logger.info("Model trained")
 
         model_builder.save_model(model, city)
-        model_builder.save_predictions(model)
+        model_builder.save_predictions(model, city)
