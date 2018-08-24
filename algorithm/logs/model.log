@@ -1,0 +1,106 @@
+Read data/processed/LZ_AEN/data.csv
+Got data of size (270971, 24)
+Got data of size (270971, 24)
+Train X: (243874, 23, 1) Train Y: (243874,) Test X: (27097, 23, 1) Test Y: (27097,). Now training
+Train X: (243874, 23, 1) Train Y: (243874,) Test X: (27097, 23, 1) Test Y: (27097,). Now training
+Model trained
+Model trained
+Model saved in /home/warproxxx/Desktop/Projects/Energy-Prediction/algorithm/models/tri_model_15_minute/LZ_AEN.h5
+Model saved in /home/warproxxx/Desktop/Projects/Energy-Prediction/algorithm/models/tri_model_15_minute/LZ_AEN.h5
+Got data of size (67726, 24)
+Got data of size (67726, 24)
+Got data of size (67726, 24)
+Train X: (60953, 23, 1) Train Y: (60953,) Test X: (6773, 23, 1) Test Y: (6773,). Now training
+Train X: (60953, 23, 1) Train Y: (60953,) Test X: (6773, 23, 1) Test Y: (6773,). Now training
+Train X: (60953, 23, 1) Train Y: (60953,) Test X: (6773, 23, 1) Test Y: (6773,). Now training
+Read data/processed/LZ_AEN/data.csv
+Got data of size (270971, 24)
+Got data of size (270971, 24)
+Train X: (243874, 23, 1) Train Y: (243874,) Test X: (27097, 23, 1) Test Y: (27097,). Now training
+Train X: (243874, 23, 1) Train Y: (243874,) Test X: (27097, 23, 1) Test Y: (27097,). Now training
+Read data/processed/LZ_AEN/data.csv
+Got data of size (270971, 24)
+Got data of size (270971, 24)
+Train X: (243874, 23, 1) Train Y: (243874,) Test X: (27097, 23, 1) Test Y: (27097,). Now training
+Train X: (243874, 23, 1) Train Y: (243874,) Test X: (27097, 23, 1) Test Y: (27097,). Now training
+Model trained
+Model trained
+Model saved in /home/warproxxx/Desktop/Projects/Energy-Prediction/algorithm/models/tri_model_15_minute/LZ_AEN.h5
+Model saved in /home/warproxxx/Desktop/Projects/Energy-Prediction/algorithm/models/tri_model_15_minute/LZ_AEN.h5
+Read data/processed/LZ_AEN/data.csv
+Got data of size (270971, 24)
+Got data of size (270971, 24)
+Train X: (243874, 23, 1) Train Y: (243874,) Test X: (27097, 23, 1) Test Y: (27097,). Now training
+Train X: (243874, 23, 1) Train Y: (243874,) Test X: (27097, 23, 1) Test Y: (27097,). Now training
+Model trained
+Model trained
+Model saved in /home/warproxxx/Desktop/Projects/Energy-Prediction/algorithm/models/tri_model_15_minute/LZ_AEN.h5
+Model saved in /home/warproxxx/Desktop/Projects/Energy-Prediction/algorithm/models/tri_model_15_minute/LZ_AEN.h5
+Got data of size (67726, 24)
+Got data of size (67726, 24)
+Got data of size (67726, 24)
+Train X: (60953, 23, 1) Train Y: (60953,) Test X: (6773, 23, 1) Test Y: (6773,). Now training
+Train X: (60953, 23, 1) Train Y: (60953,) Test X: (6773, 23, 1) Test Y: (6773,). Now training
+Train X: (60953, 23, 1) Train Y: (60953,) Test X: (6773, 23, 1) Test Y: (6773,). Now training
+Model trained
+Model trained
+Model trained
+Model saved in /home/warproxxx/Desktop/Projects/Energy-Prediction/algorithm/models/tri_model_1_hours/LZ_AEN.h5
+Model saved in /home/warproxxx/Desktop/Projects/Energy-Prediction/algorithm/models/tri_model_1_hours/LZ_AEN.h5
+Model saved in /home/warproxxx/Desktop/Projects/Energy-Prediction/algorithm/models/tri_model_1_hours/LZ_AEN.h5
+Read data/processed/HB_HUBAVG/data.csv
+Read data/processed/HB_HUBAVG/data.csv
+Read data/processed/HB_HUBAVG/data.csv
+Got data of size (270971, 24)
+Got data of size (270971, 24)
+Got data of size (270971, 24)
+Got data of size (270971, 24)
+Train X: (243874, 23, 1) Train Y: (243874,) Test X: (27097, 23, 1) Test Y: (27097,). Now training
+Train X: (243874, 23, 1) Train Y: (243874,) Test X: (27097, 23, 1) Test Y: (27097,). Now training
+Train X: (243874, 23, 1) Train Y: (243874,) Test X: (27097, 23, 1) Test Y: (27097,). Now training
+Train X: (243874, 23, 1) Train Y: (243874,) Test X: (27097, 23, 1) Test Y: (27097,). Now training
+Model trained
+Model trained
+Model trained
+Model trained
+Model saved in /home/warproxxx/Desktop/Projects/Energy-Prediction/algorithm/models/tri_model_15_minute/HB_HUBAVG.h5
+Model saved in /home/warproxxx/Desktop/Projects/Energy-Prediction/algorithm/models/tri_model_15_minute/HB_HUBAVG.h5
+Model saved in /home/warproxxx/Desktop/Projects/Energy-Prediction/algorithm/models/tri_model_15_minute/HB_HUBAVG.h5
+Model saved in /home/warproxxx/Desktop/Projects/Energy-Prediction/algorithm/models/tri_model_15_minute/HB_HUBAVG.h5
+Got data of size (67726, 24)
+Got data of size (67726, 24)
+Got data of size (67726, 24)
+Got data of size (67726, 24)
+Got data of size (67726, 24)
+Train X: (60953, 23, 1) Train Y: (60953,) Test X: (6773, 23, 1) Test Y: (6773,). Now training
+Train X: (60953, 23, 1) Train Y: (60953,) Test X: (6773, 23, 1) Test Y: (6773,). Now training
+Train X: (60953, 23, 1) Train Y: (60953,) Test X: (6773, 23, 1) Test Y: (6773,). Now training
+Train X: (60953, 23, 1) Train Y: (60953,) Test X: (6773, 23, 1) Test Y: (6773,). Now training
+Train X: (60953, 23, 1) Train Y: (60953,) Test X: (6773, 23, 1) Test Y: (6773,). Now training
+Model trained
+Model trained
+Model trained
+Model trained
+Model trained
+Model saved in /home/warproxxx/Desktop/Projects/Energy-Prediction/algorithm/models/tri_model_1_hours/HB_HUBAVG.h5
+Model saved in /home/warproxxx/Desktop/Projects/Energy-Prediction/algorithm/models/tri_model_1_hours/HB_HUBAVG.h5
+Model saved in /home/warproxxx/Desktop/Projects/Energy-Prediction/algorithm/models/tri_model_1_hours/HB_HUBAVG.h5
+Model saved in /home/warproxxx/Desktop/Projects/Energy-Prediction/algorithm/models/tri_model_1_hours/HB_HUBAVG.h5
+Model saved in /home/warproxxx/Desktop/Projects/Energy-Prediction/algorithm/models/tri_model_1_hours/HB_HUBAVG.h5
+Read data/processed/LZ_NORTH/data.csv
+Read data/processed/LZ_NORTH/data.csv
+Read data/processed/LZ_NORTH/data.csv
+Read data/processed/LZ_NORTH/data.csv
+Read data/processed/LZ_NORTH/data.csv
+Got data of size (270971, 24)
+Got data of size (270971, 24)
+Got data of size (270971, 24)
+Got data of size (270971, 24)
+Got data of size (270971, 24)
+Got data of size (270971, 24)
+Train X: (243874, 23, 1) Train Y: (243874,) Test X: (27097, 23, 1) Test Y: (27097,). Now training
+Train X: (243874, 23, 1) Train Y: (243874,) Test X: (27097, 23, 1) Test Y: (27097,). Now training
+Train X: (243874, 23, 1) Train Y: (243874,) Test X: (27097, 23, 1) Test Y: (27097,). Now training
+Train X: (243874, 23, 1) Train Y: (243874,) Test X: (27097, 23, 1) Test Y: (27097,). Now training
+Train X: (243874, 23, 1) Train Y: (243874,) Test X: (27097, 23, 1) Test Y: (27097,). Now training
+Train X: (243874, 23, 1) Train Y: (243874,) Test X: (27097, 23, 1) Test Y: (27097,). Now training

@@ -7,6 +7,9 @@ from keras.models import Model, load_model
 
 from basic_utils import get_logger, get_location
 
+from sklearn.metrics import r2_score
+from sklearn.metrics import mean_squared_error
+
 import logging
 
 try:
@@ -19,6 +22,8 @@ class tri_model_15_minute():
         self.sequence_length = 24
 
     def get_data(self, df):
+        self.df = df
+
         data = df['SettlementPointPrice'].values
         data_out = []
 
@@ -29,20 +34,23 @@ class tri_model_15_minute():
         return data
 
     def split_train_test(self, data, test_fraction=0.2):
+        self.trainTestIndicator = np.zeros(data.shape[0])
         train_ind = int(round((1-test_fraction)*data.shape[0]))
 
         train_set = data[:train_ind,:]
 
-        X_train = train_set[:,:-1]
-        Y_train = train_set[:,-1]
+        self.trainTestIndicator[:train_ind] = 1
 
-        X_test = data[train_ind:, :-1]
-        Y_test = data[train_ind:, -1]
+        self.X_train = train_set[:,:-1]
+        self.Y_train = train_set[:,-1]
 
-        X_train = np.reshape(X_train, (X_train.shape[0], X_train.shape[1], 1))
-        X_test = np.reshape(X_test, (X_test.shape[0], X_test.shape[1], 1))
+        self.X_test = data[train_ind:, :-1]
+        self.Y_test = data[train_ind:, -1]
 
-        return X_train, Y_train, X_test, Y_test
+        self.X_train = np.reshape(self.X_train, (self.X_train.shape[0], self.X_train.shape[1], 1))
+        self.X_test = np.reshape(self.X_test, (self.X_test.shape[0], self.X_test.shape[1], 1))
+
+        return self.X_train, self.Y_train, self.X_test, self.Y_test, self.trainTestIndicator
     
     def get_model(self, train_x, train_y, batch_size, epochs):
         inp = Input(shape=(None, 1))
@@ -60,8 +68,39 @@ class tri_model_15_minute():
         
         return model
 
+    def get_predictions(self, model):
+        X = np.append(self.X_train, self.X_test, axis=0)
+        predicted = model.predict(X)
+
+        self.df['Predicted'] = [None]*(self.df.shape[0]-len(predicted)) + list(predicted.reshape(-1))
+        self.df['Indicator'] = [None]*(self.df.shape[0]-len(predicted)) + list(self.trainTestIndicator.reshape(-1))
+
+        self.df['Direction'] = (self.df['Predicted'] > self.df['SettlementPointPrice']).astype(int)
+        
+        actualDirection = (self.df['SettlementPointPrice'].shift(-1) > self.df['SettlementPointPrice']).astype(int)
+        
+        metrics = {}
+
+        metrics['RMS Error'] = mean_squared_error(self.df['SettlementPointPrice'].shift(-1),predicted)
+        metrics['R2 Score'] = r2_score(self.df['SettlementPointPrice'].shift(-1),predicted)
+
+        metrics['Directional Accuracy'] = sum(self.df['Direction'] == actualDirection)/self.df['Direction'].shape[0]
+        metrics['True Positive'] = np.sum(np.logical_and(self.df['Direction']==1, actualDirection==1))
+        metrics['True Negative'] = np.sum(np.logical_and(self.df['Direction']==0, actualDirection==0))
+        metrics['False Positive'] = np.sum(np.logical_and(self.df['Direction']==1, actualDirection==0))
+        metrics['False Negative'] = np.sum(np.logical_and(self.df['Direction']==1, actualDirection==0))
+
+        metrics['Precision'] = metrics['True Positive'] / (metrics['True Positive'] + metrics['False Positive'])
+        metrics['Recall'] = metrics['True Positive'] / (metrics['True Positive'] + metrics['False Negative'])
+
+        metrics['F1 Score'] = (2 * metrics['Precision'] * metrics['Recall']) / (metrics['Precision'] + metrics['Recall'])
+
+        return self.df, metrics
+        
 class tri_model_1_hour(tri_model_15_minute): 
     def get_data(self, df):
+        self.df = df
+
         df['Date'] = pd.to_datetime(df['Date'])
         df = df.set_index('Date')
         df = df.resample('1H').agg({'Date': lambda x: x.iloc[0], 'SettlementPointPrice': lambda x: x.iloc[-1]})['Date']
@@ -106,9 +145,15 @@ class model_building(object):
         ___________
         data (list or pandas or whatever):
         The data to split
+
+        Returns:
+        ________
+        X_train, Y_train, X_test, Y_test, trainTestIndicator
+
+        trainTestIndicator contains 1 and 0 where 1 indicates training and 0 indicates test
         '''
-        X_train, Y_train, X_test, Y_test = self.model.split_train_test(data, test_fraction)
-        return X_train, Y_train, X_test, Y_test
+        X_train, Y_train, X_test, Y_test, trainTestIndicator = self.model.split_train_test(data, test_fraction)
+        return X_train, Y_train, X_test, Y_test, trainTestIndicator
 
     def get_model(self, train_x, train_y, batch_size, epochs):
         '''
@@ -168,3 +213,6 @@ class model_building(object):
             self.logger.info("Failed to load model. Exception: {}".format(str(e)))
 
         return model
+    
+    def save_predictions(self, model):
+        finalDf, metrics = self.model.get_predictions(model)
