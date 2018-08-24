@@ -1,0 +1,24 @@
+Total Duplicates: 22201
+Total Missing Dates: 8
+The Missing dates are around: [Timestamp('2011-03-13 02:00:00'), Timestamp('2012-03-11 02:00:00'), Timestamp('2013-03-10 02:00:00'), Timestamp('2014-03-09 02:00:00'), Timestamp('2015-03-08 02:00:00'), Timestamp('2016-03-13 02:00:00'), Timestamp('2017-03-12 02:00:00'), Timestamp('2018-03-11 02:00:00')]
+Saved to data/processed/HB_HOUSTON/data.csv
+data/downloading/historic/HB_HOUSTON.csv removed
+data/downloading/live/HB_HOUSTON.csv removed
+Total Duplicates: 22201
+Total Missing Dates: 8
+The Missing dates are around: [Timestamp('2011-03-13 02:00:00'), Timestamp('2012-03-11 02:00:00'), Timestamp('2013-03-10 02:00:00'), Timestamp('2014-03-09 02:00:00'), Timestamp('2015-03-08 02:00:00'), Timestamp('2016-03-13 02:00:00'), Timestamp('2017-03-12 02:00:00'), Timestamp('2018-03-11 02:00:00')]
+Saved to data/processed/HB_HUBAVG/data.csv
+data/downloading/historic/HB_HUBAVG.csv removed
+data/downloading/live/HB_HUBAVG.csv removed
+Total Duplicates: 272164
+Total Missing Dates: 8
+The Missing dates are around: [Timestamp('2011-03-13 02:00:00'), Timestamp('2012-03-11 02:00:00'), Timestamp('2013-03-10 02:00:00'), Timestamp('2014-03-09 02:00:00'), Timestamp('2015-03-08 02:00:00'), Timestamp('2016-03-13 02:00:00'), Timestamp('2017-03-12 02:00:00'), Timestamp('2018-03-11 02:00:00')]
+Saved to data/processed/LZ_NORTH/data.csv
+data/downloading/historic/LZ_NORTH.csv removed
+data/downloading/live/LZ_NORTH.csv removed
+Total Duplicates: 272164
+Total Missing Dates: 8
+The Missing dates are around: [Timestamp('2011-03-13 02:00:00'), Timestamp('2012-03-11 02:00:00'), Timestamp('2013-03-10 02:00:00'), Timestamp('2014-03-09 02:00:00'), Timestamp('2015-03-08 02:00:00'), Timestamp('2016-03-13 02:00:00'), Timestamp('2017-03-12 02:00:00'), Timestamp('2018-03-11 02:00:00')]
+Saved to data/processed/LZ_CPS/data.csv
+data/downloading/historic/LZ_CPS.csv removed
+data/downloading/live/LZ_CPS.csv removed
