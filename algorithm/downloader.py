@@ -9,13 +9,17 @@ import zipfile
 from glob import glob
 import random
 from basic_utils import get_location, get_logger
+<<<<<<< HEAD
+=======
+import json
+>>>>>>> 3e51dc1addf24c30dd306f26d71509c0a1584532
 
 class download:
     def __init__(self, url, datatype, starting, logger=None):
         '''
         Parameters:
         ___________
-        url (string):
+        url (string):   
         The URL to download from
 
         datatype (string):
@@ -34,10 +38,10 @@ class download:
         self.starting = starting
 
         if (datatype == "historic"):
-            savefolder = "data/historic"
+            savefolder = "data/downloading/historic"
             self.logger.info("Downloading historic data")
         elif (datatype == "live"):
-            savefolder = "data/live"
+            savefolder = "data/downloading/live"
             self.logger.info("Downloading live data")
 
         self.url = url
@@ -74,6 +78,7 @@ class download:
             return False
 
     def clean_data(self, df):
+<<<<<<< HEAD
         if (self.datatype == "live"):
             try:
                 locations = []
@@ -97,6 +102,14 @@ class download:
                 self.logger.info("Exception in reading from historic")
                 historicPoints = ['HB_BUSAVG', 'HB_HOUSTON', 'HB_HUBAVG', 'HB_NORTH', 'HB_SOUTH', 'HB_WEST', 'LZ_AEN', 'LZ_CPS', 'LZ_HOUSTON', 'LZ_LCRA', 'LZ_NORTH','LZ_RAYBN', 'LZ_SOUTH', 'LZ_WEST']
                 df = df[df['SettlementPointName'].isin(historicPoints)]
+=======
+        with open(get_location() + "/cities.json") as json_file:
+            json_data = json.load(json_file)
+            cities = json_data['cities']
+
+        if (self.datatype == "live"):
+            df = df[df['SettlementPointName'].isin(cities)].reset_index(drop=True)
+>>>>>>> 3e51dc1addf24c30dd306f26d71509c0a1584532
         elif (self.datatype == "historic"):
             df = df.rename(columns={'Delivery Date': 'DeliveryDate', 'Delivery Hour': 'DeliveryHour', 'Delivery Interval': 'DeliveryInterval', 'Repeated Hour Flag': 'DSTFlag', 'Settlement Point Name': 'SettlementPointName', 'Settlement Point Type': 'SettlementPointType', 'Settlement Point Price': 'SettlementPointPrice'})
             df = df[['DeliveryDate', 'DeliveryHour', 'DeliveryInterval', 'DSTFlag', 'SettlementPointName', 'SettlementPointType', 'SettlementPointPrice']]
@@ -137,6 +150,11 @@ class download:
                             zf = zipfile.ZipFile(os.path.join(self.savepath, filename))
                             zf.extractall(self.savepath)
                             zfile = os.path.join(self.savepath, zf.infolist()[0].filename)
+<<<<<<< HEAD
+=======
+                            self.logger.info("Zip file Extracted to {}".format(zfile))
+
+>>>>>>> 3e51dc1addf24c30dd306f26d71509c0a1584532
                             zf.close()
 
                             #delete the zip file
@@ -157,10 +175,17 @@ class download:
         try:
             data = pd.concat(data)
             data = self.clean_data(data)
+<<<<<<< HEAD
 
             for settlementPoint in data['SettlementPointName'].unique():
                 fname = "{}.csv".format(settlementPoint)
 
+=======
+
+            for settlementPoint in data['SettlementPointName'].unique():
+                fname = "{}.csv".format(settlementPoint)
+
+>>>>>>> 3e51dc1addf24c30dd306f26d71509c0a1584532
                 if (fname != "nan.csv"):
                     data[data['SettlementPointName'] == settlementPoint].to_csv(os.path.join(self.savepath, fname), index=False)
                     self.logger.info("Saved to {}".format(os.path.join(self.savepath, fname)))
@@ -213,6 +238,6 @@ class download:
                 xls = pd.ExcelFile(filename)
                 names = xls.sheet_names
                 df = pd.concat([xls.parse(name) for name in names]).reset_index(drop=True)
-        except:
-            pass    
+        except Exception as e:
+            self.logger.info("Exception while reading file: {}".format(str(e)))    
         return df
