@@ -38,12 +38,12 @@ historicDownloader.perform_download()
 
 #assert downloaded if required later
 
-# liveDownloader = download(liveURL, "live", starting)
-# liveDownloader.perform_download()
+liveDownloader = download(liveURL, "live", starting)
+liveDownloader.perform_download()
 
-# #assert downloaded if required later
+#assert downloaded if required later
 
-# cleaner().clean()
+cleaner().clean()
 
 # #assert the cleaned data exists and is clean
 # #totalMissing = sum((df['Date'].shift(-1)[:-1] - df['Date'][:-1]).astype('timedelta64[m]') != 15)
