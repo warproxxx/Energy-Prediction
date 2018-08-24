@@ -10,9 +10,8 @@ from glob import glob
 import random
 from basic_utils import get_location, get_logger
 
-
 class download:
-    def __init__(self, url, datatype, logger=None):
+    def __init__(self, url, datatype, starting, logger=None):
         '''
         Parameters:
         ___________
@@ -21,6 +20,9 @@ class download:
 
         datatype (string):
         live or historic
+
+        starting (pandas datetime):
+        The starting date to download from
         '''
 
         if logger == None:
@@ -29,6 +31,7 @@ class download:
             self.logger = logger
 
         self.datatype = datatype
+        self.starting = starting
 
         if (datatype == "historic"):
             savefolder = "data/historic"
@@ -46,82 +49,44 @@ class download:
 
         self.HEADERS_LIST = ['Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.79 Safari/537.36', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:60.0) Gecko/20100101 Firefox/60.0', 'Mozilla/5.0 (X11; Linux x86_64; rv:58.0) Gecko/20100101 Firefox/58.0']
 
-    def perform_download(self):
-        start_time = time.time()
-        root = "http://mis.ercot.com"
+    def to_download(self, filename):
+        '''
+        Find out wether to download the file or not
 
-        soup = self.try_get_page_soup(self.url)
-        rows = soup.find_all("tr")
+        Parameters:
+        ___________
+        filename (string): The filename in the website
+        '''
 
-        self.logger.info("Total Rows: {}".format(len(rows)))
-        data = []
-
-        for i, row in enumerate(rows):
-            if i% 100 == 0:
-                self.logger.info("{}/{}".format(i, len(rows)))
-
-            #get the text written in the row
-            row_link = row.find_all("a")
-            
-            if len(row_link) > 0:
-                row_link = row_link[0].get("href")
-                filename = str(row.find_all("td", {"class": "labelOptional_ind"})[0].text)
-                #this is the valid data entry
-                #now check if the data is the csv data or the xml data
-                self.logger.info(filename)
-
-                if self.datatype == "historic":
-                    toFind = ".zip"
-                else:
-                    toFind = "_csv.zip"
-
-                if toFind in row.text:
-                    #download the file
-                    self.logger.info("Downloading {}".format(filename))
-
-                    page = self.get_response(root + row_link)
-                    self.logger.info(root + row_link)
-
-                    if(page != None):
-                        with open(os.path.join(self.savepath, filename), "wb") as f:
-                            f.write(page.content)
-                        zf = zipfile.ZipFile(os.path.join(self.savepath, filename))
-                        zf.extractall(self.savepath)
-                        zfile = os.path.join(self.savepath, zf.infolist()[0].filename)
-                        zf.close()
-
-                        #delete the zip file
-                        os.remove(os.path.join(self.savepath, filename))
-                        self.logger.info("Removed {}".format(os.path.join(self.savepath, filename)))
-
-                        #load the data
-                        df = self.load_data(zfile)                
-                        
-                        #delete the csv file
-                        os.remove(zfile)
-                        
-                        if df is not None:
-                            data.append(df)
+        splittedName = filename.split('.')
         
-        self.logger.info("total data points: {0}".format(sum([a.shape[0] for a in data])))
+        if self.datatype == 'historic':
+            currTime = pd.to_datetime(splittedName[3])
+        elif self.datatype == 'live':
+            date = splittedName[3]
+            time = splittedName[5].split('_')[-2]
 
-        data = pd.concat(data)
-        data = self.clean_data(data)
-
+            currTime = pd.to_datetime(date + " " + time)
         
-        for settlementPoint in data['SettlementPointName'].unique():
-            if (settlementPoint != 'nan'):
-                data[data['SettlementPointName'] == settlementPoint].to_csv(os.path.join(self.savepath, "{}.csv".format(settlementPoint)), index=False)
-        
-        end_time = time.time()
-        self.logger.info("done in {}".format((end_time-start_time)/60))
+        if (currTime > self.starting):
+            return True
+        else:
+            return False
 
     def clean_data(self, df):
         if (self.datatype == "live"):
             try:
                 locations = []
 
-                for f in glob('data/historic/*'):
+                files = glob('data/live/*')
+
+                if len(files) < 2:
+                    files = glob('data/historic/*')
+
+                    if len(files) < 2:
+                        files = glob('data/processed/*')
+
+                for f in files:
                     location = os.path.basename(f).replace('.csv', '')
                     
                     if (location != "nan"):
@@ -138,6 +103,73 @@ class download:
         
         return df
 
+    def perform_download(self):
+        start_time = time.time()
+        root = "http://mis.ercot.com"
+
+        soup = self.try_get_page_soup(self.url)
+        rows = soup.find_all("tr")
+
+        self.logger.info("Total Rows: {}".format(len(rows)))
+        data = []
+
+        for i, row in enumerate(rows):
+            row_link = row.find_all("a")
+            
+            if len(row_link) > 0:
+                row_link = row_link[0].get("href")
+                filename = str(row.find_all("td", {"class": "labelOptional_ind"})[0].text)
+
+                if self.datatype == "historic":
+                    toFind = ".zip"
+                else:
+                    toFind = "_csv.zip"
+
+                if toFind in row.text:
+                    if (self.to_download(filename)):
+                        self.logger.info("Downloading {}".format(filename))
+
+                        page = self.get_response(root + row_link)
+
+                        if(page != None):
+                            with open(os.path.join(self.savepath, filename), "wb") as f:
+                                f.write(page.content)
+                            zf = zipfile.ZipFile(os.path.join(self.savepath, filename))
+                            zf.extractall(self.savepath)
+                            zfile = os.path.join(self.savepath, zf.infolist()[0].filename)
+                            zf.close()
+
+                            #delete the zip file
+                            os.remove(os.path.join(self.savepath, filename))
+                            self.logger.info("Removed {}".format(os.path.join(self.savepath, filename)))
+
+                            #load the data
+                            df = self.load_data(zfile)                
+                            
+                            #delete the csv file
+                            os.remove(zfile)
+                            
+                            if df is not None:
+                                data.append(df)
+        
+        self.logger.info("total data points: {0}".format(sum([a.shape[0] for a in data])))
+
+        try:
+            data = pd.concat(data)
+            data = self.clean_data(data)
+
+            for settlementPoint in data['SettlementPointName'].unique():
+                fname = "{}.csv".format(settlementPoint)
+
+                if (fname != "nan.csv"):
+                    data[data['SettlementPointName'] == settlementPoint].to_csv(os.path.join(self.savepath, fname), index=False)
+                    self.logger.info("Saved to {}".format(os.path.join(self.savepath, fname)))
+
+            end_time = time.time()
+            self.logger.info("done in {} seconds".format((end_time-start_time)/60))
+        except Exception as e:
+            self.logger.info("Got Exception - {}".format(str(e)))
+
     def try_get_page_soup(self, page_url):
         soup = None
         
@@ -148,6 +180,7 @@ class download:
             while(page.status_code != 200):
                 if retry > 3:
                     break
+
                 time.sleep(10)
                 page = requests.get(page_url, headers=headers)
                 retry += 1

@@ -33,7 +33,7 @@ class cleaner:
         Convert DeliveryDate, DeliveryHour and DeliveryInterval column to pd.to_datetime. Also remove the DSTFlag and SettlementPointType column. 
         Also arranges in ascending order
         '''
-        df['Date'] = pd.to_datetime(df['DeliveryDate']) + df['DeliveryHour'].astype('timedelta64[h]') + ((df['DeliveryInterval'] - 1) * 15).astype('timedelta64[m]')
+        df['Date'] = pd.to_datetime(pd.to_datetime(df['DeliveryDate']) + (df['DeliveryHour']-1).astype('timedelta64[h]') + ((df['DeliveryInterval']) * 15).astype('timedelta64[m]'))
         df = df.drop(columns=['DeliveryDate', 'DeliveryHour', 'DeliveryInterval', 'DSTFlag', 'SettlementPointType', 'SettlementPointName'], axis=1)
         df = df.sort_values('Date').reset_index(drop=True)
 
@@ -86,5 +86,3 @@ class cleaner:
 
             os.remove('data/live/{}.csv'.format(location))
             self.logger.info("data/live/{}.csv removed".format(location))
-
-cleaner().clean()
