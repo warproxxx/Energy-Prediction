@@ -122,7 +122,6 @@ class download:
                             zf.extractall(self.savepath)
                             zfile = os.path.join(self.savepath, zf.infolist()[0].filename)
                             self.logger.info("Zip file Extracted to {}".format(zfile))
-                            self.logger.info(glob(self.savepath))
 
                             zf.close()
 
