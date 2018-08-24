@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+	{% load staticfiles %}
+    <title>Dashboard</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link href="{% static 'data_plot/vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+
+    <!-- MetisMenu CSS -->
+    <link href="{% static 'data_plot/vendor/metisMenu/metisMenu.min.css' %}" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link href="{% static 'data_plot/dist/css/sb-admin-2.css' %}" rel="stylesheet">
+
+    <!-- Morris Charts CSS -->
+    <link href="{% static 'data_plot/vendor/morrisjs/morris.css' %}" rel="stylesheet">
+
+    <!-- Custom Fonts -->
+    <link href="{% static 'data_plot/vendor/font-awesome/css/font-awesome.min.css' %}" rel="stylesheet" type="text/css">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+	
+	<!--Chart Files CDN --><!---->
+	<script src="https://cdn.anychart.com/releases/8.2.1/js/anychart-base.min.js" type="text/javascript"></script>
+	<script src="https://cdn.anychart.com/releases/8.2.1/themes/dark_blue.min.js"></script>
+	<script src="https://cdn.anychart.com/releases/8.2.1/js/anychart-ui.min.js"></script>
+	<script src="https://cdn.anychart.com/releases/8.2.1/js/anychart-exports.min.js"></script>
+	<script src="https://cdn.anychart.com/releases/8.2.1/js/anychart-core.min.js"></script>
+	<script src="https://cdn.anychart.com/releases/8.2.1/js/anychart-stock.min.js"></script>
+	<script src="https://cdn.anychart.com/releases/8.2.1/js/anychart-data-adapter.min.js"></script>
+	  
+	<link rel="stylesheet" href="https://cdn.anychart.com/releases/8.2.1/css/anychart-ui.min.css" />
+	<link rel="stylesheet" href="https://cdn.anychart.com/releases/8.2.1/fonts/css/anychart-font.min.css" />
+	
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/waypoints/4.0.1/jquery.waypoints.min.js"></script>
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Counter-Up/1.0.0/jquery.counterup.min.js"></script>
+     
+	 <Style>
+		.nopadding {
+		   padding: 0 !important;
+		   margin: 0 !important;
+		}
+		
+		.nopadding-left {
+		   padding-left: 0 !important;
+		}
+		
+		.nopadding-top {
+		   padding-top: 0 !important;
+		}
+		
+		.nopadding-right {
+		   padding-right: 0 !important;
+		}
+		
+		.nopadding-bottom {
+		   padding-bottom: 0 !important;
+		}
+	</style>
+
+</head>
+
+<body>
+
+    <div id="wrapper">
+
+        <!-- Navigation -->
+        <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="index.html">DASHBOARD</a>
+            </div>
+            <!-- /.navbar-header -->
+
+            <ul class="nav navbar-top-links navbar-right">
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                        <i class="fa fa-envelope fa-fw"></i> <i class="fa fa-caret-down"></i>
+                    </a>	
+                    <ul class="dropdown-menu dropdown-messages">
+                        <li>
+                            <a href="#">
+                                <div>
+                                    <strong>John Smith</strong>
+                                    <span class="pull-right text-muted">
+                                        <em>Yesterday</em>
+                                    </span>
+                                </div>
+                                <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque eleifend...</div>
+                            </a>
+                        </li>
+                        <li class="divider"></li>
+                        <li>
+                            <a href="#">
+                                <div>
+                                    <strong>John Smith</strong>
+                                    <span class="pull-right text-muted">
+                                        <em>Yesterday</em>
+                                    </span>
+                                </div>
+                                <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque eleifend...</div>
+                            </a>
+                        </li>
+                     
+                    </ul>
+                    <!-- /.dropdown-messages -->
+                </li>
+
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                        <i class="fa fa-user fa-fw"></i> <i class="fa fa-caret-down"></i>
+                    </a>
+                    <ul class="dropdown-menu dropdown-user">
+                        <li><a href="#"><i class="fa fa-user fa-fw"></i> User Profile</a>
+                        </li>
+                        <li><a href="#"><i class="fa fa-gear fa-fw"></i> Settings</a>
+                        </li>
+                        <li class="divider"></li>
+                        <li><a href="login.html"><i class="fa fa-sign-out fa-fw"></i> Logout</a>
+                        </li>
+                    </ul>
+                    <!-- /.dropdown-user -->
+                </li>
+                <!-- /.dropdown -->
+            </ul>
+            <!-- /.navbar-top-links -->
+
+            <div class="navbar-default sidebar" role="navigation">
+                <div class="sidebar-nav navbar-collapse">
+                    <ul class="nav" id="side-menu">
+                        <li>
+                            <a href="index.html"><i class="fa fa-rd fa-backward"></i> Back-Testing</a>
+                        </li>
+						<li>
+                            <a href="index.html"><i class="fa fa-rd fa-forward"></i> Forward-Testing</a>
+                        </li>
+                        
+                    </ul>
+                </div>
+                <!-- /.sidebar-collapse -->
+            </div>
+            <!-- /.navbar-static-side -->
+        </nav>
+
+        <div id="page-wrapper">
+            <div class="row">
+                <div class="col-lg-12">
+                    <h1 class="page-header">Dashboard</h1>
+                </div>
+                <!-- /.col-lg-12 -->
+            </div>
+			<div class="row">
+				<div class="col-lg-12 col-md-12 nopadding">
+						<div class="panel panel-default">
+							<div class="panel-heading" style="padding-bottom:43px;">
+								
+								<div class="col-lg-2 col-md-2 nopadding">
+									<span style="font-size:23px"><i class="fa fa-cog"></i> Options</span>
+								</div>
+								<div class="col-lg-2 col-md-2 nopadding">
+									<select class="form-control form-control-sm" id="location">
+										<option value="NONE" selected>Select Location</option>
+										<option value="HB_BUSAVG">HB_BUSAVG</option>
+										<option value="HB_HOUSTON">HB_HOUSTON</option>
+										<option value="HB_HUBAVG">HB_HUBAVG</option>
+										<option value="HB_NORTH">HB_NORTH</option>
+										<option value="HB_SOUTH">HB_SOUTH</option>
+										<option value="HB_WEST">HB_WEST</option>
+										<option value="LZ_AEN">LZ_AEN</option>
+										<option value="LZ_CPS">LZ_CPS</option>
+										<option value="LZ_LCRA">LZ_LCRA</option>
+										<option value="LZ_NORTH">LZ_NORTH</option>
+										<option value="LZ_RAYBN">LZ_RAYBN</option>
+										<option value="LZ_SOUTH">LZ_SOUTH</option>
+										<option value="LZ_WEST">LZ_WEST</option>
+										<option value="LZ_HOUSTON">LZ_HOUSTON</option>
+
+									</select>
+								</div>
+								<div class="col-lg-2 col-md-2 nopadding-right nopadding-top nopadding-bottom">
+									<select class="form-control form-control-sm" id="algorithm">
+										<option value="NONE" selected>Select Algorithm</option>
+										<option value="A1">HB_BUSAVG</option>
+										<option value="A2">HB_HOUSTON</option>
+
+									</select>
+								</div>
+								<div class="col-lg-2 col-md-2 nopadding-right nopadding-top nopadding-bottom">
+									<input type = "submit" class="btn btn-primary" value= "View Analysis" id="viewAnalysis">
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			 <!-- /.row -->
+            <div class="row">
+                <div class="col-lg-12 col-md-12 nopadding">
+					<div class="col-lg-12 col-md-12 nopadding">
+						<div class="panel panel-default">
+							<div class="panel-heading">
+								<i class="fa fa-bar-chart-o fa-fw"></i> Backtest Result
+							</div>
+							<!-- /.panel-heading -->
+							<div class="panel-body no-padding">
+								<div id="backTestChart" class="bg-white c-bg col-xs-12 col-sm-12 col-md-12 col-lg-12 nopadding" style="height: 500px;">			  
+								</div>
+							</div>
+							<!-- /.panel-body -->
+						</div>
+						<!-- /.panel -->
+					</div>
+                </div>               
+            </div>
+            <!-- /.row -->
+            <!-- /.row -->
+            <div class="row">
+                <div class="col-lg-12 col-md-12 nopadding">
+					<div class="col-lg-6 col-md-6 nopadding">
+						<div class="panel panel-default">
+							<div class="panel-heading">
+								<i class="fa fa-bar-chart-o fa-fw"></i> Train Set Chart
+
+							</div>
+							<!-- /.panel-heading -->
+							<div class="panel-body nopadding">
+								<div id="trainSetChart" class="bg-white c-bg col-xs-12 col-sm-12 col-md-12 col-lg-12 no-padding nopadding" style="height: 400px;">			  
+								</div>
+							</div>
+							<!-- /.panel-body -->
+						</div>
+						<!-- /.panel -->
+					</div>
+					<div class="col-lg-6 col-md-6 nopadding">
+						<div class="panel panel-default">
+							<div class="panel-heading">
+								<i class="fa fa-bar-chart-o fa-fw"></i> Test Set Chart
+							</div>
+							<!-- /.panel-heading -->
+							<div class="panel-body nopadding">
+								<div id="testSetChart" class="bg-white c-bg col-xs-12 col-sm-12 col-md-12 col-lg-12 no-padding nopadding" style="height: 400px;">			  
+								</div>
+							</div>
+							<!-- /.panel-body -->
+						</div>
+						<!-- /.panel -->
+					</div>
+					<div class="col-lg-12 col-md-12 nopadding">
+						<div class="panel panel-default">
+							<div class="panel-heading">
+								<i class="fa fa-bar-chart-o fa-fw"></i> Bidirectional Accuracy
+							</div>
+							<!-- /.panel-heading -->
+							<div class="panel-body nopadding">
+								<div id="bidirectionalAccuracy" class="bg-white c-bg col-xs-12 col-sm-12 col-md-12 col-lg-12 no-padding nopadding" style="height: 400px;">			  
+								</div>
+							</div>
+							<!-- /.panel-body -->
+						</div>
+						<!-- /.panel -->
+					</div>
+				
+                </div>               
+            </div>
+            <!-- /.row -->
+        </div>
+        <!-- /#page-wrapper -->
+
+    </div>
+    <!-- /#wrapper -->
+
+    <!-- jQuery -->
+    <script src="{% static 'data_plot/vendor/jquery/jquery.min.js' %}"></script>
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="{% static 'data_plot/vendor/bootstrap/js/bootstrap.min.js' %}"></script>
+
+    <!-- Metis Menu Plugin JavaScript -->
+    <script src="{% static 'data_plot/vendor/metisMenu/metisMenu.min.js' %}"></script>
+
+    <!-- Morris Charts JavaScript -->
+    <script src="{% static 'data_plot/vendor/raphael/raphael.min.js' %}"></script>
+
+
+    <!-- Custom Theme JavaScript -->
+    <script src="{% static 'data_plot/dist/js/sb-admin-2.js' %}"></script>
+	<script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+		
+
+</body>
+
+</html>
+
+
+
+ <script type="text/javascript">
+ 
+ // create data table on loaded data
+var bt_dataTable = anychart.data.table();
+{% if bt_data %}
+	console.log("data-found");
+	var j_data = {{ bt_data|safe }};
+	bt_dataTable.addData(j_data);
+{% else %}
+	<h3> Error 404. Requested page could not be found </h3>
+{% endif %}
+</script>
+
+<script>
+$("#viewAnalysis").click(function(e) {
+	var algorithm = $("#algorithm").val();
+	var location = $("#location").val();
+	alert(algorithm);
+});
+
+anychart.onDocumentReady(function () {
+	
+    // map the data
+    mapping_usa = bt_dataTable.mapAs();
+    mapping_usa.addField('value', 1);
+    mapping_uk = bt_dataTable.mapAs();
+    mapping_uk.addField('value', 1);
+
+    // chart type
+    var chart = anychart.stock();
+
+	// create first plot on the chart
+    var plot = chart.plot(0);
+    // set grid settings
+    plot.yGrid(false)
+      .xGrid(false)
+      .yMinorGrid(true)
+      .xMinorGrid(true);
+	  
+	  plot.xGrid().stroke({
+	  // set stroke color
+	  color: "rgba(54,61,82,.7)",
+
+	});
+	plot.yGrid().stroke({
+	  // set stroke color           https://www.coinpayments.net/apidoc-get-callback-address 
+	  color: "rgba(54,61,82,.7)",
+
+	});
+	
+	
+	
+	var credits = chart.credits();
+	credits.enabled(false);
+	
+    // set the US series
+    var series_algorithm = chart.plot(0).area(mapping_usa);
+    series_algorithm.name("Algorithm");
+	
+	var series_benchmark= chart.plot(0).line(mapping_uk);
+    series_benchmark.name("Benchmark");
+
+    // coloring
+    series_algorithm.fill("rgb(0, 0, 205, 0.1)");
+    series_algorithm.stroke("2 #0000CD");
+	
+    series_benchmark.stroke("2 #800000");
+
+	
+	 var plot = chart.plot(1);
+    // set grid settings
+    plot.yGrid(false)
+      .xGrid(false)
+      .yMinorGrid(true)
+      .xMinorGrid(true);
+	  
+	  plot.xGrid().stroke({
+	  // set stroke color
+	  color: "rgba(54,61,82,.7)",
+
+	});
+	plot.yGrid().stroke({
+	  // set stroke color           https://www.coinpayments.net/apidoc-get-callback-address 
+	  color: "rgba(54,61,82,.7)",
+
+	});
+	
+    // set the UK series
+    var series_uk = chart.plot(1).line(mapping_uk);
+    series_uk.name("Positions");
+
+	series_uk.stroke("2 #32CD32");
+    // hatch fill
+    //series_uk.hatchFill("diagonal-cross");
+
+    chart.title('Back Testing');
+    
+    // y-axis labels formatting
+    chart.plot(0).yAxis().labels().format(function (){
+      return this.value/1000 + "K";
+    });
+	
+	chart.plot(1).yAxis().labels().format(function (){
+      return this.value/1000000 + "m";
+    });
+
+    chart.container('backTestChart');
+    chart.draw();
+});
+</script>
+
+
+
+
+
+ <script type="text/javascript">
+ 
+ // create data table on loaded data
+var dataTable = anychart.data.table();
+{% if data %}
+	var j_data = {{ data|safe }};
+	dataTable.addData(j_data);
+{% else %}
+	<h3> Error 404. Requested page could not be found </h3>
+{% endif %}
+</script>
+
+<script>
+
+//**********************training set chart plotting************************************
+
+anychart.onDocumentReady(function() {
+anychart.licenseKey("songzcorp-7ce21725-824e1b3b");
+
+    // create stock chart
+    var chart = anychart.stock();
+
+		
+	var credits = chart.credits();
+	credits.enabled(false);
+	
+    // set chart title
+    chart.title('Training Set');
+
+    // create plot on the chart
+    var plot = chart.plot(0);
+
+    // create plot series with mapped data
+    plot.line(dataTable.mapAs({
+      'value': 1
+    })).name('Actual Price');
+	
+	plot.line(dataTable.mapAs({
+      'value': 2
+    })).name('Predicted Price');
+
+    // create scroller series with mapped data
+    chart.scroller().line(dataTable.mapAs({
+      'value': 0
+    }));
+
+	
+	
+
+    // set container id for the chart
+    chart.container('trainSetChart');
+    // initiate chart drawing
+    chart.draw();
+
+
+    // create range selector
+    var rangeSelector = anychart.ui.rangeSelector();
+    // init range selector
+    rangeSelector.render(chart);
+	
+});
+</script>
+
+<script>
+
+//**********************test set chart plotting************************************
+
+anychart.onDocumentReady(function() {
+anychart.licenseKey("songzcorp-7ce21725-824e1b3b");
+
+
+    // create stock chart
+    var chart = anychart.stock();
+
+    // set chart title
+    chart.title('Test Set');
+
+	var credits = chart.credits();
+	credits.enabled(false);
+	
+    // create plot on the chart
+    var plot = chart.plot(0);
+
+    // create plot series with mapped data
+    plot.line(dataTable.mapAs({
+      'value': 1
+    })).name('Actual Price');
+	
+	plot.line(dataTable.mapAs({
+      'value': 2
+    })).name('Predicted Price');
+	
+    // create scroller series with mapped data
+    chart.scroller().line(dataTable.mapAs({
+      'value': 1
+    }));
+
+
+    // set container id for the chart
+    chart.container('testSetChart');
+    // initiate chart drawing
+    chart.draw();
+    // create range picker
+
+
+    // create range selector
+    var rangeSelector = anychart.ui.rangeSelector();
+    // init range selector
+    rangeSelector.render(chart);
+	
+});
+</script>
+ <script type="text/javascript">
+ 
+ // create data table on loaded data
+var bd_dataTable = anychart.data.table();
+var bd;
+{% if bd_data %}
+	var j_data = {{ bd_data|safe }};
+	bd_dataTable.addData(j_data);
+	bd = j_data;
+{% else %}
+	<h3> Error 404. Requested page could not be found </h3>
+{% endif %}
+</script>
+
+<script>
+//**********************Bidirectional accuracy************************************
+anychart.onDocumentReady(function () {
+
+    // create data
+    var data = [
+      {x: "1995", value: 1},
+      {x: "1996", value: 0},
+      {x: "1997", value: 0},
+      {x: "1998", value: 1},
+      {x: "1999", value: 0},
+      {x: "2000", value: 1},
+      {x: "2001", value: 0},
+      {x: "2002", value: 1},
+      {x: "2003", value: 1}
+    ];
+    
+     // create a chart
+    var chart = anychart.line();
+
+    // create a step line series and set the data
+    var series = chart.stepLine(data);
+
+    // set step direction to the forward mode
+    series.stepDirection("forward");   
+
+    // set the chart title
+    chart.title("Bidirectional Accuracy");
+
+    // set the container id
+    chart.container("bidirectionalAccuracy");
+
+    // initiate drawing the chart
+    chart.draw();
+});
+</script>
+

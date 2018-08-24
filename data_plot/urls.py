@@ -4,5 +4,5 @@ from django.conf.urls import url, include
 from django.contrib.auth import login
 
 urlpatterns = [
-    path('', views.dashboard, name='dashboard'),
+    url(r'(?P<al>.+)/(?P<lc>.+)/$', views.dashboard, name='dashboard'),
 ]
