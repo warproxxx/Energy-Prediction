@@ -121,6 +121,9 @@ class download:
                             zf = zipfile.ZipFile(os.path.join(self.savepath, filename))
                             zf.extractall(self.savepath)
                             zfile = os.path.join(self.savepath, zf.infolist()[0].filename)
+                            self.logger.info("Zip file Extracted to {}".format(zfile))
+                            self.logger.info(glob(self.savepath))
+
                             zf.close()
 
                             #delete the zip file
@@ -197,6 +200,6 @@ class download:
                 xls = pd.ExcelFile(filename)
                 names = xls.sheet_names
                 df = pd.concat([xls.parse(name) for name in names]).reset_index(drop=True)
-        except:
-            pass    
+        except Exception as e:
+            self.logger("Exception while reading file: {}".format(str(e)))    
         return df
