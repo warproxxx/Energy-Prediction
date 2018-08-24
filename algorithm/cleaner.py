@@ -93,10 +93,6 @@ class cleaner:
             for location in self.liveLocations:
                 live = pd.read_csv('{}/{}.csv'.format(self.liveFolder, location))
 
-<<<<<<< HEAD
-            os.remove('data/live/{}.csv'.format(location))
-            self.logger.info("data/live/{}.csv removed".format(location))
-=======
                 live = self.fix_data(live)
                 
                 live.to_csv('data/processed/{}/data.csv'.format(location), index=False, header=None, mode='a')
@@ -104,4 +100,3 @@ class cleaner:
 
                 os.remove('{}/{}.csv'.format(self.liveFolder, location))
                 self.logger.info("{}/{}.csv removed".format(self.liveFolder, location))
->>>>>>> 3e51dc1addf24c30dd306f26d71509c0a1584532
