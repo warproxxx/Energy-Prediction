@@ -61,4 +61,5 @@ def create_directory_structure(rootDir, cities):
     os.makedirs("{}/data/downloading/historic".format(rootDir), exist_ok=True)
 
     for city in cities:
-        os.makedirs("{}/data/processed/{}".format(rootDir, city), exist_ok=True)
+        os.makedirs("{}/data/processed/{}/backtest".format(rootDir, city), exist_ok=True)
+        os.makedirs("{}/data/processed/{}/forwardtest".format(rootDir, city), exist_ok=True)

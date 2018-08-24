@@ -23,15 +23,23 @@ with open(cwd + "/cities.json") as json_file:
 
 create_directory_structure(cwd, cities)
 
+runtype = "forwardtest"
+
 #using HB_HOUSTON but can use anything else
 try:
-    with open('data/processed/HB_HOUSTON/data.csv', 'r') as f:
+    with open('data/processed/HB_HOUSTON/forwardtest/data.csv', 'r') as f:
         q = deque(f, 1)
         starting = pd.to_datetime(pd.read_csv(StringIO(''.join(q)), header=None)[0][0])
 except:
-    starting = pd.to_datetime("2010-12-01 00:00:00")
+    try:
+        with open('data/processed/HB_HOUSTON/backtest/data.csv', 'r') as f:
+            q = deque(f, 1)
+            starting = pd.to_datetime(pd.read_csv(StringIO(''.join(q)), header=None)[0][0]) 
+    except:
+        runtype = "backtest"
+        starting = pd.to_datetime("2010-12-01 00:00:00")
 
-logging.info("Starting Date: {}".format(starting))
+logging.info("Starting data collection for {} in date: {}".format(runtype, starting))
 
 historicDownloader = download(historicURL, "historic", starting)
 historicDownloader.perform_download()
@@ -41,7 +49,9 @@ liveDownloader.perform_download()
 
 #assert downloaded if required later
 
-cleaner().clean()
+cleaner(runtype).clean()
 
 #assert the cleaned data exists and is clean
 #totalMissing = sum((df['Date'].shift(-1)[:-1] - df['Date'][:-1]).astype('timedelta64[m]') != 15)
+
+#add code for training here too after testing that above functions work

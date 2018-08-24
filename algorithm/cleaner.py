@@ -4,7 +4,19 @@ import pandas as pd
 from basic_utils import get_logger, get_location
 
 class cleaner:
-    def __init__(self, logger=None):
+    def __init__(self, runtype, logger=None):
+        '''
+        Copies files from the live or historic data and moves it to appropriate folder
+
+        Parameters:
+        ___________
+
+        runtype (string):
+        forwardtest or backtest
+        '''
+
+        self.runtype = runtype
+
         if logger == None:
             self.logger = get_logger(get_location() + "/logs/cleaner.log")
         else:
@@ -71,6 +83,8 @@ class cleaner:
         return full_data.reset_index()
 
     def clean(self):
+        processedDir = "data/processed/{}/" + self.runtype + "/data.csv"
+
         if (len(self.locations) > 2):
             for location in self.locations:
                 historic = pd.read_csv('{}/{}.csv'.format(self.historicFolder, location))
@@ -81,8 +95,8 @@ class cleaner:
 
                 df = self.fixJoin(live, historic)
 
-                df.to_csv('data/processed/{}/data.csv'.format(location), index=False, mode='a')
-                self.logger.info("Saved to data/processed/{}/data.csv".format(location))
+                df.to_csv(processedDir.format(location), index=False, mode='a')
+                self.logger.info("Saved to " + processedDir.format(location))
                 
                 os.remove('{}/{}.csv'.format(self.historicFolder, location))
                 self.logger.info("{}/{}.csv removed".format(self.historicFolder, location))
@@ -95,8 +109,8 @@ class cleaner:
 
                 live = self.fix_data(live)
                 
-                live.to_csv('data/processed/{}/data.csv'.format(location), index=False, header=None, mode='a')
-                self.logger.info("Appended to data/processed/{}/data.csv".format(location))
+                live.to_csv(processedDir.format(location), index=False, header=None, mode='a')
+                self.logger.info("Appended to " + processedDir.format(location))
 
                 os.remove('{}/{}.csv'.format(self.liveFolder, location))
                 self.logger.info("{}/{}.csv removed".format(self.liveFolder, location))
