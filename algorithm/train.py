@@ -11,7 +11,7 @@ logger = get_logger(get_location() + "/logs/model.log")
 
 for location in glob('data/processed/*'):
     city = location.replace("data/processed/", "")
-    f = location + "/data.csv"
+    f = location + "/backtest/data.csv"
     df = pd.read_csv(f)
 
     logger.info("Read {}".format(f))
@@ -20,11 +20,11 @@ for location in glob('data/processed/*'):
 
     for model in models:
         model_builder = model_building(model)
-        data = model_builder.get_data(df)
+        X, y = model_builder.get_XY(df)
 
-        logger.info("Got data of size {}".format(data.shape))
+        logger.info("Got data. The size of X is {} and that of y is {}".format(X.shape, y.shape))
 
-        train_x, train_y, test_x, test_y, trainTestIndicator = model_builder.split_train_test(data, 0.1)
+        train_x, train_y, test_x, test_y, trainTestIndicator = model_builder.split_train_test(X, y, 0.1)
         
         logger.info("Train X: {} Train Y: {} Test X: {} Test Y: {}. Now training".format(train_x.shape, train_y.shape, test_x.shape, test_y.shape))
 
@@ -36,4 +36,4 @@ for location in glob('data/processed/*'):
         logger.info("Model trained")
 
         model_builder.save_model(model, city)
-        model_builder.save_predictions(model, city)
+        model_builder.save_predictions(df, X, model, city, runtype='backtest')

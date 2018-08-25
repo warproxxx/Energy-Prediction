@@ -12,18 +12,13 @@ from sklearn.metrics import mean_squared_error
 
 import logging
 
-try:
-    import pickle
-except:
-    import cpickle
+import json
 
 class tri_model_15_minute():
     def __init__(self):
         self.sequence_length = 24
 
     def get_data(self, df):
-        self.df = df
-
         data = df['SettlementPointPrice'].values
         data_out = []
 
@@ -32,23 +27,29 @@ class tri_model_15_minute():
 
         data = np.array(data_out)
         return data
+    
+    def get_XY(self, df):
+        '''
+        Returns X and Y in appropriate formate when df is sent to it 
+        '''
+        data = self.get_data(df)
+        X = data[:, :-1]
+        y = data[:, -1]
+        X = np.reshape(X, (X.shape[0], X.shape[1], 1))
+        y = np.reshape(y, (y.shape[0], 1))
+        return X, y
 
-    def split_train_test(self, data, test_fraction=0.2):
-        self.trainTestIndicator = np.zeros(data.shape[0])
-        train_ind = int(round((1-test_fraction)*data.shape[0]))
+    def split_train_test(self, X, y, test_size=0.2):
+        self.trainTestIndicator = np.zeros(X.shape[0])
+        train_ind = int(round((1-test_size)*X.shape[0]))
 
-        train_set = data[:train_ind,:]
-
+        self.X_train = X[:train_ind,:, :]
+        self.Y_train = y[:train_ind, :]
+        
         self.trainTestIndicator[:train_ind] = 1
 
-        self.X_train = train_set[:,:-1]
-        self.Y_train = train_set[:,-1]
-
-        self.X_test = data[train_ind:, :-1]
-        self.Y_test = data[train_ind:, -1]
-
-        self.X_train = np.reshape(self.X_train, (self.X_train.shape[0], self.X_train.shape[1], 1))
-        self.X_test = np.reshape(self.X_test, (self.X_test.shape[0], self.X_test.shape[1], 1))
+        self.X_test = X[train_ind:,:, :]
+        self.Y_test = y[train_ind:,:]
 
         return self.X_train, self.Y_train, self.X_test, self.Y_test, self.trainTestIndicator
     
@@ -68,42 +69,38 @@ class tri_model_15_minute():
         
         return model
 
-    def get_predictions(self, model):
-        X = np.append(self.X_train, self.X_test, axis=0)
+    def get_predictions(self, model, df, X):
         predicted = model.predict(X)
 
-        self.df['Predicted'] = [None]*(self.df.shape[0]-len(predicted)) + list(predicted.reshape(-1))
-        self.df['Indicator'] = [None]*(self.df.shape[0]-len(predicted)) + list(self.trainTestIndicator.reshape(-1))
+        df['Predicted'] = [None]*(df.shape[0]-len(predicted)) + list(predicted.reshape(-1))
+        df['Indicator'] = [None]*(df.shape[0]-len(predicted)) + list(self.trainTestIndicator.reshape(-1))
 
-        self.df['Direction'] = (self.df['Predicted'] > self.df['SettlementPointPrice']).astype(int)
-        
-        actualDirection = (self.df['SettlementPointPrice'].shift(-1) > self.df['SettlementPointPrice']).astype(int)
-        
+        df['Direction'] = (df['Predicted'] > df['SettlementPointPrice']).astype(int)
+
+        actualDirection = (df['SettlementPointPrice'].shift(-1) > df['SettlementPointPrice']).astype(int)
+
         metrics = {}
 
-        # self.df = self.df.fillna(method='bfill')
-        # self.df = self.df.fillna(method='ffill')
+        df = df.fillna(method='bfill')
 
-        # metrics['RMS Error'] = mean_squared_error(self.df['SettlementPointPrice'].shift(-1),self.df['Predicted'])
-        # metrics['R2 Score'] = r2_score(self.df['SettlementPointPrice'].shift(-1),self.df['Predicted'])
+        metrics['RMS Error'] = mean_squared_error(df['SettlementPointPrice'].shift(-1).fillna(method='ffill'),df['Predicted'])
+        metrics['R2 Score'] = r2_score(df['SettlementPointPrice'].shift(-1).fillna(method='ffill'),df['Predicted'])
 
-        metrics['Directional Accuracy'] = sum(self.df['Direction'] == actualDirection)/self.df['Direction'].shape[0]
-        metrics['True Positive'] = np.sum(np.logical_and(self.df['Direction']==1, actualDirection==1))
-        metrics['True Negative'] = np.sum(np.logical_and(self.df['Direction']==0, actualDirection==0))
-        metrics['False Positive'] = np.sum(np.logical_and(self.df['Direction']==1, actualDirection==0))
-        metrics['False Negative'] = np.sum(np.logical_and(self.df['Direction']==1, actualDirection==0))
+        metrics['Directional Accuracy'] = sum(df['Direction'] == actualDirection)/df['Direction'].shape[0]
+        metrics['True Positive'] = np.sum(np.logical_and(df['Direction']==1, actualDirection==1))
+        metrics['True Negative'] = np.sum(np.logical_and(df['Direction']==0, actualDirection==0))
+        metrics['False Positive'] = np.sum(np.logical_and(df['Direction']==1, actualDirection==0))
+        metrics['False Negative'] = np.sum(np.logical_and(df['Direction']==1, actualDirection==0))
 
         metrics['Precision'] = metrics['True Positive'] / (metrics['True Positive'] + metrics['False Positive'])
         metrics['Recall'] = metrics['True Positive'] / (metrics['True Positive'] + metrics['False Negative'])
 
         metrics['F1 Score'] = (2 * metrics['Precision'] * metrics['Recall']) / (metrics['Precision'] + metrics['Recall'])
 
-        return self.df, metrics
+        return df, metrics
         
 class tri_model_1_hour(tri_model_15_minute): 
     def get_data(self, df):
-        self.df = df
-
         df['Date'] = pd.to_datetime(df['Date'])
         df = df.set_index('Date')
         df = df.resample('1H').agg({'Date': lambda x: x.iloc[0], 'SettlementPointPrice': lambda x: x.iloc[-1]})['Date']
@@ -135,19 +132,36 @@ class model_building(object):
         elif (self.model_name == 'tri_model_1_hours'):
             self.model = tri_model_1_hour()
 
-    def get_data(self, df):
+    def get_XY(self, df):
         '''
-        Modifies the data so it can be suitably used with the correct model
-        '''
-        data = self.model.get_data(df)
-        return data
+        Modifies the df so it can be suitably used with the correct model and returns X and y
 
-    def split_train_test(self, data, test_fraction=0.2):
+        Parameters:
+        ___________
+        df: (dataframe)
+        The dataframe to process
+
+        Returns:
+        ________
+        X (numpy): 
+        X from the data that can be sent to keras
+
+        y (numpy): 
+        y from the data that can be sent to keras
+        '''
+
+        X, y = self.model.get_XY(df)
+        return X, y
+
+    def split_train_test(self, X, y, test_size=0.2):
         '''
         Parameters:
         ___________
-        data (list or pandas or whatever):
-        The data to split
+        X (list or pandas or numpy):
+        X in keras format to split it
+
+        y (list or pandas or numpy):
+        y in keras format to split it
 
         Returns:
         ________
@@ -155,7 +169,7 @@ class model_building(object):
 
         trainTestIndicator contains 1 and 0 where 1 indicates training and 0 indicates test
         '''
-        X_train, Y_train, X_test, Y_test, trainTestIndicator = self.model.split_train_test(data, test_fraction)
+        X_train, Y_train, X_test, Y_test, trainTestIndicator = self.model.split_train_test(X, y, test_size)
         return X_train, Y_train, X_test, Y_test, trainTestIndicator
 
     def get_model(self, train_x, train_y, batch_size, epochs):
@@ -217,13 +231,40 @@ class model_building(object):
 
         return model
     
-    def save_predictions(self, model, city):
-        finalDf, metrics = self.model.get_predictions(model)
-        saveLocation = self.location + "/models/{}/{}".format(self.model_name, city)
+    def save_predictions(self, df, X, model, city, runtype):
+        '''
+        Saves prediction by adding it to the column
+
+        Parameters:
+        ___________
+        df (pandas dataframe):
+        The pandas dataframe to perfrom the prediction from
+
+        X (Numpy):
+        The X values to be sent manually to save time
+
+        model (Keras Model): 
+        Model to perform predictions off
+
+        city (string):
+        City whose prediction is taking place. For saving in folder
+        
+        runtype (string):
+        backtest or forwardtest
+        '''
+        finalDf, metrics = self.model.get_predictions(model, df, X)
+
+        saveLocation = self.location + "/models/{}/{}/{}".format(self.model_name, city, runtype)
+
+        if not os.path.exists(saveLocation):
+            os.makedirs(saveLocation)
+
         finalDf.to_csv(saveLocation + "/predicted.csv", index=False)
         self.logger.info("Saved to {}".format(saveLocation + "/predicted.csv"))
 
-        with open(saveLocation + "/metrics.json", 'wb') as fp:
-            pickle.dump(metrics, fp, protocol=pickle.HIGHEST_PROTOCOL)
+        data = json.dumps(metrics)
+
+        with open(saveLocation + "/metrics.json", 'w') as fp:
+            json.dump(data, fp)
 
         self.logger.info("Saved to {}".format(saveLocation + "/metrics.json"))
