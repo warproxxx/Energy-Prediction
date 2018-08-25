@@ -75,7 +75,8 @@ class cleaner:
         df.set_index('Date', inplace=True)
         dates.set_index('Date', inplace=True)
         
-        full_data = pd.concat([df, dates], axis=1).ls(method='ffill')
+        full_data = pd.concat([df, dates], axis=1).fillna(method='bfill')
+        full_data = full_data.fillna(method='ffill')
         full_data.index.name = 'Date'
         
         return full_data.reset_index()
