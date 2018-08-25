@@ -1,0 +1,175 @@
+2018-08-25 14:27:11.980775: I tensorflow/core/platform/cpu_feature_guard.cc:141] Your CPU supports instructions that this TensorFlow binary was not compiled to use: AVX2 FMA
+2018-08-25 14:27:12.646154: I tensorflow/stream_executor/cuda/cuda_gpu_executor.cc:897] successful NUMA node read from SysFS had negative value (-1), but there must be at least one NUMA node, so returning NUMA node zero
+2018-08-25 14:27:12.646932: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1405] Found device 0 with properties: 
+name: Tesla K80 major: 3 minor: 7 memoryClockRate(GHz): 0.8235
+pciBusID: 0000:00:04.0
+totalMemory: 11.17GiB freeMemory: 11.09GiB
+2018-08-25 14:27:12.730759: I tensorflow/stream_executor/cuda/cuda_gpu_executor.cc:897] successful NUMA node read from SysFS had negative value (-1), but there must be at least one NUMA node, so returning NUMA node zero
+2018-08-25 14:27:12.731531: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1405] Found device 1 with properties: 
+name: Tesla K80 major: 3 minor: 7 memoryClockRate(GHz): 0.8235
+pciBusID: 0000:00:05.0
+totalMemory: 11.17GiB freeMemory: 11.10GiB
+2018-08-25 14:27:12.817997: I tensorflow/stream_executor/cuda/cuda_gpu_executor.cc:897] successful NUMA node read from SysFS had negative value (-1), but there must be at least one NUMA node, so returning NUMA node zero
+2018-08-25 14:27:12.818654: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1405] Found device 2 with properties: 
+name: Tesla K80 major: 3 minor: 7 memoryClockRate(GHz): 0.8235
+pciBusID: 0000:00:06.0
+totalMemory: 11.17GiB freeMemory: 11.10GiB
+2018-08-25 14:27:12.906438: I tensorflow/stream_executor/cuda/cuda_gpu_executor.cc:897] successful NUMA node read from SysFS had negative value (-1), but there must be at least one NUMA node, so returning NUMA node zero
+2018-08-25 14:27:12.907145: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1405] Found device 3 with properties: 
+name: Tesla K80 major: 3 minor: 7 memoryClockRate(GHz): 0.8235
+pciBusID: 0000:00:07.0
+totalMemory: 11.17GiB freeMemory: 11.10GiB
+2018-08-25 14:27:12.909242: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1484] Adding visible gpu devices: 0, 1, 2, 3
+2018-08-25 14:27:29.293919: I tensorflow/core/common_runtime/gpu/gpu_device.cc:965] Device interconnect StreamExecutor with strength 1 edge matrix:
+2018-08-25 14:27:29.293984: I tensorflow/core/common_runtime/gpu/gpu_device.cc:971]      0 1 2 3 
+2018-08-25 14:27:29.293992: I tensorflow/core/common_runtime/gpu/gpu_device.cc:984] 0:   N Y Y Y 
+2018-08-25 14:27:29.293997: I tensorflow/core/common_runtime/gpu/gpu_device.cc:984] 1:   Y N Y Y 
+2018-08-25 14:27:29.294001: I tensorflow/core/common_runtime/gpu/gpu_device.cc:984] 2:   Y Y N Y 
+2018-08-25 14:27:29.294005: I tensorflow/core/common_runtime/gpu/gpu_device.cc:984] 3:   Y Y Y N 
+2018-08-25 14:27:29.308697: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1097] Created TensorFlow device (/job:localhost/replica:0/task:0/device:GPU:0 with 10743 MB memory) -> physical GPU (device: 0, name: Tesla K80, pci bus id: 0000:00:04.0, compute capability: 3.7)
+2018-08-25 14:27:29.509665: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1097] Created TensorFlow device (/job:localhost/replica:0/task:0/device:GPU:1 with 10758 MB memory) -> physical GPU (device: 1, name: Tesla K80, pci bus id: 0000:00:05.0, compute capability: 3.7)
+2018-08-25 14:27:29.708827: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1097] Created TensorFlow device (/job:localhost/replica:0/task:0/device:GPU:2 with 10758 MB memory) -> physical GPU (device: 2, name: Tesla K80, pci bus id: 0000:00:06.0, compute capability: 3.7)
+2018-08-25 14:27:29.908709: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1097] Created TensorFlow device (/job:localhost/replica:0/task:0/device:GPU:3 with 10758 MB memory) -> physical GPU (device: 3, name: Tesla K80, pci bus id: 0000:00:07.0, compute capability: 3.7)
+Train on 231708 samples, validate on 12196 samples
+Epoch 1/10
+ - 60s - loss: 6193.0327 - val_loss: 505.6773
+Epoch 2/10
+ - 35s - loss: 5919.7833 - val_loss: 457.8776
+Epoch 3/10
+ - 35s - loss: 5774.8234 - val_loss: 430.0027
+Epoch 4/10
+ - 35s - loss: 5650.0277 - val_loss: 419.2863
+Epoch 5/10
+ - 35s - loss: 5540.5249 - val_loss: 396.6991
+Epoch 6/10
+ - 35s - loss: 5433.9170 - val_loss: 398.6753
+Epoch 7/10
+ - 35s - loss: 5340.7374 - val_loss: 394.5393
+Epoch 8/10
+ - 35s - loss: 5253.2850 - val_loss: 378.0873
+Epoch 9/10
+ - 35s - loss: 5177.8365 - val_loss: 374.8647
+Epoch 10/10
+ - 35s - loss: 5096.5779 - val_loss: 384.7612
+Train on 57912 samples, validate on 3049 samples
+Epoch 1/50
+ - 10s - loss: 7182.4754 - val_loss: 688.5654
+Epoch 2/50
+ - 9s - loss: 6922.6430 - val_loss: 667.3012
+Epoch 3/50
+ - 9s - loss: 6885.3997 - val_loss: 681.8268
+Epoch 4/50
+ - 9s - loss: 6879.8741 - val_loss: 686.4042
+Epoch 5/50
+ - 9s - loss: 6846.7245 - val_loss: 604.2544
+Epoch 6/50
+ - 9s - loss: 6752.1372 - val_loss: 574.2702
+Epoch 7/50
+ - 9s - loss: 6697.4610 - val_loss: 554.9019
+Epoch 8/50
+ - 9s - loss: 6658.7102 - val_loss: 545.9740
+Epoch 9/50
+ - 9s - loss: 6629.7935 - val_loss: 547.5791
+Epoch 10/50
+ - 9s - loss: 6597.8347 - val_loss: 533.0788
+Epoch 11/50
+ - 9s - loss: 6568.6678 - val_loss: 529.5079
+Epoch 12/50
+ - 9s - loss: 6545.6130 - val_loss: 528.1865
+Epoch 13/50
+ - 9s - loss: 6519.9236 - val_loss: 527.2700
+Epoch 14/50
+ - 9s - loss: 6513.6741 - val_loss: 519.8625
+Epoch 15/50
+ - 9s - loss: 6486.9528 - val_loss: 517.9309
+Epoch 16/50
+ - 9s - loss: 6467.0406 - val_loss: 519.3151
+Epoch 17/50
+ - 9s - loss: 6448.8732 - val_loss: 514.3543
+Epoch 18/50
+ - 9s - loss: 6428.0343 - val_loss: 514.0742
+Epoch 19/50
+ - 9s - loss: 6411.1981 - val_loss: 510.7811
+Epoch 20/50
+ - 9s - loss: 6395.8511 - val_loss: 514.5475
+Epoch 21/50
+ - 9s - loss: 6379.8545 - val_loss: 513.4557
+Epoch 22/50
+ - 9s - loss: 6356.9394 - val_loss: 508.9948
+Epoch 23/50
+ - 9s - loss: 6345.8250 - val_loss: 506.0661
+Epoch 24/50
+ - 9s - loss: 6332.2950 - val_loss: 506.2473
+Epoch 25/50
+ - 9s - loss: 6315.5388 - val_loss: 510.6599
+Epoch 26/50
+ - 9s - loss: 6300.4393 - val_loss: 495.5021
+Epoch 27/50
+ - 9s - loss: 6286.7447 - val_loss: 496.3343
+Epoch 28/50
+ - 9s - loss: 6270.3105 - val_loss: 498.8954
+Epoch 29/50
+ - 9s - loss: 6253.8937 - val_loss: 490.4428
+Epoch 30/50
+ - 9s - loss: 6236.4181 - val_loss: 489.9617
+Epoch 31/50
+ - 9s - loss: 6214.8730 - val_loss: 487.3081
+Epoch 32/50
+ - 9s - loss: 6205.5953 - val_loss: 482.5368
+Epoch 33/50
+ - 9s - loss: 6187.8841 - val_loss: 483.1129
+Epoch 34/50
+ - 9s - loss: 6178.3762 - val_loss: 478.8092
+Epoch 35/50
+ - 9s - loss: 6163.4100 - val_loss: 477.8308
+Epoch 36/50
+ - 9s - loss: 6137.7596 - val_loss: 482.2269
+Epoch 37/50
+ - 9s - loss: 6131.3540 - val_loss: 478.0882
+Epoch 38/50
+ - 9s - loss: 6120.2369 - val_loss: 471.0346
+Epoch 39/50
+ - 9s - loss: 6100.1231 - val_loss: 480.6897
+Epoch 40/50
+ - 9s - loss: 6102.7988 - val_loss: 478.4084
+Epoch 41/50
+ - 9s - loss: 6077.1714 - val_loss: 478.0917
+Epoch 42/50
+ - 9s - loss: 6062.4732 - val_loss: 471.7835
+Epoch 43/50
+ - 9s - loss: 6048.9871 - val_loss: 469.3092
+Epoch 44/50
+ - 9s - loss: 6032.7677 - val_loss: 474.1820
+Epoch 45/50
+ - 9s - loss: 6031.2915 - val_loss: 471.8798
+Epoch 46/50
+ - 9s - loss: 6021.0054 - val_loss: 466.2151
+Epoch 47/50
+ - 9s - loss: 5993.2612 - val_loss: 478.6531
+Epoch 48/50
+ - 9s - loss: 5985.7927 - val_loss: 477.6298
+Epoch 49/50
+ - 9s - loss: 5983.9808 - val_loss: 473.4049
+Epoch 50/50
+ - 9s - loss: 5972.4499 - val_loss: 482.0850
+Train on 231708 samples, validate on 12196 samples
+Epoch 1/10
+ - 37s - loss: 6169.1446 - val_loss: 539.2758
+Epoch 2/10
+ - 35s - loss: 5882.2320 - val_loss: 483.0179
+Epoch 3/10
+ - 35s - loss: 5728.9992 - val_loss: 452.3962
+Epoch 4/10
+ - 35s - loss: 5602.6031 - val_loss: 432.6418
+Epoch 5/10
+ - 35s - loss: 5483.7492 - val_loss: 413.0345
+Epoch 6/10
+ - 35s - loss: 5372.1478 - val_loss: 406.4133
+Epoch 7/10
+ - 35s - loss: 5272.5748 - val_loss: 397.1989
+Epoch 8/10
+ - 35s - loss: 5189.5231 - val_loss: 395.0170
+Epoch 9/10
+ - 35s - loss: 5103.1487 - val_loss: 390.2309
+Epoch 10/10
+ - 35s - loss: 5023.9245 - val_loss: 389.0687

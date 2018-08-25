@@ -1,0 +1,50 @@
+Read data/processed/LZ_RAYBN/backtest/data.csv for backtest
+Got data. The size of X is (271004, 23, 1) and that of y is (271004, 1)
+Got data. The size of X is (271004, 23, 1) and that of y is (271004, 1)
+Train X: (243904, 23, 1) Train Y: (243904, 1) Test X: (27100, 23, 1) Test Y: (27100, 1). Now training
+Train X: (243904, 23, 1) Train Y: (243904, 1) Test X: (27100, 23, 1) Test Y: (27100, 1). Now training
+Model trained
+Model trained
+Model saved in /home/warproxxx/Energy-Prediction/algorithm/models/tri_model_15_minute/LZ_RAYBN/model.h5
+Model saved in /home/warproxxx/Energy-Prediction/algorithm/models/tri_model_15_minute/LZ_RAYBN/model.h5
+Saved to /home/warproxxx/Energy-Prediction/algorithm/models/tri_model_15_minute/LZ_RAYBN/backtest/predicted.csv
+Saved to /home/warproxxx/Energy-Prediction/algorithm/models/tri_model_15_minute/LZ_RAYBN/backtest/predicted.csv
+Saved to /home/warproxxx/Energy-Prediction/algorithm/models/tri_model_15_minute/LZ_RAYBN/backtest/metrics.json
+Saved to /home/warproxxx/Energy-Prediction/algorithm/models/tri_model_15_minute/LZ_RAYBN/backtest/metrics.json
+Got data. The size of X is (67734, 23, 1) and that of y is (67734, 1)
+Got data. The size of X is (67734, 23, 1) and that of y is (67734, 1)
+Got data. The size of X is (67734, 23, 1) and that of y is (67734, 1)
+Train X: (60961, 23, 1) Train Y: (60961, 1) Test X: (6773, 23, 1) Test Y: (6773, 1). Now training
+Train X: (60961, 23, 1) Train Y: (60961, 1) Test X: (6773, 23, 1) Test Y: (6773, 1). Now training
+Train X: (60961, 23, 1) Train Y: (60961, 1) Test X: (6773, 23, 1) Test Y: (6773, 1). Now training
+Model trained
+Model trained
+Model trained
+Model saved in /home/warproxxx/Energy-Prediction/algorithm/models/tri_model_1_hours/LZ_RAYBN/model.h5
+Model saved in /home/warproxxx/Energy-Prediction/algorithm/models/tri_model_1_hours/LZ_RAYBN/model.h5
+Model saved in /home/warproxxx/Energy-Prediction/algorithm/models/tri_model_1_hours/LZ_RAYBN/model.h5
+Saved to /home/warproxxx/Energy-Prediction/algorithm/models/tri_model_1_hours/LZ_RAYBN/backtest/predicted.csv
+Saved to /home/warproxxx/Energy-Prediction/algorithm/models/tri_model_1_hours/LZ_RAYBN/backtest/predicted.csv
+Saved to /home/warproxxx/Energy-Prediction/algorithm/models/tri_model_1_hours/LZ_RAYBN/backtest/predicted.csv
+Saved to /home/warproxxx/Energy-Prediction/algorithm/models/tri_model_1_hours/LZ_RAYBN/backtest/metrics.json
+Saved to /home/warproxxx/Energy-Prediction/algorithm/models/tri_model_1_hours/LZ_RAYBN/backtest/metrics.json
+Saved to /home/warproxxx/Energy-Prediction/algorithm/models/tri_model_1_hours/LZ_RAYBN/backtest/metrics.json
+Read data/processed/HB_WEST/backtest/data.csv for backtest
+Read data/processed/HB_WEST/backtest/data.csv for backtest
+Read data/processed/HB_WEST/backtest/data.csv for backtest
+Got data. The size of X is (271004, 23, 1) and that of y is (271004, 1)
+Got data. The size of X is (271004, 23, 1) and that of y is (271004, 1)
+Got data. The size of X is (271004, 23, 1) and that of y is (271004, 1)
+Got data. The size of X is (271004, 23, 1) and that of y is (271004, 1)
+Train X: (243904, 23, 1) Train Y: (243904, 1) Test X: (27100, 23, 1) Test Y: (27100, 1). Now training
+Train X: (243904, 23, 1) Train Y: (243904, 1) Test X: (27100, 23, 1) Test Y: (27100, 1). Now training
+Train X: (243904, 23, 1) Train Y: (243904, 1) Test X: (27100, 23, 1) Test Y: (27100, 1). Now training
+Train X: (243904, 23, 1) Train Y: (243904, 1) Test X: (27100, 23, 1) Test Y: (27100, 1). Now training
+Model trained
+Model trained
+Model trained
+Model trained
+Model saved in /home/warproxxx/Energy-Prediction/algorithm/models/tri_model_15_minute/HB_WEST/model.h5
+Model saved in /home/warproxxx/Energy-Prediction/algorithm/models/tri_model_15_minute/HB_WEST/model.h5
+Model saved in /home/warproxxx/Energy-Prediction/algorithm/models/tri_model_15_minute/HB_WEST/model.h5
+Model saved in /home/warproxxx/Energy-Prediction/algorithm/models/tri_model_15_minute/HB_WEST/model.h5
