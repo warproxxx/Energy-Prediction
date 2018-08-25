@@ -38,9 +38,9 @@ def perform_training():
                 logger.info("Train X: {} Train Y: {} Test X: {} Test Y: {}. Now training".format(train_x.shape, train_y.shape, test_x.shape, test_y.shape))
 
                 if (model == "tri_model_15_minute"):
-                    model = model_builder.get_model(train_x, train_y, batch_size=512,  epochs=1)
+                    model = model_builder.get_model(train_x, train_y, batch_size=512,  epochs=10)
                 elif (model == "tri_model_1_hours"):
-                    model = model_builder.get_model(train_x, train_y, batch_size=512,  epochs=1)
+                    model = model_builder.get_model(train_x, train_y, batch_size=512,  epochs=50)
                     
                 logger.info("Model trained")
 
