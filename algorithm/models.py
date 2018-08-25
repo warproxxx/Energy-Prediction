@@ -73,13 +73,16 @@ class tri_model_15_minute():
         
         return model
 
-    def get_predictions(self, model, df, X):
+    def get_predictions(self, model, df, X, runtype):
         predicted = model.predict(X)
 
         df['Predicted'] = [None]*(df.shape[0]-len(predicted)) + list(predicted.reshape(-1))
         df['Indicator'] = [None]*(df.shape[0]-len(predicted)) + list(self.trainTestIndicator.reshape(-1))
 
         df['Direction'] = (df['Predicted'] > df['SettlementPointPrice']).astype(int)
+
+        if (runtype == "forwardfill"):
+            df = df[100:].reset_index(drop=True)
 
         actualDirection = (df['SettlementPointPrice'].shift(-1) > df['SettlementPointPrice']).astype(int)
 
@@ -100,6 +103,9 @@ class tri_model_15_minute():
         metrics['Recall'] = metrics['True Positive'] / (metrics['True Positive'] + metrics['False Negative'])
 
         metrics['F1 Score'] = (2 * metrics['Precision'] * metrics['Recall']) / (metrics['Precision'] + metrics['Recall'])
+
+        if (runtype == "forwardfill"):
+            metrics['Current Prediction'] = df.iloc[-1]['Predicted']
 
         return df, metrics
         
@@ -256,7 +262,7 @@ class model_building(object):
         runtype (string):
         backtest or forwardtest
         '''
-        finalDf, metrics = self.model.get_predictions(model, df, X)
+        finalDf, metrics = self.model.get_predictions(model, df, X, runtype=runtype)
 
         saveLocation = self.location + "/models/{}/{}/{}".format(self.model_name, city, runtype)
 

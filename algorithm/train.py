@@ -10,21 +10,24 @@ from basic_utils import get_logger, get_location
 logger = get_logger(get_location() + "/logs/model.log")
 
 for location in glob('data/processed/*'):
+    models = ['tri_model_15_minute', 'tri_model_1_hours']
     city = location.replace("data/processed/", "")
 
-    #check forwardtest files. Read backtest or forward test csv depending on that
-    f = location + "/backtest/data.csv"
-    df = pd.read_csv(f)
+    fTestDirectory = get_location() + "/models/{}/{}/forwardtest/".format(models[0], city)
+    bTestDirectory = get_location() + "/models/{}/{}/backtest/".format(models[0],city)
+
+    if (os.path.isdir(fTestDirectory)):
+        runtype = "forwardtest"
+        forward = pd.read_csv(location + '/forwardtest/data.csv')
+        df = pd.concat([pd.read_csv(location + '/backtest/data.csv')[-100:], forward]).reset_index(drop=True)
+    else:
+        runtype = "backtest"
+        f = location + "/backtest/data.csv"
+        df = pd.read_csv(f)
 
     logger.info("Read {}".format(f))
 
-    models = ['tri_model_15_minute', 'tri_model_1_hours']
-
     for model in models:
-        # check these and run if we are negative
-        # models/model_name/city/backtest/predicted.csv
-        # models/model_name/city/backtest/metrics.json
-        # models/model_name/city/model.h5
 
         model_builder = model_building(model)
         X, y = model_builder.get_XY(df)
