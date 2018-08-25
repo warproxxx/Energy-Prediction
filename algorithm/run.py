@@ -11,6 +11,7 @@ from basic_utils import get_location, get_logger, create_directory_structure
 
 import time
 import json
+from train import perform_training
 
 cwd = get_location()
 logging = get_logger(get_location() + "/logs/run.log")
@@ -23,35 +24,38 @@ with open(cwd + "/cities.json") as json_file:
 
 create_directory_structure(cwd, cities)
 
-runtype = "forwardtest"
+while True:
+    runtype = "forwardtest"
 
-#using HB_HOUSTON but can use anything else
-try:
-    with open('data/processed/HB_HOUSTON/forwardtest/data.csv', 'r') as f:
-        q = deque(f, 1)
-        starting = pd.to_datetime(pd.read_csv(StringIO(''.join(q)), header=None)[0][0])
-except:
+    #using HB_HOUSTON but can use anything else
     try:
-        with open('data/processed/HB_HOUSTON/backtest/data.csv', 'r') as f:
+        with open('data/processed/HB_HOUSTON/forwardtest/data.csv', 'r') as f:
             q = deque(f, 1)
-            starting = pd.to_datetime(pd.read_csv(StringIO(''.join(q)), header=None)[0][0]) 
+            starting = pd.to_datetime(pd.read_csv(StringIO(''.join(q)), header=None)[0][0])
     except:
-        runtype = "backtest"
-        starting = pd.to_datetime("2010-12-01 00:00:00")
+        try:
+            with open('data/processed/HB_HOUSTON/backtest/data.csv', 'r') as f:
+                q = deque(f, 1)
+                starting = pd.to_datetime(pd.read_csv(StringIO(''.join(q)), header=None)[0][0]) 
+        except:
+            runtype = "backtest"
+            starting = pd.to_datetime("2010-12-01 00:00:00")
 
-logging.info("Starting data collection for {} in date: {}".format(runtype, starting))
+    logging.info("Starting data collection for {} in date: {}".format(runtype, starting))
 
-historicDownloader = download(historicURL, "historic", starting)
-historicDownloader.perform_download()
+    historicDownloader = download(historicURL, "historic", starting)
+    historicDownloader.perform_download()
 
-liveDownloader = download(liveURL, "live", starting)
-liveDownloader.perform_download()
+    liveDownloader = download(liveURL, "live", starting)
+    liveDownloader.perform_download()
 
-#assert downloaded if required later
+    #assert downloaded if required later
 
-cleaner(runtype).clean()
+    cleaner(runtype).clean()
 
-#assert the cleaned data exists and is clean
-#totalMissing = sum((df['Date'].shift(-1)[:-1] - df['Date'][:-1]).astype('timedelta64[m]') != 15)
+    #assert the cleaned data exists and is clean
+    #totalMissing = sum((df['Date'].shift(-1)[:-1] - df['Date'][:-1]).astype('timedelta64[m]') != 15)
 
-#add code for training here too after testing that above functions work
+    #add code for training here too after testing that above functions work
+    perform_training()
+    time.sleep(300)

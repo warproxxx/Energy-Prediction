@@ -77,7 +77,12 @@ class tri_model_15_minute():
         predicted = model.predict(X)
 
         df['Predicted'] = [None]*(df.shape[0]-len(predicted)) + list(predicted.reshape(-1))
-        df['Indicator'] = [None]*(df.shape[0]-len(predicted)) + list(self.trainTestIndicator.reshape(-1))
+
+        try:
+            df['Indicator'] = [None]*(df.shape[0]-len(predicted)) + list(self.trainTestIndicator.reshape(-1))
+        except:
+            #it is forward test so all test
+            df['Indicator'] = 0
 
         df['Direction'] = (df['Predicted'] > df['SettlementPointPrice']).astype(int)
 
@@ -104,7 +109,7 @@ class tri_model_15_minute():
 
         metrics['F1 Score'] = (2 * metrics['Precision'] * metrics['Recall']) / (metrics['Precision'] + metrics['Recall'])
 
-        if (runtype == "forwardfill"):
+        if (runtype == "forwardtest"):
             metrics['Current Prediction'] = df.iloc[-1]['Predicted']
 
         return df, metrics
