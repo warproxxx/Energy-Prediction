@@ -14,6 +14,10 @@ import logging
 
 import json
 
+def default(o):
+    if isinstance(o, np.integer): return int(o)
+    raise TypeError
+
 class tri_model_15_minute():
     def __init__(self):
         self.sequence_length = 24
@@ -262,7 +266,7 @@ class model_building(object):
         finalDf.to_csv(saveLocation + "/predicted.csv", index=False)
         self.logger.info("Saved to {}".format(saveLocation + "/predicted.csv"))
 
-        data = json.dumps(metrics)
+        data = json.dumps(metrics, default=default)
 
         with open(saveLocation + "/metrics.json", 'w') as fp:
             json.dump(data, fp)

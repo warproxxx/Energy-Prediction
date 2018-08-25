@@ -11,6 +11,8 @@ logger = get_logger(get_location() + "/logs/model.log")
 
 for location in glob('data/processed/*'):
     city = location.replace("data/processed/", "")
+
+    #check forwardtest files. Read backtest or forward test csv depending on that
     f = location + "/backtest/data.csv"
     df = pd.read_csv(f)
 
@@ -19,6 +21,11 @@ for location in glob('data/processed/*'):
     models = ['tri_model_15_minute', 'tri_model_1_hours']
 
     for model in models:
+        # check these and run if we are negative
+        # models/model_name/city/backtest/predicted.csv
+        # models/model_name/city/backtest/metrics.json
+        # models/model_name/city/model.h5
+
         model_builder = model_building(model)
         X, y = model_builder.get_XY(df)
 
