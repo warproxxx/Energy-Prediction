@@ -107,10 +107,8 @@ class TestStrategy(bt.Strategy):
         except:
             pass
 
-def execute_backtesting(location):
-	file= location + '.csv'
-	df = pd.read_csv('temp_data/HB_HOUSTON.csv',  encoding='utf-8')[:1000]
-	df = df.drop('Unnamed: 0', axis=1)
+def execute_backtesting(location, csv_data):
+	df = csv_data
 	np.random.seed(1)
 	df['Date'] = [int(time.mktime(datetime.datetime.strptime(x, '%Y-%m-%d %H:%M:%S').timetuple())) for x in df['Date']] 
 	df['Datetime'] = [datetime.datetime.fromtimestamp(x) for x in df['Date']]

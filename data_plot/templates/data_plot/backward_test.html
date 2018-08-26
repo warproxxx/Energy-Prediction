@@ -9,6 +9,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 	{% load staticfiles %}
+	{% load widget_tweaks %}
     <title>Dashboard</title>
 
     <!-- Bootstrap Core CSS -->
@@ -74,7 +75,6 @@
 </head>
 
 <body>
-
     <div id="wrapper">
 
         <!-- Navigation -->
@@ -171,41 +171,26 @@
 				<div class="col-lg-12 col-md-12 nopadding">
 						<div class="panel panel-default">
 							<div class="panel-heading" style="padding-bottom:43px;">
-								
-								<div class="col-lg-2 col-md-2 nopadding">
-									<span style="font-size:23px"><i class="fa fa-cog"></i> Options</span>
-								</div>
-								<div class="col-lg-2 col-md-2 nopadding">
-									<select class="form-control form-control-sm" id="location">
-										<option value="NONE" selected>Select Location</option>
-										<option value="HB_BUSAVG">HB_BUSAVG</option>
-										<option value="HB_HOUSTON">HB_HOUSTON</option>
-										<option value="HB_HUBAVG">HB_HUBAVG</option>
-										<option value="HB_NORTH">HB_NORTH</option>
-										<option value="HB_SOUTH">HB_SOUTH</option>
-										<option value="HB_WEST">HB_WEST</option>
-										<option value="LZ_AEN">LZ_AEN</option>
-										<option value="LZ_CPS">LZ_CPS</option>
-										<option value="LZ_LCRA">LZ_LCRA</option>
-										<option value="LZ_NORTH">LZ_NORTH</option>
-										<option value="LZ_RAYBN">LZ_RAYBN</option>
-										<option value="LZ_SOUTH">LZ_SOUTH</option>
-										<option value="LZ_WEST">LZ_WEST</option>
-										<option value="LZ_HOUSTON">LZ_HOUSTON</option>
-
-									</select>
-								</div>
-								<div class="col-lg-2 col-md-2 nopadding-right nopadding-top nopadding-bottom">
-									<select class="form-control form-control-sm" id="algorithm">
-										<option value="NONE" selected>Select Algorithm</option>
-										<option value="A1">HB_BUSAVG</option>
-										<option value="A2">HB_HOUSTON</option>
-
-									</select>
-								</div>
-								<div class="col-lg-2 col-md-2 nopadding-right nopadding-top nopadding-bottom">
-									<input type = "submit" class="btn btn-primary" value= "View Analysis" id="viewAnalysis">
-								</div>
+								<form action="" method="post" enctype='multipart/form-data'>{% csrf_token %}
+									<div class="col-lg-2 col-md-2 nopadding">
+										<span style="font-size:23px"><i class="fa fa-cog"></i> Options</span>
+									</div>
+									<div class="col-lg-2 col-md-2 nopadding">
+										{{ form.location|add_class:"form-control form-control-sm"|attr:"placeholder:Select Location" }}
+									</div>
+									<div class="col-lg-2 col-md-2 nopadding-right nopadding-top nopadding-bottom">
+										{{ form.algorithm|add_class:"form-control form-control-sm"|attr:"placeholder:Select Algorithm" }}
+									</div>
+									<div class="col-lg-2 col-md-2 nopadding-right nopadding-top nopadding-bottom">
+										{{ form.buy|add_class:"form-control form-control-sm"|attr:"placeholder:Select Algorithm" }}
+									</div>
+									<div class="col-lg-2 col-md-2 nopadding-right nopadding-top nopadding-bottom">
+										{{ form.sell|add_class:"form-control form-control-sm"|attr:"placeholder:Select Algorithm" }}
+									</div>
+									<div class="col-lg-2 col-md-2 nopadding-right nopadding-top nopadding-bottom">
+										<input type = "submit" class="btn btn-primary" value= "View Analysis" id="viewAnalysis">
+									</div>
+								</form>
 							</div>
 						</div>
 					</div>
@@ -312,23 +297,21 @@
 
  <script type="text/javascript">
  
- // create data table on loaded data
+ //create data table on loaded data
 var bt_dataTable = anychart.data.table();
 {% if bt_data %}
-	console.log("data-found");
 	var j_data = {{ bt_data|safe }};
 	bt_dataTable.addData(j_data);
 {% else %}
 	<h3> Error 404. Requested page could not be found </h3>
 {% endif %}
+
 </script>
 
+
+
 <script>
-$("#viewAnalysis").click(function(e) {
-	var algorithm = $("#algorithm").val();
-	var location = $("#location").val();
-	alert(algorithm);
-});
+
 
 anychart.onDocumentReady(function () {
 	
@@ -422,21 +405,23 @@ anychart.onDocumentReady(function () {
 </script>
 
 
-
-
-
  <script type="text/javascript">
  
  // create data table on loaded data
-var dataTable = anychart.data.table();
-{% if data %}
-	var j_data = {{ data|safe }};
-	dataTable.addData(j_data);
-{% else %}
-	<h3> Error 404. Requested page could not be found </h3>
-{% endif %}
-</script>
+var training_dataTable = anychart.data.table();
+var test_dataTable = anychart.data.table();
 
+{% if training %}
+	var j_data_training = {{ training|safe }};
+	training_dataTable.addData(j_data_training);
+{% endif %}
+
+{% if test %}
+	var j_data_test = {{ test|safe }};
+	test_dataTable.addData(j_data_test);
+{% endif %}
+
+</script>
 <script>
 
 //**********************training set chart plotting************************************
@@ -458,16 +443,16 @@ anychart.licenseKey("songzcorp-7ce21725-824e1b3b");
     var plot = chart.plot(0);
 
     // create plot series with mapped data
-    plot.line(dataTable.mapAs({
+    plot.line(training_dataTable.mapAs({
       'value': 1
     })).name('Actual Price');
 	
-	plot.line(dataTable.mapAs({
+	plot.line(training_dataTable.mapAs({
       'value': 2
     })).name('Predicted Price');
 
     // create scroller series with mapped data
-    chart.scroller().line(dataTable.mapAs({
+    chart.scroller().line(training_dataTable.mapAs({
       'value': 0
     }));
 
@@ -509,16 +494,16 @@ anychart.licenseKey("songzcorp-7ce21725-824e1b3b");
     var plot = chart.plot(0);
 
     // create plot series with mapped data
-    plot.line(dataTable.mapAs({
+    plot.line(test_dataTable.mapAs({
       'value': 1
     })).name('Actual Price');
 	
-	plot.line(dataTable.mapAs({
+	plot.line(test_dataTable.mapAs({
       'value': 2
     })).name('Predicted Price');
 	
     // create scroller series with mapped data
-    chart.scroller().line(dataTable.mapAs({
+    chart.scroller().line(test_dataTable.mapAs({
       'value': 1
     }));
 
@@ -540,50 +525,50 @@ anychart.licenseKey("songzcorp-7ce21725-824e1b3b");
  <script type="text/javascript">
  
  // create data table on loaded data
-var bd_dataTable = anychart.data.table();
 var bd;
-{% if bd_data %}
-	var j_data = {{ bd_data|safe }};
-	bd_dataTable.addData(j_data);
-	bd = j_data;
+{% if direction %}
+	var j_data_bidirection = {{ direction }};
+	bd = j_data_bidirection;
 {% else %}
-	<h3> Error 404. Requested page could not be found </h3>
+console.log('not found');
 {% endif %}
 </script>
 
 <script>
 //**********************Bidirectional accuracy************************************
+
+
+
 anychart.onDocumentReady(function () {
-
-    // create data
-    var data = [
-      {x: "1995", value: 1},
-      {x: "1996", value: 0},
-      {x: "1997", value: 0},
-      {x: "1998", value: 1},
-      {x: "1999", value: 0},
-      {x: "2000", value: 1},
-      {x: "2001", value: 0},
-      {x: "2002", value: 1},
-      {x: "2003", value: 1}
-    ];
-    
-     // create a chart
+    // create data set on our data
+ 
+	var dataSet = anychart.data.set([]);
+    // map data for the first series, take x from the zero column and value from the first column of data set
+    var seriesData_1 = dataSet.mapAs({'x': 0, 'value': 1});
+	
+    // create line chart
     var chart = anychart.line();
+	var credits = chart.credits();
+	credits.enabled(false);
+	
+    // turn on the crosshair
+    chart.crosshair().enabled(true).yLabel().enabled(false);
+    chart.crosshair().enabled(true).yStroke(null);
 
-    // create a step line series and set the data
-    var series = chart.stepLine(data);
+    // set y axis title
+    chart.title('Bidirectional Accuracy');
 
-    // set step direction to the forward mode
-    series.stepDirection("forward");   
+    // create first series with mapped data
+    var series_1 = chart.stepLine(seriesData_1);
+    series_1.name('Accuracy').hovered().markers().enabled(true).type('circle').size(4);
 
-    // set the chart title
-    chart.title("Bidirectional Accuracy");
+    // turn the legend on
+    chart.legend().enabled(true).fontSize(13).padding([0, 0, 20, 0]);
 
-    // set the container id
-    chart.container("bidirectionalAccuracy");
+    // set container id for the chart
+    chart.container('bidirectionalAccuracy');
 
-    // initiate drawing the chart
+    // initiate chart drawing
     chart.draw();
 });
 </script>
