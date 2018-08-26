@@ -9,6 +9,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 	{% load staticfiles %}
+	{% load widget_tweaks %}
     <title>Dashboard</title>
 
     <!-- Bootstrap Core CSS -->
@@ -170,40 +171,26 @@
 				<div class="col-lg-12 col-md-12 nopadding">
 						<div class="panel panel-default">
 							<div class="panel-heading" style="padding-bottom:43px;">
-								
-								<div class="col-lg-2 col-md-2 nopadding">
-									<span style="font-size:23px"><i class="fa fa-cog"></i> Options</span>
-								</div>
-								<div class="col-lg-2 col-md-2 nopadding">
-									<select class="form-control form-control-sm" id="location">
-										<option value="HB_BUSAVG">HB_BUSAVG</option>
-										<option value="HB_HOUSTON" selected>HB_HOUSTON</option>
-										<option value="HB_HUBAVG">HB_HUBAVG</option>
-										<option value="HB_NORTH">HB_NORTH</option>
-										<option value="HB_SOUTH">HB_SOUTH</option>
-										<option value="HB_WEST">HB_WEST</option>
-										<option value="LZ_AEN">LZ_AEN</option>
-										<option value="LZ_CPS">LZ_CPS</option>
-										<option value="LZ_LCRA">LZ_LCRA</option>
-										<option value="LZ_NORTH">LZ_NORTH</option>
-										<option value="LZ_RAYBN">LZ_RAYBN</option>
-										<option value="LZ_SOUTH">LZ_SOUTH</option>
-										<option value="LZ_WEST">LZ_WEST</option>
-										<option value="LZ_HOUSTON">LZ_HOUSTON</option>
-
-									</select>
-								</div>
-								<div class="col-lg-2 col-md-2 nopadding-right nopadding-top nopadding-bottom">
-									<select class="form-control form-control-sm" id="algorithm">
-										<option value="NONE" selected>Select Algorithm</option>
-										<option value="A1">HB_BUSAVG</option>
-										<option value="A2">HB_HOUSTON</option>
-
-									</select>
-								</div>
-								<div class="col-lg-2 col-md-2 nopadding-right nopadding-top nopadding-bottom">
-									<input type = "submit" class="btn btn-primary" value= "View Analysis" id="viewAnalysis">
-								</div>
+								<form action="" method="post" enctype='multipart/form-data'>{% csrf_token %}
+									<div class="col-lg-2 col-md-2 nopadding">
+										<span style="font-size:23px"><i class="fa fa-cog"></i> Options</span>
+									</div>
+									<div class="col-lg-2 col-md-2 nopadding">
+										{{ form.location|add_class:"form-control form-control-sm"|attr:"placeholder:Select Location" }}
+									</div>
+									<div class="col-lg-2 col-md-2 nopadding-right nopadding-top nopadding-bottom">
+										{{ form.algorithm|add_class:"form-control form-control-sm"|attr:"placeholder:Select Algorithm" }}
+									</div>
+									<div class="col-lg-2 col-md-2 nopadding-right nopadding-top nopadding-bottom">
+										{{ form.buy|add_class:"form-control form-control-sm"|attr:"placeholder:Select Algorithm" }}
+									</div>
+									<div class="col-lg-2 col-md-2 nopadding-right nopadding-top nopadding-bottom">
+										{{ form.sell|add_class:"form-control form-control-sm"|attr:"placeholder:Select Algorithm" }}
+									</div>
+									<div class="col-lg-2 col-md-2 nopadding-right nopadding-top nopadding-bottom">
+										<input type = "submit" class="btn btn-primary" value= "View Analysis" id="viewAnalysis">
+									</div>
+								</form>
 							</div>
 						</div>
 					</div>
@@ -310,7 +297,7 @@
 
  <script type="text/javascript">
  
- /* create data table on loaded data
+ //create data table on loaded data
 var bt_dataTable = anychart.data.table();
 {% if bt_data %}
 	var j_data = {{ bt_data|safe }};
@@ -318,7 +305,103 @@ var bt_dataTable = anychart.data.table();
 {% else %}
 	<h3> Error 404. Requested page could not be found </h3>
 {% endif %}
-*/
+
+</script>
+
+
+
+<script>
+
+
+anychart.onDocumentReady(function () {
+	
+    // map the data
+    mapping_usa = bt_dataTable.mapAs();
+    mapping_usa.addField('value', 1);
+    mapping_uk = bt_dataTable.mapAs();
+    mapping_uk.addField('value', 1);
+
+    // chart type
+    var chart = anychart.stock();
+
+	// create first plot on the chart
+    var plot = chart.plot(0);
+    // set grid settings
+    plot.yGrid(false)
+      .xGrid(false)
+      .yMinorGrid(true)
+      .xMinorGrid(true);
+	  
+	  plot.xGrid().stroke({
+	  // set stroke color
+	  color: "rgba(54,61,82,.7)",
+
+	});
+	plot.yGrid().stroke({
+	  // set stroke color           https://www.coinpayments.net/apidoc-get-callback-address 
+	  color: "rgba(54,61,82,.7)",
+
+	});
+	
+	
+	
+	var credits = chart.credits();
+	credits.enabled(false);
+	
+    // set the US series
+    var series_algorithm = chart.plot(0).area(mapping_usa);
+    series_algorithm.name("Algorithm");
+	
+	var series_benchmark= chart.plot(0).line(mapping_uk);
+    series_benchmark.name("Benchmark");
+
+    // coloring
+    series_algorithm.fill("rgb(0, 0, 205, 0.1)");
+    series_algorithm.stroke("2 #0000CD");
+	
+    series_benchmark.stroke("2 #800000");
+
+	
+	 var plot = chart.plot(1);
+    // set grid settings
+    plot.yGrid(false)
+      .xGrid(false)
+      .yMinorGrid(true)
+      .xMinorGrid(true);
+	  
+	  plot.xGrid().stroke({
+	  // set stroke color
+	  color: "rgba(54,61,82,.7)",
+
+	});
+	plot.yGrid().stroke({
+	  // set stroke color           https://www.coinpayments.net/apidoc-get-callback-address 
+	  color: "rgba(54,61,82,.7)",
+
+	});
+	
+    // set the UK series
+    var series_uk = chart.plot(1).line(mapping_uk);
+    series_uk.name("Positions");
+
+	series_uk.stroke("2 #32CD32");
+    // hatch fill
+    //series_uk.hatchFill("diagonal-cross");
+
+    chart.title('Back Testing');
+    
+    // y-axis labels formatting
+    chart.plot(0).yAxis().labels().format(function (){
+      return this.value/1000 + "K";
+    });
+	
+	chart.plot(1).yAxis().labels().format(function (){
+      return this.value/1000000 + "m";
+    });
+
+    chart.container('backTestChart');
+    chart.draw();
+});
 </script>
 
 
@@ -339,7 +422,6 @@ var test_dataTable = anychart.data.table();
 {% endif %}
 
 </script>
-
 <script>
 
 //**********************training set chart plotting************************************
@@ -459,8 +541,8 @@ console.log('not found');
 
 anychart.onDocumentReady(function () {
     // create data set on our data
-    var dataSet = anychart.data.set([bd]);
-
+ 
+	var dataSet = anychart.data.set([]);
     // map data for the first series, take x from the zero column and value from the first column of data set
     var seriesData_1 = dataSet.mapAs({'x': 0, 'value': 1});
 	
