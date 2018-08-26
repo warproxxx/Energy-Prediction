@@ -55,7 +55,7 @@ class tri_model_15_minute():
         self.X_test = X[train_ind:,:, :]
         self.Y_test = y[train_ind:,:]
 
-        return self.X_train, self.Y_train, self.X_test, self.Y_test, self.trainTestIndicator
+        return self.X_train, self.Y_train, self.X_test, self.Y_test
     
     def get_model(self, train_x, train_y, batch_size, epochs):
         inp = Input(shape=(None, 1))
@@ -184,8 +184,8 @@ class model_building(object):
 
         trainTestIndicator contains 1 and 0 where 1 indicates training and 0 indicates test
         '''
-        X_train, Y_train, X_test, Y_test, trainTestIndicator = self.model.split_train_test(X, y, test_size)
-        return X_train, Y_train, X_test, Y_test, trainTestIndicator
+        X_train, Y_train, X_test, Y_test = self.model.split_train_test(X, y, test_size)
+        return X_train, Y_train, X_test, Y_test
 
     def get_model(self, train_x, train_y, batch_size, epochs):
         '''

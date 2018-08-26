@@ -11,7 +11,7 @@ from basic_utils import get_location, get_logger, create_directory_structure
 
 import time
 import json
-from train import perform_training
+from train import trainer
 
 cwd = get_location()
 logging = get_logger(get_location() + "/logs/run.log")
@@ -58,7 +58,7 @@ while True:
         #totalMissing = sum((df['Date'].shift(-1)[:-1] - df['Date'][:-1]).astype('timedelta64[m]') != 15)
 
         #add code for training here too after testing that above functions work
-        perform_training()
+        trainer().train()
     except Exception as e:
         logging.info("Got error - {}".format(str(e)))
 
