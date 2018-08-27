@@ -174,7 +174,8 @@ class download:
                 print("page failed: " + page_url)
             else:
                 soup = BeautifulSoup(page.text, "lxml")
-        except:
+        except Exception as e:
+            self.logger.info("Got Exception while loading page - {}".format(str(e)))
             soup = None
             
         return soup
