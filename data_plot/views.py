@@ -10,6 +10,7 @@ from django.db.models import Count
 from django.shortcuts import render, get_object_or_404
 
 from . import bt
+import os
 import pandas as pd
 import numpy as np
 from glob import glob
@@ -147,16 +148,16 @@ def dashboard_backward_test(request):
         #set default algorithm and location
         temp_models = []
         for file in glob('algorithm/models/*'):
-            file = file.replace('algorithm/models\\', '')
+            file = os.path.basename(file)
             temp_models.append(file)
             
         al = temp_models[0]
 
         temp_location = []
+
         for file in glob('algorithm/models/{}/*'.format(al)):
-            file = file.replace('algorithm/models/'+al, '')
-            file = file.replace("\\", '/')
-            file = file.replace("/", '')
+            file = os.path.basename(file)
+
             if ("about.json" not in file):
                 temp_location.append(file)
 
