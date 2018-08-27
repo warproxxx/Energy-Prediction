@@ -181,12 +181,18 @@
 									<div class="col-lg-2 col-md-2 nopadding-right nopadding-top nopadding-bottom">
 										{{ form.algorithm|add_class:"form-control form-control-sm"|attr:"placeholder:Select Algorithm" }}
 									</div>
+									
+									<div class="col-lg-2 col-md-2 nopadding-right nopadding-top nopadding-bottom">
+										{{ form.loggic_field|add_class:"form-control form-control-sm"|attr:"placeholder:Enter Your Logic" }}
+									</div>
+									<!--
 									<div class="col-lg-2 col-md-2 nopadding-right nopadding-top nopadding-bottom">
 										{{ form.buy|add_class:"form-control form-control-sm"|attr:"placeholder:Select Algorithm" }}
 									</div>
 									<div class="col-lg-2 col-md-2 nopadding-right nopadding-top nopadding-bottom">
 										{{ form.sell|add_class:"form-control form-control-sm"|attr:"placeholder:Select Algorithm" }}
 									</div>
+									-->
 									<div class="col-lg-2 col-md-2 nopadding-right nopadding-top nopadding-bottom">
 										<input type = "submit" class="btn btn-primary" value= "View Analysis" id="viewAnalysis">
 									</div>
@@ -198,6 +204,42 @@
 			 <!-- /.row -->
             <div class="row">
                 <div class="col-lg-12 col-md-12 nopadding">
+					<div class="panel panel-default">
+						<div class="panel-heading">
+						 <i class="fa fa-question-circle"></i> About Model
+						</div>
+						<div class="panel-body no-padding">
+							{% if about %}
+								{% for key, value in about.items %} 
+								  {% if key == 'title' %}
+										<h4><b>{{value}}</b></h4>
+								  {% elif  key == 'description' %}
+										<p>{{ value }}</p>
+								  {% elif  key == 'pros' %}
+										<h4>Pros</h4>
+										<ol>
+										{% for pros in value %} 
+											<li>{{ pros }}</li>
+										{% endfor %}
+										</ol>
+
+								  {% elif  key == 'cons' %}
+									<h4>Cons</h4>
+									<ol>
+									{% for cons in value %} 
+										<li>{{ cons }}</li>
+									{% endfor %}
+									</ol>
+								  {% endif %}
+								{% endfor %}
+							{% endif %}
+						</div>
+					</div>
+				</div>
+			</div>
+			 <!-- /.row -->
+            <div class="row">
+                <div class="col-lg-12 col-md-12 nopadding">
 					<div class="col-lg-12 col-md-12 nopadding">
 						<div class="panel panel-default">
 							<div class="panel-heading">
@@ -205,8 +247,53 @@
 							</div>
 							<!-- /.panel-heading -->
 							<div class="panel-body no-padding">
+								<div class="col-lg-12 col-md-12 nopadding">
+									<div class="panel panel-default">
+										<div class="panel-heading" style="padding-bottom:43px;">
+											<form action="" method="post" enctype='multipart/form-data'>{% csrf_token %}
+												<div class="col-lg-2 col-md-2 nopadding">
+													<span style="font-size:23px"><i class="fa fa-cog"></i> Options</span>
+												</div>
+												<div class="col-lg-2 col-md-2 nopadding">
+													{{ logic_form.buy|add_class:"form-control form-control-sm"|attr:"placeholder:Select Location" }}
+												</div>
+												<div class="col-lg-2 col-md-2 nopadding-right nopadding-top nopadding-bottom">
+													<input type = "submit" class="btn btn-primary" value= "View Analysis" id="viewAnalysis">
+												</div>
+											</form>
+										</div>
+									</div>
+								</div>
 								<div id="backTestChart" class="bg-white c-bg col-xs-12 col-sm-12 col-md-12 col-lg-12 nopadding" style="height: 500px;">			  
 								</div>
+							</div>
+							<div class="panel-body">
+							 <div class="panel panel-default">
+							 
+									<div class="panel-heading">
+										Model Performance
+									</div>
+									<div class="panel-body">
+										<div class="col-md-6 col-lg-6">
+											<div class="table-responsive">
+												<table class="table table-striped table-bordered table-hover">
+													<tbody>
+													{% if metrics %}
+														{% for key, value in metrics.items%} 
+															 <tr>
+																<td>{{ key }}</td>
+																<td>{{ value }}</td>
+															 </tr>
+														{% endfor %}
+													{% endif %}
+													</tbody>
+												</table>
+											</div>
+										</div>
+									</div>
+									
+								</div>
+
 							</div>
 							<!-- /.panel-body -->
 						</div>

@@ -11,6 +11,7 @@ import datetime
 from glob import glob
 
 class dashboard_options(forms.Form):
+
     temp_models = []
     for file in glob('algorithm/models/*'):
         file = file.replace('algorithm/models\\', '')
@@ -18,24 +19,21 @@ class dashboard_options(forms.Form):
     models = tuple(temp_models)
 
     temp_location = []
-    for file in glob('algorithm/models/tri_model_15_minute/*'):
-        file = file.replace('algorithm/models/tri_model_15_minute\\', '')
-        temp_location.append((file, file))
+    for file in glob('algorithm/models/{}/*'.format(temp_models[0][1])):
+        file = file.replace('algorithm/models/'+temp_models[0][1], '')
+        file = file.replace("\\", '/')
+        file = file.replace("/", '')
+        if ("about.json" not in file):
+            temp_location.append((file, file))
     locations = tuple(temp_location)
+
  
-    location = forms.ChoiceField(label ="",choices=locations, required=True)
-    algorithm = forms.ChoiceField(label ="",choices=models, required=True)
+    location = forms.ChoiceField(label ="",choices=locations, required=True, initial =0)
+    algorithm = forms.ChoiceField(label ="",choices=models, required=True, initial =0)
 
-    buy = forms.IntegerField(label='',
-                                         min_value=1,
-                                         max_value=99,
-                                         required=False)
+    loggic_field = forms.CharField(widget=forms.Textarea, required=True)
 
-    sell = forms.IntegerField(label='   ',
-                                         min_value=1,
-                                         max_value=99,
-                                         required=False)
-
-
+class algorithm_options(forms.Form):
+    buy = forms.CharField(label ="", required=True, max_length =100)
 
 
