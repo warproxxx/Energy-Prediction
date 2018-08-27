@@ -32,6 +32,9 @@ class dashboard_options(forms.Form):
     algorithm = forms.ChoiceField(label ="",choices=models, required=True, initial =0)
 
 class algorithm_options(forms.Form):
-    buy = forms.CharField(label ="", required=True, max_length =100)
+    starting_cash = forms.IntegerField(min_value=0, required = True)
+    comission_percentage = forms.IntegerField(min_value=0, required = True)
+    strategies=(('s1','Maximizing Return (Aggressive but risky)'),('s2','Minimizing Risk'),('s3','Maximizing Sharpe ratio'), ('s4','Maximizing sortino ratio'))
+    strategy_type = forms.ChoiceField(label ="",choices=strategies, required=True, initial =0)
 
 
