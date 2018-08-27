@@ -31,8 +31,6 @@ class dashboard_options(forms.Form):
     location = forms.ChoiceField(label ="",choices=locations, required=True, initial =0)
     algorithm = forms.ChoiceField(label ="",choices=models, required=True, initial =0)
 
-    loggic_field = forms.CharField(widget=forms.Textarea, required=True)
-
 class algorithm_options(forms.Form):
     buy = forms.CharField(label ="", required=True, max_length =100)
 
