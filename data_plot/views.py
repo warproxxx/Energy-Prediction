@@ -15,6 +15,7 @@ import numpy as np
 from glob import glob
 from django import forms
 from data_plot.forms import dashboard_options, algorithm_options
+
 import json 
 
 from .multiforms import MultiFormsView
@@ -28,7 +29,6 @@ def form_redir(request):
 
 
 def dashboard_data(request, method, al, lc, form, logic_form, test_type):
-    
     location= 'algorithm/models/'+ al +'/'+ lc +'/'+test_type+'/predicted.csv'
     about = ''
     metrics = ''
@@ -99,19 +99,18 @@ def dashboard_forward_test(request):
         #set default algorithm and location
         temp_models = []
         for file in glob('algorithm/models/*'):
-            file = file.replace('algorithm/models\\', '')
+            file = os.path.basename(file)
             temp_models.append(file)
             
         al = temp_models[0]
 
         temp_location = []
+
         for file in glob('algorithm/models/{}/*'.format(al)):
-            file = file.replace('algorithm/models/'+al, '')
-            file = file.replace("\\", '/')
-            file = file.replace("/", '')
+            file = os.path.basename(file)
+
             if ("about.json" not in file):
                 temp_location.append(file)
-
         
         option_form = dashboard_options()
         logic_form = algorithm_options()
