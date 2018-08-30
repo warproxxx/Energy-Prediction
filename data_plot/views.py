@@ -83,6 +83,8 @@ def dashboard_data(request, method, al, lc, form, logic_form, test_type, datas):
 
     portfolioValue, trade_data, strategy_metrics, benchmark_metrics, strategyMovementDetails, benchmarkMovementDetails = perform_backtest(lc, al, test_type, datas['starting_cash'], datas['comission_percentage'], datas['strategy_type'])
     
+    trade_data = trade_data.reset_index()
+    
     bt_metrics = strategy_metrics #remove this one later. It is useless
     portfolioValue = portfolioValue.values.tolist()
 

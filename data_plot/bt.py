@@ -99,7 +99,7 @@ class tradeStrategy(bt.Strategy):
         self.operations.seek(0)
         operationsDf = pd.read_csv(self.operations, names=['Date', 'Profit'])
         
-        return portfolioValueDf, tradesDf, operationsDf
+        return portfolioValueDf.reset_index(), tradesDf, operationsDf
     
     
     def next(self):
@@ -191,7 +191,7 @@ def process_data(df, portfolioValue, trades, operations):
     trades = trades.set_index('Date')
     operations = operations.set_index('Date')
 
-    portfolioValue = pd.to_datetime(portfolioValue['Date'])
+    portfolioValue['Date'] = pd.to_datetime(portfolioValue['Date'])
     portfolioValue = portfolioValue.set_index('Date')
 
     #Creating trade_data
@@ -352,10 +352,10 @@ def perform_backtest(cityname, model_name, test_type, starting_cash, comission, 
         portfolioValue.to_csv('{}/PortfolioValue.csv'.format(strategyDir))
         trade_data.to_csv('{}/trading_data.csv'.format(strategyDir))
 
-        with open("strategyMetrics.json", 'w') as fp:
+        with open("{}/strategyMetrics.json".format(strategyDir), 'w') as fp:
             json.dump(strategy_metrics, fp)
         
-        with open("s&pMetrics.json", 'w') as fp:
+        with open("{}/s&pMetrics.json".format(strategyDir), 'w') as fp:
             json.dump(benchmark_metrics, fp)
 
         strategyMovementDetails.to_csv('{}/strategyMovementDetails.csv'.format(strategyDir))
