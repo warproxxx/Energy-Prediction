@@ -1,160 +1,365 @@
-import numpy as np
 import pandas as pd
-import datetime  # For datetime objects
-import time
-import os.path  # To manage paths
-import sys  # To find out the script name (in argv[0])
-
-# Import the backtrader platform
 import backtrader as bt
-from backtrader.feeds import PandasData
+import numpy as np
+import io
+import csv
+import datetime
+import json
+import os
+from alpha_vantage.timeseries import TimeSeries
 
-class PandasData_Signal(PandasData):
-    lines = ('Predicted',)
-    params = (('Predicted', 5), )
 
-# Create a Stratey
-class TestStrategy(bt.Strategy):
-    def log(self, txt, dt=None):
-        ''' Logging function fot this strategy'''
-        dt = dt or self.datas[0].datetime.date(0)
-        print('%s, %s' % (dt.isoformat(), txt))
+class PandasData_Custom(bt.feeds.PandasData):
+    lines = ('predicted',)
+    params = (
+        ('datetime', 0),
+        ('open', 1),
+        ('high', None),
+        ('low', None),
+        ('close', 2),
+        ('volume', None),
+        ('predicted', 3),
+    )
 
+class tradeStrategy(bt.Strategy):
     def __init__(self):
-        # Keep a reference to the "close" line in the data[0] dataseries
-
-        self.datasignal = self.datas[0].Predicted
-        # To keep track of pending orders and buy price/commission
-        self.order = None
-        self.buyprice = None
-        self.buycomm = None
-        self.cashrecord = pd.DataFrame(['Date', 'Value'])
-
+        self.dataclose = self.datas[0].close
+        self.predicted = self.datas[0].predicted
+        
+        self.order=None
+        self.buyprice=None
+        self.buycomm=None
+        
+        self.trades = io.StringIO()
+        self.trades_writer = csv.writer(self.trades)
+        
+        self.operations = io.StringIO()
+        self.operations_writer = csv.writer(self.operations)
+        
+        self.portfolioValue = io.StringIO()
+        self.portfolioValue_writer = csv.writer(self.portfolioValue)
+        
+    def log(self, txt, dt=None):
+        dt = dt or self.datas[0].datetime.datetime(0)
+        print("Datetime: {} Message: {} Predicted: {}".format(dt, txt, self.dataclose[0]))
+        
     def notify_order(self, order):
         if order.status in [order.Submitted, order.Accepted]:
-            # Buy/Sell order submitted/accepted to/by broker - Nothing to do
             return
-
-        # Check if an order has been completed
-        # Attention: broker could reject order if not enough cash
+        
         if order.status in [order.Completed]:
             if order.isbuy():
-                self.log(
-                    'BUY EXECUTED, Price: %.2f, Cost: %.2f, Comm %.2f' %
-                    (order.executed.price,
-                     order.executed.value,
-                     order.executed.comm))
-
+                ordertype = "BUY"
+                #self.log("BUY EXECUTED, Price: {}, Cost: {}, Comm: {}".format(order.executed.price, order.executed.value, order.executed.comm))
                 self.buyprice = order.executed.price
                 self.buycomm = order.executed.comm
-            else:  # Sell
-                self.log('SELL EXECUTED, Price: %.2f, Cost: %.2f, Comm %.2f' %
-                         (order.executed.price,
-                          order.executed.value,
-                          order.executed.comm))
+            else:
+                ordertype = "SELL"
+                #self.log("SELL EXECUTED, Price: {}, Cost: {}, Comm: {}".format(order.executed.price, order.executed.value, order.executed.comm))
 
+            self.trades_writer.writerow([self.datas[0].datetime.datetime(0), ordertype, order.executed.price, order.executed.value, order.executed.comm])
+        
             self.bar_executed = len(self)
-
         elif order.status in [order.Canceled, order.Margin, order.Rejected]:
-            self.log('Order Canceled/Margin/Rejected')
-
+            #self.log("Order Canceled/Margin/Rejected")
+            self.trades_writer.writerow([self.datas[0].datetime.datetime(0) , 'Rejection', 0, 0, 0])
+            
         self.order = None
-
+    
     def notify_trade(self, trade):
         if not trade.isclosed:
             return
-
-        self.log('OPERATION PROFIT, GROSS %.2f, NET %.2f' %
-                 (trade.pnl, trade.pnlcomm))
         
-    def get_cash_record(self):
-        try:
-            self.cashrecord = self.cashrecord.drop(0, axis=1)
-        except:
-            pass
+        self.log('OPERATION PROFIT, GROSS: {}, NET: {}'.format(trade.pnl, trade.pnlcomm))
+        self.operations_writer.writerow([self.datas[0].datetime.datetime(0), trade.pnlcomm])
+    
+    def get_logs(self):
+        '''
+        Returns:
+        ________
+        portfolioValue (df):
+        Date and Value of portfolio
         
-        return self.cashrecord
-
+        trades (df):
+        'Date', 'Type', 'Price', 'Total Spent', 'Comission'
+        
+        operations (df):
+        'Date', 'Profit'
+        '''
+        self.portfolioValue.seek(0)
+        portfolioValueDf = pd.read_csv(self.portfolioValue, names=['Date', 'Value'])
+        
+        portfolioValueDf['Date'] = pd.to_datetime(portfolioValueDf['Date'])
+        portfolioValueDf = portfolioValueDf.set_index('Date')
+        portfolioValueDf = portfolioValueDf.resample('1D').agg({'Date': lambda x: x.iloc[0], 'Value': lambda x: x.iloc[-1]})['Date']
+        
+        self.trades.seek(0)
+        tradesDf = pd.read_csv(self.trades, names=['Date', 'Type', 'Price', 'Total Spent', 'Comission'])
+        
+        self.operations.seek(0)
+        operationsDf = pd.read_csv(self.operations, names=['Date', 'Profit'])
+        
+        return portfolioValueDf.reset_index(), tradesDf, operationsDf
+    
+    
     def next(self):
-        # Simply log the closing price of the series from the reference
-        self.log('Close, %.2f' % self.datasignal[0])
-        self.cashrecord = self.cashrecord.append({'Date': self.datas[0].datetime.datetime(0) , 'Value': self.broker.get_cash()}, ignore_index=True)
-
-        # Check if an order is pending ... if yes, we cannot send a 2nd one
+        #self.log('Close: {}'.format(self.dataclose[0]))
+        self.portfolioValue_writer.writerow([self.datas[0].datetime.datetime(0), self.broker.get_cash()])
+        
         if self.order:
             return
         
-        try:
-            # Check if we are in the market
-            if not self.position:
+        if not self.position:
+            if self.predicted[0] > self.dataclose[0]:
+                self.log("BUY CREATE {}".format(self.dataclose[0]))
+                self.order = self.buy()
+        else:
+            if self.predicted[0] < self.dataclose[0]:
+                self.log("SELL CREATE {}".format(self.dataclose[0]))
+                self.order = self.sell()
 
-                # Not yet ... we MIGHT BUY if ...
-                if self.datasignal[1] > self.datasignal[0]:
-                    # BUY, BUY, BUY!!! (with default parameters)
-                    self.log('BUY CREATE, %.2f' % self.datasignal[0])
+def sharpe_ratio(data):
+    '''
+    http://www.edge-fund.com/Lo02.pdf
 
-                    # Keep track of the created order to avoid a 2nd order
-                    self.order = self.buy()
+    https://sixfigureinvesting.com/2013/09/daily-scaling-sharpe-sortino-excel/
+    '''
+    n = 365 ** 0.5 #365 trading days
 
-            else:
-                # Already in the market ... we might sell
-                if self.datasignal[1] < self.datasignal[0]:
-                    # SELL, SELL, SELL!!! (with all possible default parameters)
-                    self.log('SELL CREATE, %.2f' % self.datasignal[0])
-                    print(self.log('Current Cash {}'.format(self.broker.get_cash())))
-                    # Keep track of the created order to avoid a 2nd order
-                    self.order = self.sell()
-        except:
-            pass
+    percentage = data.pct_change()[1:]
+    sharpe = (np.average(percentage)/np.std(percentage)) * n
+    return sharpe
 
-def execute_backtesting(location, csv_data, datas):
-	df = csv_data
-	np.random.seed(1)
-	df['Date'] = [int(time.mktime(datetime.datetime.strptime(x, '%Y-%m-%d %H:%M:%S').timetuple())) for x in df['Date']] 
-	df['Datetime'] = [datetime.datetime.fromtimestamp(x) for x in df['Date']]
-	df = df.drop('Date', axis=1)
-	df['Signal'] = np.random.rand(df.shape[0])
-	df['Open'] = df['SettlementPointPrice']
-	df['High'] = df['SettlementPointPrice']
-	df['Low'] = df['SettlementPointPrice']
-	df['Close'] = df['SettlementPointPrice']
-	df['Predicted'] = ((df['Predicted'] - df['Open'])/df['Open']) * 100
-	df = df[['Datetime', 'Open', 'High', 'Low', 'Close', 'Predicted']]
+def sortino_ratio(data):
+    '''
+    The ratio that only considers downside volatility
+    '''
+    n = 365 ** 0.5 #365 trading days
+    df = pd.DataFrame(columns=['Portfolio', 'Percentage Change'])
+    df['Portfolio'] = data
+    df['Percentage Change'] = data.pct_change()
+    df = df.fillna(method='bfill')
+    negatives = df[df['Percentage Change'] < 0]['Percentage Change']
+    sortino = (np.average(df['Percentage Change'])/np.std(negatives)) * n
+    return sortino
+
+def drawDown(down):
+    '''
+    Returns maximum draw down in terms of percentage
+    '''
+
+    minimum = ((np.amin(down) - down[0])/down[0]) * 100
+    return minimum
+
+def portfolio_return(data):
+    return (data[-1] - data[0])/data[0]
+
+def my_agg(x, column):
+    names = {
+        'Time': x.index[0].to_pydatetime().strftime("%B %Y"),
+        'Return': (x[column].iloc[-1] - x[column].iloc[0])/x[column].iloc[0],
+        'Drawdown': ((np.amin(x[column]) - x[column].iloc[0])/x[column].iloc[0])}
+
+    return pd.Series(names, index=['Time', 'Return', 'Drawdown'])
+
+def process_data(df, portfolioValue, trades, operations):
+    '''
+    Process and returns the data in an appropriate format
+
+    Parameters:
+    ___________
+    df (Dataframe):
+    15 minute data containing 'Date', 'Open', 'Close', 'Predicted' 
+
+    portfolioValue (Dataframe):
+    Currently contains ['Date', 'Value']
+
+    trades (Dataframe):
+    Currently Contains ['Date', 'Type', 'Price', 'Total Spent', 'Comission']
+
+    operations (Dataframe):
+    Currently Contains ['Date', 'Profit']
+
+    Returns:
+    ________
+    portfolioValue, trade_data, strategy_metrics, benchmark_metrics, strategyMovementDetails, benchmarkMovementDetails
+    '''
+
+    df['Date'] = pd.to_datetime(df['Date'])
+    df = df.set_index('Date')
+
+    trades = trades.set_index('Date')
+    operations = operations.set_index('Date')
+
+    portfolioValue['Date'] = pd.to_datetime(portfolioValue['Date'])
+    portfolioValue = portfolioValue.set_index('Date')
+
+    #Creating trade_data
+
+    df['Buy'] = trades[trades['Type'] == 'BUY']['Price']
+    df['Sell'] = trades[trades['Type'] == 'SELL']['Price']
+
+    df['p/l'] = operations['Profit']
+    df['p/l'] = df['p/l'].replace(np.nan, 0)
+
+    df['Buy'] = df['Buy'].replace(np.nan, '')
+    df['Sell'] = df['Sell'].replace(np.nan, '')
+
+    trade_data = df[['Close', 'Buy', 'Sell', 'p/l']]
+    trade_data.rename(columns={'Close': 'SettlementPointPrice'})
+
+    #Created trade_data
+
+    #Creating portfolioValue
+
+    ts = TimeSeries(key='9CFF0BJ1ZPRQYEO0',output_format='pandas')
+    data, meta_data = ts.get_daily_adjusted('^GSPC')
+    spNew = data.reset_index()[['date', '5. adjusted close']].rename(columns={'date': 'Date', '5. adjusted close': 'Adj Close'})
+    spOld = pd.read_csv('S&P.csv')[['Date', 'Adj Close']]
+    spy = pd.concat([spOld, spNew[spNew['Date'] > spOld.iloc[-1]['Date']]]).reset_index(drop=True)
+
+    spy['Date'] = pd.to_datetime(spy['Date'])
+    spy = spy.set_index('Date')
+
+    portfolioValue['s&p'] = spy['Adj Close']
+    portfolioValue = portfolioValue.fillna(method='ffill')
+    portfolioValue['s&pValue'] = (portfolioValue['Value'].iloc[0] / portfolioValue['s&p'].iloc[0]) * portfolioValue['s&p']
+    portfolioValue = portfolioValue.drop('s&p', axis=1)
+
+    #Created portfolioValue
+
+    #Creating metrics
+    sharpe = sharpe_ratio(portfolioValue['s&pValue'])
+    sortino = sortino_ratio(portfolioValue['s&pValue'])
+    drawdown = drawDown(portfolioValue['s&pValue'])
+    portfolioReturn = portfolio_return(portfolioValue['s&pValue']) * 100
+
+    backtestMetrics = {'Total Return:': str(portfolioReturn) + " %", 'Sharpe Ratio': sharpe, 'Sortino Ratio': sortino, 'Maximum Drawdown': drawdown}
+    benchmark_metrics = json.dumps(backtestMetrics)
+
+    sharpe = sharpe_ratio(portfolioValue['Value'])
+    sortino = sortino_ratio(portfolioValue['Value'])
+    drawdown = drawDown(portfolioValue['Value'])
+    portfolioReturn = portfolio_return(portfolioValue['Value']) * 100
+
+    strategyMetrics = {'Total Return:': str(portfolioReturn) + " %", 'Sharpe Ratio': sharpe, 'Sortino Ratio': sortino, 'Maximum Drawdown': drawdown}
+    strategy_metrics = json.dumps(strategyMetrics)
+    #Created Metrics
+
+    #Creating monthly metrics
+    strategyMovementDetails = portfolioValue.resample('1M').apply(my_agg, column='Value').reset_index(drop=True)
+    benchmarkMovementDetails = portfolioValue.resample('1M').apply(my_agg, column='s&pValue').reset_index(drop=True)
+    #Created montly metrics
+
+    return portfolioValue, trade_data, strategy_metrics, benchmark_metrics, strategyMovementDetails, benchmarkMovementDetails
+
+def perform_backtest(cityname, model_name, test_type, starting_cash, comission, strategy):
+    '''
+    Perform backtest or loads backtest data from the cache. Although the name is perform_backtest
+    this can perform both forwardtest and backtest
+
+    Parameters:
+    ___________
+    cityname (string):
+    The name of the city
+
+    model_name (string):
+    The name of the model
+
+    test_type (string):
+    forwardtest or backtest
+
+    starting_cash (int):
+    The cash amount to start
+
+    comission (float):
+    Comission amount in percentage
+
+    strategy (string):
+    The strategy to use. Currently the possible values are s1 and s2. s1 refers to Normal and s2 refers to Agressive strategy
+
+    Returns:
+    ________
+    portfolioValue (df):
+    Pandas dataframe containing daily value of portfolio and buying and holding s&p500. Columns are Date, Value and s&pValue
+
+    trade_data (df):
+    Pandas dataframe containing details all dates, SettlementPointPrice, Buy, Sell and p/l. Buy column contains Buy price and Sell contains Sell price
+
+    strategy_metrics (dictionary):
+    Dictionary containing metrics of using this strategy. Currently the values are Return, Sharpe Ratio, Sortino Ratio and Maximum drawdown
     
-	data = PandasData_Signal(dataname=df, datetime=0 ,open=1, high=2, low=3, close=4, Predicted=5)
-    # Create a cerebro entity
-	cerebro = bt.Cerebro()
+    benchmark_metrics (dictionary):
+    Dictionary containing metrics of buying and holding S&P 500 to compare. Same column as above
 
-    # Add a strategy
-	cerebro.addstrategy(TestStrategy)
+    strategyMovementDetails (df):
+    Dataframe containing montly returns and drawdown if traded using the strategy
+
+    benchmarkMovementDetails (df):
+    Dataframe containing montly returns and drawdown if s&p 500 is held
+    '''
+
+    current_rootDir = "algorithm/models/{}/{}/{}".format(model_name, cityname, test_type)
+    strategyName = "{}_{}_{}".format(strategy, starting_cash, comission)
+    strategyDir = os.path.join(current_rootDir, strategyName)
+
+    if (os.path.isdir(strategyDir)):
+        with open('{}/strategyMetrics.json'.format(strategyDir)) as aa:
+            strategy_metrics = json.load(aa)
+        strategy_metrics = json.loads(strategy_metrics) 
+
+        with open('{}/s&pMetrics.json'.format(strategyDir)) as aa:
+            benchmark_metrics = json.load(aa)
+        benchmark_metrics = json.loads(benchmark_metrics)
+
+        portfolioValue = pd.read_csv('{}/PortfolioValue.csv'.format(strategyDir))
+        trade_data = pd.read_csv('{}/trading_data.csv'.format(strategyDir))
+
+        strategyMovementDetails = pd.read_csv('{}/strategyMovementDetails.csv'.format(strategyDir))
+        benchmarkMovementDetails = pd.read_csv('{}/benchmarkMovementDetails.csv'.format(strategyDir))
+    else:
+        print("Performing backtest. This is gonna take a while")
+
+        df = pd.read_csv('{}/predicted.csv'.format(current_rootDir))
+        df['Open'] = df['SettlementPointPrice'].shift(1)
+        df['Close'] = df['SettlementPointPrice']
+        df['Date'] = pd.to_datetime(df['Date']).dt.to_pydatetime()
+        df = df[['Date', 'Open', 'Close', 'Predicted']]
+
+        data = PandasData_Custom(dataname=df)
+
+        cerebro = bt.Cerebro()
+
+        cerebro.adddata(data)
+        cerebro.addstrategy(tradeStrategy)
+
+        if (strategy == "s1"):
+            cerebro.addsizer(bt.sizers.SizerFix, stake=10)
+        elif (strategy == "s2"):
+            cerebro.addsizer(bt.sizers.SizerFix, stake=2)
+
+        cerebro.broker.setcash(starting_cash)
+        cerebro.broker.setcommission(comission/100)
+
+        run = cerebro.run()
+        portfolioValue, trades, operations = run[0].get_logs() #not using opeartions for now
+
+        portfolioValue, trade_data, strategy_metrics, benchmark_metrics, strategyMovementDetails, benchmarkMovementDetails = process_data(df, portfolioValue, trades, operations)
+        
+        #create directory then save
+        os.makedirs(strategyDir)
+
+        portfolioValue.to_csv('{}/PortfolioValue.csv'.format(strategyDir))
+        trade_data.to_csv('{}/trading_data.csv'.format(strategyDir))
+
+        with open("{}/strategyMetrics.json".format(strategyDir), 'w') as fp:
+            json.dump(strategy_metrics, fp)
+        
+        with open("{}/s&pMetrics.json".format(strategyDir), 'w') as fp:
+            json.dump(benchmark_metrics, fp)
+
+        strategyMovementDetails.to_csv('{}/strategyMovementDetails.csv'.format(strategyDir))
+        benchmarkMovementDetails.to_csv('{}/benchmarkMovementDetails.csv'.format(strategyDir))
 
 
-    # Add the Data Feed to Cerebro
-	cerebro.adddata(data)
-
-    # Set our desired cash start
-	if bool(datas):
-		if datas['starting_cash'] > 0:
-			cerebro.broker.setcash(datas['starting_cash'])
-		else:
-			cerebro.broker.setcash(100000.0)
-	else:
-		cerebro.broker.setcash(100000.0)
-
-    # Add a FixedSize sizer according to the stake
-	cerebro.addsizer(bt.sizers.FixedSize, stake=10)
-
-    # Set the commission - 0.1% ... divide by 100 to remove the %
-	cerebro.broker.setcommission(commission=0.001)
-	# Print out the starting conditions
-	print('Starting Portfolio Value: %.2f' % cerebro.broker.getvalue())
-	# Run over everything
-	rr = cerebro.run()
-	# Print out the final result
-	print('Final Portfolio Value: %.2f' % cerebro.broker.getvalue())
-	bt_data = rr[0].get_cash_record()
-	df = pd.DataFrame(data=bt_data)
-	df = df.fillna(method='bfill')
-	df['Date'] = df['Date'].astype(str)
-	
-	return df
+    return portfolioValue, trade_data, strategy_metrics, benchmark_metrics, strategyMovementDetails, benchmarkMovementDetails
