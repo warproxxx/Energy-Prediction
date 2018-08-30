@@ -188,7 +188,10 @@ def process_data(df, portfolioValue, trades, operations):
     df['Date'] = pd.to_datetime(df['Date'])
     df = df.set_index('Date')
 
+    trades['Date'] = pd.to_datetime(trades['Date'])
     trades = trades.set_index('Date')
+
+    operations['Date'] = pd.to_datetime(operations['Date'])
     operations = operations.set_index('Date')
 
     portfolioValue['Date'] = pd.to_datetime(portfolioValue['Date'])
@@ -303,22 +306,8 @@ def perform_backtest(cityname, model_name, test_type, starting_cash, comission, 
     strategyName = "{}_{}_{}".format(strategy, starting_cash, comission)
     strategyDir = os.path.join(current_rootDir, strategyName)
 
-    if (os.path.isdir(strategyDir)):
-        with open('{}/strategyMetrics.json'.format(strategyDir)) as aa:
-            strategy_metrics = json.load(aa)
-        strategy_metrics = json.loads(strategy_metrics) 
-
-        with open('{}/s&pMetrics.json'.format(strategyDir)) as aa:
-            benchmark_metrics = json.load(aa)
-        benchmark_metrics = json.loads(benchmark_metrics)
-
-        portfolioValue = pd.read_csv('{}/PortfolioValue.csv'.format(strategyDir))
-        trade_data = pd.read_csv('{}/trading_data.csv'.format(strategyDir))
-
-        strategyMovementDetails = pd.read_csv('{}/strategyMovementDetails.csv'.format(strategyDir))
-        benchmarkMovementDetails = pd.read_csv('{}/benchmarkMovementDetails.csv'.format(strategyDir))
-    else:
-        print("Performing backtest. This is gonna take a while")
+    if not(os.path.isdir(strategyDir)):
+        print("Performing backtest. This is gonna take a while. {}".format(strategy))
 
         df = pd.read_csv('{}/predicted.csv'.format(current_rootDir))
         df['Open'] = df['SettlementPointPrice'].shift(1)
@@ -361,5 +350,18 @@ def perform_backtest(cityname, model_name, test_type, starting_cash, comission, 
         strategyMovementDetails.to_csv('{}/strategyMovementDetails.csv'.format(strategyDir))
         benchmarkMovementDetails.to_csv('{}/benchmarkMovementDetails.csv'.format(strategyDir))
 
+    with open('{}/strategyMetrics.json'.format(strategyDir)) as aa:
+        strategy_metrics = json.load(aa)
+    strategy_metrics = json.loads(strategy_metrics) 
+
+    with open('{}/s&pMetrics.json'.format(strategyDir)) as aa:
+        benchmark_metrics = json.load(aa)
+    benchmark_metrics = json.loads(benchmark_metrics)
+
+    portfolioValue = pd.read_csv('{}/PortfolioValue.csv'.format(strategyDir))
+    trade_data = pd.read_csv('{}/trading_data.csv'.format(strategyDir))
+
+    strategyMovementDetails = pd.read_csv('{}/strategyMovementDetails.csv'.format(strategyDir))
+    benchmarkMovementDetails = pd.read_csv('{}/benchmarkMovementDetails.csv'.format(strategyDir))
 
     return portfolioValue, trade_data, strategy_metrics, benchmark_metrics, strategyMovementDetails, benchmarkMovementDetails

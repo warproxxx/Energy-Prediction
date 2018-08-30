@@ -82,9 +82,7 @@ def dashboard_data(request, method, al, lc, form, logic_form, test_type, datas):
     forward_metrics = json.loads(f_metrics)
 
     portfolioValue, trade_data, strategy_metrics, benchmark_metrics, strategyMovementDetails, benchmarkMovementDetails = perform_backtest(lc, al, test_type, datas['starting_cash'], datas['comission_percentage'], datas['strategy_type'])
-    
-    trade_data = trade_data.reset_index()
-    
+        
     bt_metrics = strategy_metrics #remove this one later. It is useless
     portfolioValue = portfolioValue.values.tolist()
 
@@ -97,7 +95,7 @@ def dashboard_data(request, method, al, lc, form, logic_form, test_type, datas):
     t_data = pd.read_csv(location) 
 
     trade_data = t_data[['Date','SettlementPointPrice']]
-    trade_data = trade_data.values.tolist()   
+    trade_data = trade_data.values.tolist() 
 
     t_data = t_data[['Date','SettlementPointPrice', 'Predicted', 'Direction', 'Indicator']]
     
@@ -111,10 +109,7 @@ def dashboard_data(request, method, al, lc, form, logic_form, test_type, datas):
     training = training.values.tolist()
     test = test.values.tolist()
 
-    s_pMovementDetails = pd.read_csv('algorithm/csvs/s&pMovementDetails.csv')
-    s_pMovementDetails = s_pMovementDetails.values.tolist()
-
-    strategyMovementDetails = pd.read_csv('algorithm/csvs/strategyMovementDetails.csv')
+    s_pMovementDetails = benchmarkMovementDetails.values.tolist()
     strategyMovementDetails = strategyMovementDetails.values.tolist()
 
 
