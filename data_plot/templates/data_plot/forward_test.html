@@ -71,6 +71,10 @@
 		.nopadding-bottom {
 		   padding-bottom: 0 !important;
 		}
+		
+		.padding-10px {
+		   padding: 10px !important;
+		}
 	</style>
 
 </head>
@@ -246,8 +250,15 @@
 										<div class="panel-body">
 											<form action="" method="post" enctype='multipart/form-data'>{% csrf_token %}
 
-												<div class="col-lg-2 col-md-2 nopadding">
-													{{ logic_form.buy|add_class:"form-control form-control-sm"|attr:"placeholder:Logic" }}
+												<div class="col-lg-3 col-md-3">
+													{{ logic_form.starting_cash|add_class:"form-control form-control-sm"|attr:"placeholder:Starting Cash" }}
+												</div>
+												<div class="col-lg-3 col-md-3 ">
+													{{ logic_form.comission_percentage|add_class:"form-control form-control-sm"|attr:"placeholder:Comission Percentage"|attr:"value:0.1 %"|attr:"disabled: " }}
+													{{ logic_form.test_type|add_class:"form-control form-control-sm"}}
+												</div>
+												<div class="col-lg-3 col-md-3 ">
+													{{ logic_form.strategy_type|add_class:"form-control form-control-sm"|attr:"placeholder:Strategy Type" }}
 												</div>
 												<div class="col-lg-2 col-md-2 nopadding-right nopadding-top nopadding-bottom">
 													<input type = "submit" class="btn btn-primary" value= "View Testing" id="viewAnalysis">
@@ -259,6 +270,106 @@
 								<div id="backTestChart" class="bg-white c-bg col-xs-12 col-sm-12 col-md-12 col-lg-12 nopadding" style="height: 500px;">			  
 								</div>
 							</div>
+							<div class="panel-body">
+								<div class="panel panel-default">
+									<div class="panel-heading">
+										Risk Metrics
+									</div>
+									<div class="panel-body">
+										<div class="col-lg-12 nopadding">
+											<!-- Nav tabs -->
+											<ul class="nav nav-tabs">
+												<li class="active"><a href="#backtest_metrics" data-toggle="tab" aria-expanded="true">Backtest Metrics</a>
+												</li>
+												<li class=""><a href="#benchmark_metrics" data-toggle="tab" aria-expanded="false">Benckmark Metrics</a>
+												</li>
+												<li class=""><a href="#strategy_metrics" data-toggle="tab" aria-expanded="false">Strategy Metrics</a>
+												</li>
+											</ul>
+
+											<!-- Tab panes -->
+											<div class="tab-content">
+												<div class="tab-pane fade active in" id="backtest_metrics">
+													<div class="table-responsive padding-10px">
+														<table class="table table-bordered">
+															<tbody>
+															{% if bt_metrics %}
+															<tr>
+																{% for key, value in bt_metrics.items%} 											
+																		
+																			<td style="background-color:#f9f9f9;">{{ key }}</td>
+																			<td>{{ value }}</td>
+																		
+
+																	 {% if forloop.counter == 2 or forloop.counter == 4 or forloop.counter == 6 or forloop.counter == 8 or forloop.counter == 10 %}
+																		</tr>
+																		<tr>
+																	 {% endif %}
+																{% endfor %}
+															</tr>
+															{% else %}
+															<p class="text-danger">No data found</p>
+															{% endif %}
+															</tbody>
+														</table>
+													</div>
+												</div>
+												<div class="tab-pane fade" id="benchmark_metrics">
+													<div class="table-responsive padding-10px">
+														<table class="table table-bordered">
+															<tbody>
+															{% if benchmark_metrics %}
+															<tr>
+																{% for key, value in benchmark_metrics.items%} 											
+																		
+																			<td style="background-color:#f9f9f9;">{{ key }}</td>
+																			<td>{{ value }}</td>
+																		
+
+																	 {% if forloop.counter == 2 or forloop.counter == 4 or forloop.counter == 6 or forloop.counter == 8 or forloop.counter == 10 %}
+																		</tr>
+																		<tr>
+																	 {% endif %}
+																{% endfor %}
+															</tr>
+															{% else %}
+															<p class="text-danger">No data found</p>
+															{% endif %}
+															</tbody>
+														</table>
+													</div>
+												</div>
+												<div class="tab-pane fade" id="strategy_metrics">
+													<div class="table-responsive padding-10px">
+														<table class="table table-bordered">
+															<tbody>
+															{% if strategy_metrics %}
+															<tr>
+																{% for key, value in strategy_metrics.items%} 											
+																		
+																			<td style="background-color:#f9f9f9;">{{ key }}</td>
+																			<td>{{ value }}</td>
+																		
+
+																	 {% if forloop.counter == 2 or forloop.counter == 4 or forloop.counter == 6 or forloop.counter == 8 or forloop.counter == 10 %}
+																		</tr>
+																		<tr>
+																	 {% endif %}
+																{% endfor %}
+															</tr>
+															{% else %}
+															<p class="text-danger">No data found</p>
+															{% endif %}
+															</tbody>
+														</table>
+													</div>
+												</div>
+											</div>
+										</div>									
+									</div>								
+								</div>
+							</div>
+							<!-- /.panel-body -->
 							<div class="panel-body">
 							 <div class="panel panel-default">
 							 
@@ -397,18 +508,34 @@
 
 </html>
 
-
-
  <script type="text/javascript">
  
  //create data table on loaded data
 var bt_dataTable = anychart.data.table();
-{% if bt_data %}
-	var j_data = {{ bt_data|safe }};
+var buy_datatable = anychart.data.table();
+var benchmark_datatable = anychart.data.table();
+var sell_datatable = anychart.data.table();
+
+{% if trade_data %}
+	var j_data = {{ trade_data|safe }};
 	bt_dataTable.addData(j_data);
-{% else %}
-	<h3> Error 404. Requested page could not be found </h3>
 {% endif %}
+
+{% if sell_data %}
+	var j_data = {{ sell_data|safe }};
+	sell_datatable.addData(j_data);
+{% endif %}
+
+{% if buy_data %}
+	var j_data = {{ buy_data|safe }};
+	buy_datatable.addData(j_data);
+{% endif %}
+
+{% if portfolioValue %}
+	var j_data = {{ portfolioValue|safe }};
+	benchmark_datatable.addData(j_data);
+{% endif %}
+
 
 </script>
 
@@ -416,14 +543,15 @@ var bt_dataTable = anychart.data.table();
 
 <script>
 
+$('#id_test_type').val('{{ test_type }}');
 
 anychart.onDocumentReady(function () {
 	
     // map the data
-    mapping_usa = bt_dataTable.mapAs();
-    mapping_usa.addField('value', 1);
-    mapping_uk = bt_dataTable.mapAs();
-    mapping_uk.addField('value', 1);
+    algorithm = bt_dataTable.mapAs();
+    algorithm.addField('value', 1);
+	
+    
 
     // chart type
     var chart = anychart.stock();
@@ -452,18 +580,34 @@ anychart.onDocumentReady(function () {
 	var credits = chart.credits();
 	credits.enabled(false);
 	
-    // set the US series
-    var series_algorithm = chart.plot(0).area(mapping_usa);
+    var series_algorithm = chart.plot(0).line(algorithm);
     series_algorithm.name("Algorithm");
 	
-	var series_benchmark= chart.plot(0).line(mapping_uk);
-    series_benchmark.name("Benchmark");
-
     // coloring
-    series_algorithm.fill("rgb(0, 0, 205, 0.1)");
-    series_algorithm.stroke("2 #0000CD");
+    series_algorithm.stroke("1.5 #800000");
 	
-    series_benchmark.stroke("2 #800000");
+
+	buy_data = buy_datatable.mapAs();
+    buy_data.addField('value', 1);
+	
+	
+	var buy_marker = chart.plot(0).marker(buy_data);
+	buy_marker.size(1.5)
+	buy_marker.name("Buy Amt");
+	buy_marker.fill("#32CD32");
+	buy_marker.stroke("#32CD32");
+	buy_marker.type("circle");
+	
+	sell_data = sell_datatable.mapAs();
+    sell_data.addField('value', 1);
+	
+	var sell_marker = chart.plot(0).marker(sell_data);
+	sell_marker.size(1.5)
+	sell_marker.name("Sell Amt");
+	sell_marker.fill("#ffa500");
+	sell_marker.stroke("#ffa500");
+	sell_marker.type("circle");
+    
 
 	
 	 var plot = chart.plot(1);
@@ -484,11 +628,21 @@ anychart.onDocumentReady(function () {
 
 	});
 	
+	benchmark = benchmark_datatable.mapAs();
+    benchmark.addField('value', 2);
+	
+	portfolio = benchmark_datatable.mapAs();
+    portfolio.addField('value', 1);
+	
+	var series_benchmark= chart.plot(1).line(benchmark);
+    series_benchmark.name("Benchmark");
+	series_benchmark.stroke("2 #800000");
+	
     // set the UK series
-    var series_uk = chart.plot(1).line(mapping_uk);
-    series_uk.name("Positions");
+    var series_positions = chart.plot(1).line(portfolio);
+    series_positions.name("Portfolio Value");
 
-	series_uk.stroke("2 #32CD32");
+	series_positions.stroke("2 #32CD32");
     // hatch fill
     //series_uk.hatchFill("diagonal-cross");
 
@@ -496,11 +650,11 @@ anychart.onDocumentReady(function () {
     
     // y-axis labels formatting
     chart.plot(0).yAxis().labels().format(function (){
-      return this.value/1000 + "K";
+      return this.value/1;
     });
 	
 	chart.plot(1).yAxis().labels().format(function (){
-      return this.value/1000000 + "m";
+      return this.value/1000 + "K";
     });
 
     chart.container('backTestChart');
@@ -629,51 +783,58 @@ anychart.licenseKey("songzcorp-7ce21725-824e1b3b");
  <script type="text/javascript">
  
  // create data table on loaded data
-var bd;
+var j_data_bidirection;
+var bd_dataTable = anychart.data.table();
 {% if direction %}
-	var j_data_bidirection = {{ direction }};
-	bd = j_data_bidirection;
+	j_data_bidirection = {{ direction|safe }};
+	bd_dataTable.addData(j_data_bidirection);
 {% else %}
 console.log('not found');
 {% endif %}
 </script>
 
+
 <script>
 //**********************Bidirectional accuracy************************************
 
 
+anychart.onDocumentReady(function() {
+anychart.licenseKey("songzcorp-7ce21725-824e1b3b");
 
-anychart.onDocumentReady(function () {
-    // create data set on our data
- 
-	var dataSet = anychart.data.set([]);
-    // map data for the first series, take x from the zero column and value from the first column of data set
-    var seriesData_1 = dataSet.mapAs({'x': 0, 'value': 1});
-	
-    // create line chart
-    var chart = anychart.line();
+
+    // create stock chart
+    var chart = anychart.stock();
+
+    // set chart title
+    chart.title('Bidirectional Accuracy');
+
 	var credits = chart.credits();
 	credits.enabled(false);
 	
-    // turn on the crosshair
-    chart.crosshair().enabled(true).yLabel().enabled(false);
-    chart.crosshair().enabled(true).yStroke(null);
+    // create plot on the chart
+    var plot = chart.plot(0);
 
-    // set y axis title
-    chart.title('Bidirectional Accuracy');
+    // create plot series with mapped data
+    plot.line(bd_dataTable.mapAs({
+      'value': 1
+    })).name('Accuracy').hovered().markers().enabled(true).type('circle').size(4);
+	
+    // create scroller series with mapped data
+    chart.scroller().line(bd_dataTable.mapAs({
+      'value': 0
+    }));
 
-    // create first series with mapped data
-    var series_1 = chart.stepLine(seriesData_1);
-    series_1.name('Accuracy').hovered().markers().enabled(true).type('circle').size(4);
-
-    // turn the legend on
-    chart.legend().enabled(true).fontSize(13).padding([0, 0, 20, 0]);
 
     // set container id for the chart
     chart.container('bidirectionalAccuracy');
-
     // initiate chart drawing
     chart.draw();
-});
-</script>
+    // create range picker
 
+
+    // create range selector
+    var rangeSelector = anychart.ui.rangeSelector();
+    // init range selector
+    rangeSelector.render(chart);
+	
+});

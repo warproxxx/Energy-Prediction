@@ -45,12 +45,44 @@ def dashboard_data(request, method, al, lc, form, logic_form, test_type, datas):
         f_metrics = json.load(aa)
     forward_metrics = json.loads(f_metrics)
 
+    with open('algorithm/csvs/backtestMetrics.json') as aa:
+        bt_metrics = json.load(aa)
+    bt_metrics = json.loads(bt_metrics)
+
+    with open('algorithm/csvs/s&pMetrics.json') as aa:
+        benchmark_metrics = json.load(aa)
+    benchmark_metrics = json.loads(benchmark_metrics)
+
+    with open('algorithm/csvs/strategyMetrics.json') as aa:
+        strategy_metrics = json.load(aa)
+    strategy_metrics = json.loads(strategy_metrics)
+
     t_data = pd.read_csv(location)
 
-    t_data = t_data[['Date','SettlementPointPrice', 'Predicted', 'Direction', 'Indicator']]
-    backtest_data = t_data[['Date','SettlementPointPrice', 'Predicted']][:100]
+    operations = pd.read_csv('algorithm/csvs/operations.csv')
+    operations = operations.values.tolist()
 
-    direction = t_data[['Date','Direction']][:1000]
+    portfolioValue = pd.read_csv('algorithm/csvs/PortfolioValue.csv')
+    portfolioValue = portfolioValue.values.tolist()
+
+
+    trade_data = pd.read_csv('algorithm/csvs/trading_data.csv')
+    buy_data =trade_data[['Date','Buy']].dropna().reset_index(drop=True)
+    print(buy_data)
+    buy_data = buy_data.values.tolist()
+    
+    sell_data =trade_data[['Date','Sell']].dropna().reset_index(drop=True)
+    sell_data = sell_data.values.tolist()
+
+    trade_data = t_data[['Date','SettlementPointPrice']]
+    trade_data = trade_data.values.tolist()
+
+
+    t_data = t_data[['Date','SettlementPointPrice', 'Predicted', 'Direction', 'Indicator']]
+    
+    direction = t_data[['Date','Direction']]
+    actual = t_data['SettlementPointPrice'].shift(-1) > t_data['SettlementPointPrice']
+    direction['Direction'] = ((1 - np.abs(t_data['Direction'] - actual)).replace(0, -1)).cumsum()
     direction = direction.values.tolist()
 
     training = t_data[t_data['Indicator'] == 1]
@@ -59,11 +91,11 @@ def dashboard_data(request, method, al, lc, form, logic_form, test_type, datas):
     test = test.values.tolist()
 
     #trend_data = data[['Date', 'Trend', 'Trend_macd']]
-    bt_data = bt.execute_backtesting(lc, backtest_data, datas)
-    bt_data=bt_data.values.tolist()
+    #bt_data = bt.execute_backtesting(lc, backtest_data, datas)
+    #bt_data=bt_data.values.tolist()
     
     context = {
-        'bt_data': bt_data,
+        'trade_data':trade_data,
         'test':test,
         'direction': direction,
         "form":form,
@@ -72,6 +104,14 @@ def dashboard_data(request, method, al, lc, form, logic_form, test_type, datas):
         "about":about,
         "backward_metrics":backward_metrics,
         "forward_metrics":forward_metrics,
+        "test_type":test_type,
+        "trade_data":trade_data,
+        "sell_data":sell_data,
+        "buy_data":buy_data,
+        "portfolioValue":portfolioValue,
+        "bt_metrics":bt_metrics,
+        "benchmark_metrics":benchmark_metrics,
+        "strategy_metrics":strategy_metrics,
     }
 
     template_name = ''
@@ -162,6 +202,7 @@ def dashboard_backward_test(request):
                 datas['starting_cash']  = logic_form.cleaned_data.get("starting_cash")
                 datas['comission_percentage']  = logic_form.cleaned_data.get("comission_percentage")
                 datas['strategy_type']  = logic_form.cleaned_data.get("strategy_type")
+                datas['test_type']  = logic_form.cleaned_data.get("strategy_type")
 
                 return dashboard_data(request, method, al, lc, option_form, logic_form, test, datas) 
             

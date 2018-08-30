@@ -33,8 +33,10 @@ class dashboard_options(forms.Form):
 
 class algorithm_options(forms.Form):
     starting_cash = forms.IntegerField(min_value=0, required = True)
-    comission_percentage = forms.IntegerField(min_value=0, required = True)
-    strategies=(('s1','Maximizing Return (Aggressive but risky)'),('s2','Minimizing Risk'),('s3','Maximizing Sharpe ratio'), ('s4','Maximizing sortino ratio'))
+    comission_percentage = forms.CharField(label ="", required=True, max_length =10)
+    test_type = forms.CharField(widget=forms.HiddenInput(), required=True,  max_length =10)
+    #strategies=(('s1','Maximizing Return (Aggressive but risky)'),('s2','Minimizing Risk'),('s3','Maximizing Sharpe ratio'), ('s4','Maximizing sortino ratio'))
+    strategies=(('s1','Normal'), ('s2', 'Aggressive'))
     strategy_type = forms.ChoiceField(label ="",choices=strategies, required=True, initial =0)
 
 
