@@ -89,6 +89,14 @@ def dashboard_data(request, method, al, lc, form, logic_form, test_type, datas):
     training = training.values.tolist()
     test = test.values.tolist()
 
+    #reading s&pmovementdetails.csv 
+    s_pMovementDetails = pd.read_csv('algorithm/csvs/s&pMovementDetails.csv')
+    s_pMovementDetails = s_pMovementDetails.values.tolist()
+
+    #reading strategymovementdetails.csv 
+    strategyMovementDetails = pd.read_csv('algorithm/csvs/strategyMovementDetails.csv')
+    strategyMovementDetails = strategyMovementDetails.values.tolist()
+
     #trend_data = data[['Date', 'Trend', 'Trend_macd']]
     #bt_data = bt.execute_backtesting(lc, backtest_data, datas)
     #bt_data=bt_data.values.tolist()
@@ -111,6 +119,8 @@ def dashboard_data(request, method, al, lc, form, logic_form, test_type, datas):
         "bt_metrics":bt_metrics,
         "benchmark_metrics":benchmark_metrics,
         "strategy_metrics":strategy_metrics,
+        "strategyMovementDetails":strategyMovementDetails,
+        "s_pMovementDetails":s_pMovementDetails,
     }
 
     template_name = ''
