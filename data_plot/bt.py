@@ -256,6 +256,50 @@ def process_data(df, portfolioValue, trades, operations):
 
     return portfolioValue, trade_data, strategy_metrics, benchmark_metrics, strategyMovementDetails, benchmarkMovementDetails
 
+def run_cerebro(strategy, current_rootDir, starting_cash, comission, strategyDir):
+    print("Running cerebro for {}. This is gonna take a while.".format(strategy))
+
+    df = pd.read_csv('{}/predicted.csv'.format(current_rootDir))
+    df['Open'] = df['SettlementPointPrice'].shift(1)
+    df['Close'] = df['SettlementPointPrice']
+    df['Date'] = pd.to_datetime(df['Date']).dt.to_pydatetime()
+    df = df[['Date', 'Open', 'Close', 'Predicted']]
+
+    data = PandasData_Custom(dataname=df)
+
+    cerebro = bt.Cerebro()
+
+    cerebro.adddata(data)
+    cerebro.addstrategy(tradeStrategy)
+
+    if (strategy == "s1"):
+        cerebro.addsizer(bt.sizers.SizerFix, stake=10)
+    elif (strategy == "s2"):
+        cerebro.addsizer(bt.sizers.SizerFix, stake=2)
+
+    cerebro.broker.setcash(starting_cash)
+    cerebro.broker.setcommission(comission/100)
+
+    run = cerebro.run()
+    portfolioValue, trades, operations = run[0].get_logs() #not using opeartions for now
+
+    portfolioValue, trade_data, strategy_metrics, benchmark_metrics, strategyMovementDetails, benchmarkMovementDetails = process_data(df, portfolioValue, trades, operations)
+    
+    #create directory then save
+    os.makedirs(strategyDir)
+
+    portfolioValue.to_csv('{}/PortfolioValue.csv'.format(strategyDir))
+    trade_data.to_csv('{}/trading_data.csv'.format(strategyDir))
+
+    with open("{}/strategyMetrics.json".format(strategyDir), 'w') as fp:
+        json.dump(strategy_metrics, fp)
+    
+    with open("{}/s&pMetrics.json".format(strategyDir), 'w') as fp:
+        json.dump(benchmark_metrics, fp)
+
+    strategyMovementDetails.to_csv('{}/strategyMovementDetails.csv'.format(strategyDir))
+    benchmarkMovementDetails.to_csv('{}/benchmarkMovementDetails.csv'.format(strategyDir))
+
 def perform_backtest(cityname, model_name, test_type, starting_cash, comission, strategy):
     '''
     Perform backtest or loads backtest data from the cache. Although the name is perform_backtest
@@ -306,49 +350,13 @@ def perform_backtest(cityname, model_name, test_type, starting_cash, comission, 
     strategyName = "{}_{}_{}".format(strategy, starting_cash, comission)
     strategyDir = os.path.join(current_rootDir, strategyName)
 
-    if not(os.path.isdir(strategyDir)):
-        print("Performing backtest. This is gonna take a while. {}".format(strategy))
-
-        df = pd.read_csv('{}/predicted.csv'.format(current_rootDir))
-        df['Open'] = df['SettlementPointPrice'].shift(1)
-        df['Close'] = df['SettlementPointPrice']
-        df['Date'] = pd.to_datetime(df['Date']).dt.to_pydatetime()
-        df = df[['Date', 'Open', 'Close', 'Predicted']]
-
-        data = PandasData_Custom(dataname=df)
-
-        cerebro = bt.Cerebro()
-
-        cerebro.adddata(data)
-        cerebro.addstrategy(tradeStrategy)
-
-        if (strategy == "s1"):
-            cerebro.addsizer(bt.sizers.SizerFix, stake=10)
-        elif (strategy == "s2"):
-            cerebro.addsizer(bt.sizers.SizerFix, stake=2)
-
-        cerebro.broker.setcash(starting_cash)
-        cerebro.broker.setcommission(comission/100)
-
-        run = cerebro.run()
-        portfolioValue, trades, operations = run[0].get_logs() #not using opeartions for now
-
-        portfolioValue, trade_data, strategy_metrics, benchmark_metrics, strategyMovementDetails, benchmarkMovementDetails = process_data(df, portfolioValue, trades, operations)
-        
-        #create directory then save
-        os.makedirs(strategyDir)
-
-        portfolioValue.to_csv('{}/PortfolioValue.csv'.format(strategyDir))
-        trade_data.to_csv('{}/trading_data.csv'.format(strategyDir))
-
-        with open("{}/strategyMetrics.json".format(strategyDir), 'w') as fp:
-            json.dump(strategy_metrics, fp)
-        
-        with open("{}/s&pMetrics.json".format(strategyDir), 'w') as fp:
-            json.dump(benchmark_metrics, fp)
-
-        strategyMovementDetails.to_csv('{}/strategyMovementDetails.csv'.format(strategyDir))
-        benchmarkMovementDetails.to_csv('{}/benchmarkMovementDetails.csv'.format(strategyDir))
+    if test_type == "forwardtest":
+        print("Forward Test Detected")
+        run_cerebro(strategy, current_rootDir, starting_cash, comission, strategyDir)
+    else:
+        print("Backtest Detected")
+        if not(os.path.isdir(strategyDir)):
+            run_cerebro(strategy, current_rootDir, starting_cash, comission, strategyDir)
 
     with open('{}/strategyMetrics.json'.format(strategyDir)) as aa:
         strategy_metrics = json.load(aa)
