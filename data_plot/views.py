@@ -110,7 +110,14 @@ def dashboard_data(request, method, al, lc, form, logic_form, test_type, datas):
     test = t_data[t_data['Indicator'] == 0]
     training = training.values.tolist()
     test = test.values.tolist()
-    
+
+    s_pMovementDetails = pd.read_csv('algorithm/csvs/s&pMovementDetails.csv')
+    s_pMovementDetails = s_pMovementDetails.values.tolist()
+
+    strategyMovementDetails = pd.read_csv('algorithm/csvs/strategyMovementDetails.csv')
+    strategyMovementDetails = strategyMovementDetails.values.tolist()
+
+
     context = {
         'trade_data':trade_data,
         'test':test,
@@ -129,6 +136,8 @@ def dashboard_data(request, method, al, lc, form, logic_form, test_type, datas):
         "bt_metrics":bt_metrics,
         "benchmark_metrics":benchmark_metrics,
         "strategy_metrics":strategy_metrics,
+        "strategyMovementDetails":strategyMovementDetails,
+        "s_pMovementDetails":s_pMovementDetails,
     }
 
     template_name = ''
