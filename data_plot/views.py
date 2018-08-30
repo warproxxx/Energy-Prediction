@@ -9,7 +9,7 @@ from django.contrib.auth import(
 from django.db.models import Count
 from django.shortcuts import render, get_object_or_404
 
-from . import bt
+from .bt import perform_backtest
 import os
 import pandas as pd
 import numpy as np
@@ -30,52 +30,74 @@ def form_redir(request):
 
 
 def dashboard_data(request, method, al, lc, form, logic_form, test_type, datas):
+    '''
+    Parameters:
+    ___________
+    request (request):
+    The web request
+    
+    method (string):
+    POST or GET
+
+    al (string):
+    The name of algorithm
+
+    lc (string):
+    The name of city
+
+    form (form):
+    option form data
+
+    logic_form (form):
+
+
+    test_type (string):
+    backtest or forwardtest
+
+    datas: (dictionary)
+    POST data belonging to the form
+    '''
+
+    if ('starting_cash' not in datas):
+        datas['starting_cash'] = 10000
+        datas['comission_percentage'] = 0.01
+        datas['strategy_type'] = "s1"
+        datas['test_type'] = test_type
+
     location= 'algorithm/models/'+ al +'/'+ lc +'/'+test_type+'/predicted.csv'
     about = ''
     f_metrics = ''
     b_metrics =''
+
     with open('algorithm/models/'+ al + "/about.json") as json_file:
         about = json.load(json_file)
     
     with open('algorithm/models/'+ al +'/'+ lc +'/'+'backtest'+'/metrics.json') as aa:
         b_metrics = json.load(aa)
+    
     backward_metrics = json.loads(b_metrics)
 
     with open('algorithm/models/'+ al +'/'+ lc +'/'+'forwardtest'+'/metrics.json') as aa:
         f_metrics = json.load(aa)
     forward_metrics = json.loads(f_metrics)
 
-    with open('algorithm/csvs/backtestMetrics.json') as aa:
-        bt_metrics = json.load(aa)
-    bt_metrics = json.loads(bt_metrics)
-
-    with open('algorithm/csvs/s&pMetrics.json') as aa:
-        benchmark_metrics = json.load(aa)
-    benchmark_metrics = json.loads(benchmark_metrics)
-
-    with open('algorithm/csvs/strategyMetrics.json') as aa:
-        strategy_metrics = json.load(aa)
-    strategy_metrics = json.loads(strategy_metrics)
-
-    t_data = pd.read_csv(location)
-
-    operations = pd.read_csv('algorithm/csvs/operations.csv')
-    operations = operations.values.tolist()
-
-    portfolioValue = pd.read_csv('algorithm/csvs/PortfolioValue.csv')
+    portfolioValue, trade_data, strategy_metrics, benchmark_metrics, strategyMovementDetails, benchmarkMovementDetails = perform_backtest(lc, al, test_type, datas['starting_cash'], datas['comission_percentage'], datas['strategy_type'])
+    
+    trade_data = trade_data.reset_index()
+    
+    bt_metrics = strategy_metrics #remove this one later. It is useless
     portfolioValue = portfolioValue.values.tolist()
 
-
-    trade_data = pd.read_csv('algorithm/csvs/trading_data.csv')
     buy_data =trade_data[['Date','Buy']].dropna().reset_index(drop=True)
     buy_data = buy_data.values.tolist()
     
     sell_data =trade_data[['Date','Sell']].dropna().reset_index(drop=True)
     sell_data = sell_data.values.tolist()
 
-    trade_data = t_data[['Date','SettlementPointPrice']]
-    trade_data = trade_data.values.tolist()
+    t_data = pd.read_csv(location) 
 
+    trade_data = t_data[['Date','SettlementPointPrice']]
+    trade_data = trade_data.values.tolist()   
 
     t_data = t_data[['Date','SettlementPointPrice', 'Predicted', 'Direction', 'Indicator']]
     
@@ -89,18 +111,13 @@ def dashboard_data(request, method, al, lc, form, logic_form, test_type, datas):
     training = training.values.tolist()
     test = test.values.tolist()
 
-    #reading s&pmovementdetails.csv 
     s_pMovementDetails = pd.read_csv('algorithm/csvs/s&pMovementDetails.csv')
     s_pMovementDetails = s_pMovementDetails.values.tolist()
 
-    #reading strategymovementdetails.csv 
     strategyMovementDetails = pd.read_csv('algorithm/csvs/strategyMovementDetails.csv')
     strategyMovementDetails = strategyMovementDetails.values.tolist()
 
-    #trend_data = data[['Date', 'Trend', 'Trend_macd']]
-    #bt_data = bt.execute_backtesting(lc, backtest_data, datas)
-    #bt_data=bt_data.values.tolist()
-    
+
     context = {
         'trade_data':trade_data,
         'test':test,
@@ -157,8 +174,10 @@ def dashboard_forward_test(request):
             if logic_form.is_valid():
                 datas={}
                 datas['starting_cash']  = logic_form.cleaned_data.get("starting_cash")
-                datas['comission_percentage']  = 0.1 #logic_form.cleaned_data.get("comission_percentage")
+                datas['comission_percentage']  = 0.1
                 datas['strategy_type']  = logic_form.cleaned_data.get("strategy_type")
+                datas['test_type']  = logic_form.cleaned_data.get("test_type")
+
                 return dashboard_data(request, method, al, lc, option_form, logic_form, test, datas) 
             
 
@@ -208,9 +227,9 @@ def dashboard_backward_test(request):
             if logic_form.is_valid():
                 datas={}
                 datas['starting_cash']  = logic_form.cleaned_data.get("starting_cash")
-                datas['comission_percentage']  = logic_form.cleaned_data.get("comission_percentage")
+                datas['comission_percentage']  = 0.1
                 datas['strategy_type']  = logic_form.cleaned_data.get("strategy_type")
-                datas['test_type']  = logic_form.cleaned_data.get("strategy_type")
+                datas['test_type']  = logic_form.cleaned_data.get("test_type")
 
                 return dashboard_data(request, method, al, lc, option_form, logic_form, test, datas) 
             
