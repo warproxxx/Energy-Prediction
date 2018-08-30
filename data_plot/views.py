@@ -16,7 +16,7 @@ import numpy as np
 from glob import glob
 from django import forms
 from data_plot.forms import dashboard_options, algorithm_options
-
+import os
 import json 
 
 from .multiforms import MultiFormsView
@@ -29,23 +29,28 @@ def form_redir(request):
     return render(request, 'data_plot/backward_test.html')
 
 
-def dashboard_data(request, method, al, lc, form, logic_form, test_type):
+def dashboard_data(request, method, al, lc, form, logic_form, test_type, datas):
     location= 'algorithm/models/'+ al +'/'+ lc +'/'+test_type+'/predicted.csv'
     about = ''
-    metrics = ''
+    f_metrics = ''
+    b_metrics =''
     with open('algorithm/models/'+ al + "/about.json") as json_file:
         about = json.load(json_file)
     
-    with open('algorithm/models/'+ al +'/'+ lc +'/'+test_type+'/metrics.json') as aa:
-        metrics = json.load(aa)
-    
-    metrics = json.loads(metrics)
+    with open('algorithm/models/'+ al +'/'+ lc +'/'+'backtest'+'/metrics.json') as aa:
+        b_metrics = json.load(aa)
+    backward_metrics = json.loads(b_metrics)
+
+    with open('algorithm/models/'+ al +'/'+ lc +'/'+'forwardtest'+'/metrics.json') as aa:
+        f_metrics = json.load(aa)
+    forward_metrics = json.loads(f_metrics)
+
     t_data = pd.read_csv(location)
 
     t_data = t_data[['Date','SettlementPointPrice', 'Predicted', 'Direction', 'Indicator']]
     backtest_data = t_data[['Date','SettlementPointPrice', 'Predicted']][:100]
 
-    direction = t_data[['Date','Direction']]
+    direction = t_data[['Date','Direction']][:1000]
     direction = direction.values.tolist()
 
     training = t_data[t_data['Indicator'] == 1]
@@ -54,23 +59,31 @@ def dashboard_data(request, method, al, lc, form, logic_form, test_type):
     test = test.values.tolist()
 
     #trend_data = data[['Date', 'Trend', 'Trend_macd']]
-    bt_data = bt.execute_backtesting(lc, backtest_data)
+    bt_data = bt.execute_backtesting(lc, backtest_data, datas)
     bt_data=bt_data.values.tolist()
-
+    
     context = {
         'bt_data': bt_data,
-        'training':training,
         'test':test,
         'direction': direction,
         "form":form,
         "logic_form":logic_form,
         "location":lc,
         "about":about,
-        "metrics":metrics,
+        "backward_metrics":backward_metrics,
+        "forward_metrics":forward_metrics,
     }
+
+    template_name = ''
+    if test_type == 'backtest':
+        template_name = 'data_plot/backward_test.html'
+        context['training']=training
+    elif test_type == 'forwardtest':
+        template_name = 'data_plot/forward_test.html'
+
     return render(
         request,
-        'data_plot/backward_test.html',
+        template_name,
         context
     )
 
@@ -78,27 +91,33 @@ def dashboard_data(request, method, al, lc, form, logic_form, test_type):
 def dashboard_forward_test(request):
     global al, lc
     test ='forwardtest'
+    
     if request.method == 'POST':
+        method = 'POST'
         option_form = dashboard_options(request.POST)
         logic_form = algorithm_options(request.POST)
         if option_form.is_valid() or logic_form.is_valid():        
             if option_form.is_valid():
+                datas= {}
                 lc  = option_form.cleaned_data.get("location")
                 al  = option_form.cleaned_data.get('algorithm')
                 logic  = option_form.cleaned_data.get('logic_field')
                 method = 'POST'
-                return dashboard_data(request, method, al, lc, option_form, logic_form, test) 
+                return dashboard_data(request, method, al, lc, option_form, logic_form, test, datas) 
 
             if logic_form.is_valid():
-                buy  = logic_form.cleaned_data.get("buy")
-                print(buy)
-                method = 'buy'
-                return dashboard_data(request, method, al, lc, option_form, logic_form, test) 
+                datas={}
+                datas['starting_cash']  = logic_form.cleaned_data.get("starting_cash")
+                datas['comission_percentage']  = logic_form.cleaned_data.get("comission_percentage")
+                datas['strategy_type']  = logic_form.cleaned_data.get("strategy_type")
+
+                return dashboard_data(request, method, al, lc, option_form, logic_form, test, datas) 
             
 
     else:
         #set default algorithm and location
         temp_models = []
+        datas ={}
         for file in glob('algorithm/models/*'):
             file = os.path.basename(file)
             temp_models.append(file)
@@ -120,33 +139,37 @@ def dashboard_forward_test(request):
         method = 'GET'
         
 
-        return dashboard_data(request, method, al, lc, option_form, logic_form, test)
+        return dashboard_data(request, method, al, lc, option_form, logic_form, test, datas)
 
 
 def dashboard_backward_test(request):
     global al, lc
     test ='backtest'
     if request.method == 'POST':
+        method = 'POST'
         option_form = dashboard_options(request.POST)
         logic_form = algorithm_options(request.POST)
         if option_form.is_valid() or logic_form.is_valid():        
             if option_form.is_valid():
+                datas= {}
                 lc  = option_form.cleaned_data.get("location")
                 al  = option_form.cleaned_data.get('algorithm')
                 logic  = option_form.cleaned_data.get('logic_field')
-                method = 'POST'
-                return dashboard_data(request, method, al, lc, option_form, logic_form, test) 
+                return dashboard_data(request, method, al, lc, option_form, logic_form, test, datas) 
 
             if logic_form.is_valid():
-                buy  = logic_form.cleaned_data.get("buy")
-                print(buy)
-                method = 'buy'
-                return dashboard_data(request, method, al, lc, option_form, logic_form, test) 
+                datas={}
+                datas['starting_cash']  = logic_form.cleaned_data.get("starting_cash")
+                datas['comission_percentage']  = logic_form.cleaned_data.get("comission_percentage")
+                datas['strategy_type']  = logic_form.cleaned_data.get("strategy_type")
+
+                return dashboard_data(request, method, al, lc, option_form, logic_form, test, datas) 
             
 
     else:
         #set default algorithm and location
         temp_models = []
+        datas ={}
         for file in glob('algorithm/models/*'):
             file = os.path.basename(file)
             temp_models.append(file)
@@ -167,7 +190,7 @@ def dashboard_backward_test(request):
             
         lc = temp_location[0]
         method = 'GET'
-        return dashboard_data(request, method, al, lc, option_form, logic_form, test)
+        return dashboard_data(request, method, al, lc, option_form, logic_form, test, datas)
 
         
 

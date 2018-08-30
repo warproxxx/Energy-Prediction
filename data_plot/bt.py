@@ -107,7 +107,7 @@ class TestStrategy(bt.Strategy):
         except:
             pass
 
-def execute_backtesting(location, csv_data):
+def execute_backtesting(location, csv_data, datas):
 	df = csv_data
 	np.random.seed(1)
 	df['Date'] = [int(time.mktime(datetime.datetime.strptime(x, '%Y-%m-%d %H:%M:%S').timetuple())) for x in df['Date']] 
@@ -133,7 +133,13 @@ def execute_backtesting(location, csv_data):
 	cerebro.adddata(data)
 
     # Set our desired cash start
-	cerebro.broker.setcash(100000.0)
+	if bool(datas):
+		if datas['starting_cash'] > 0:
+			cerebro.broker.setcash(datas['starting_cash'])
+		else:
+			cerebro.broker.setcash(100000.0)
+	else:
+		cerebro.broker.setcash(100000.0)
 
     # Add a FixedSize sizer according to the stake
 	cerebro.addsizer(bt.sizers.FixedSize, stake=10)
