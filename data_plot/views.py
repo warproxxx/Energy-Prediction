@@ -68,7 +68,6 @@ def dashboard_data(request, method, al, lc, form, logic_form, test_type, datas):
 
     trade_data = pd.read_csv('algorithm/csvs/trading_data.csv')
     buy_data =trade_data[['Date','Buy']].dropna().reset_index(drop=True)
-    print(buy_data)
     buy_data = buy_data.values.tolist()
     
     sell_data =trade_data[['Date','Sell']].dropna().reset_index(drop=True)
@@ -148,9 +147,8 @@ def dashboard_forward_test(request):
             if logic_form.is_valid():
                 datas={}
                 datas['starting_cash']  = logic_form.cleaned_data.get("starting_cash")
-                datas['comission_percentage']  = logic_form.cleaned_data.get("comission_percentage")
+                datas['comission_percentage']  = 0.1 #logic_form.cleaned_data.get("comission_percentage")
                 datas['strategy_type']  = logic_form.cleaned_data.get("strategy_type")
-
                 return dashboard_data(request, method, al, lc, option_form, logic_form, test, datas) 
             
 

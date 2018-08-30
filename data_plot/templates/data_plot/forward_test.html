@@ -254,8 +254,8 @@
 													{{ logic_form.starting_cash|add_class:"form-control form-control-sm"|attr:"placeholder:Starting Cash" }}
 												</div>
 												<div class="col-lg-3 col-md-3 ">
-													{{ logic_form.comission_percentage|add_class:"form-control form-control-sm"|attr:"placeholder:Comission Percentage"|attr:"value:0.1 %"|attr:"disabled: " }}
-													{{ logic_form.test_type|add_class:"form-control form-control-sm"}}
+													<input type="text" class="form-control form-control-sm" value="0.1" disabled="">
+													{{ logic_form.test_type|add_class:"form-control form-control-sm"|attr:"value:backtest"}}
 												</div>
 												<div class="col-lg-3 col-md-3 ">
 													{{ logic_form.strategy_type|add_class:"form-control form-control-sm"|attr:"placeholder:Strategy Type" }}
