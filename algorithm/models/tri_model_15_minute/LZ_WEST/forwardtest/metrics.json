@@ -1,0 +1,1 @@
+"{\"Directional Accuracy\": 0.4650837988826816, \"True Negative\": 41, \"False Positive\": 326, \"Recall\": 0.47249190938511326, \"True Positive\": 292, \"RMS Error\": 70.51120690718271, \"False Negative\": 326, \"F1 Score\": 0.4724919093851132, \"Current Prediction\": 52.53969192504883, \"Precision\": 0.47249190938511326, \"R2 Score\": 0.6796673361166193}"

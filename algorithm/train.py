@@ -21,7 +21,8 @@ class trainer():
 
     def train(self):
         for location in self.locations:
-            city = os.path.basename("data/processed/", "")
+            city = os.path.basename(location)
+            print(city)
             bTestDirectory = self.currLocation + "/models/{}/{}/backtest/".format(self.models[0],city)
 
             if (os.path.isdir(bTestDirectory)):
