@@ -1,4 +1,4 @@
 {
-    "title": "",
-    "description": ""
+    "title": "Bidirectional Accuracy",
+    "description": "The direction the model predicted is compared with the real direction. If these two directions match, value is increased by 1 and if it they don't value is decreased by 1. This plot is thus formed"
 }
