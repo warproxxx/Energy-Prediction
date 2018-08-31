@@ -1,0 +1,4 @@
+{
+    "title": "Metrics",
+    "description": "This shows how the backtesting performed. Total Return is self explanatory. Sharpe ratio is the ratio of return to volatility. The more the better. Sortino ratio is the ratio of negative volatility to return as positive volatility is good. Maxmimum drawdown is the maxmium it went down in percantage. They can be looked up in google. Also there is this movement option which shows what the return would be (in terms of decimal. Multiply it by 100 to get percetage) and what the maximum drawdown would be for that month."
+}
