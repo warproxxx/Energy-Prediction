@@ -15,12 +15,13 @@ import pandas as pd
 import numpy as np
 from glob import glob
 from django import forms
-from data_plot.forms import dashboard_options, algorithm_options
+from data_plot.forms import dashboard_options, algorithm_options, userLoginForm, UserRegistrationForm
 import os
 import json 
 
 from .multiforms import MultiFormsView
 from django.urls import reverse, reverse_lazy
+from django.views.generic import TemplateView
 
 al = ''
 lc = ''
@@ -137,8 +138,9 @@ def dashboard_data(request, method, al, lc, form, logic_form, test_type, datas):
     direction = direction.values.tolist()
 
     training = t_data[t_data['Indicator'] == 1]
-    test = t_data[t_data['Indicator'] == 0]
     training = training.values.tolist()
+
+    test = t_data[t_data['Indicator'] == 0]
     test = test.values.tolist()
 
     s_pMovementDetails = benchmarkMovementDetails.values.tolist()
@@ -319,3 +321,108 @@ class MultipleFormsDemoView(MultiFormsView):
         buy= form.cleaned_data.get('buy')
         print(buy)
         return HttpResponseRedirect(self.get_success_url(form_name))
+
+def login_user(request):
+    template_name = 'data_plot/login.html'
+
+    if request.method == 'GET':
+        if request.user.is_authenticated == True:
+            return HttpResponseRedirect("/dashboard/backtest/")
+        else:
+            form = userLoginForm()
+            return render(request, template_name, {"form":form})
+            
+
+    if request.method == 'POST':
+        if request.user.is_authenticated == True:
+            return HttpResponseRedirect("/dashboard/backtest/")
+        else:
+            form = userLoginForm(request.POST)
+            if form.is_valid():
+                uname  = form.cleaned_data.get("username")
+                pword  = form.cleaned_data.get('password')
+                user = authenticate(username=uname, password=pword)      
+                login(request, user)
+                if login:
+                    return HttpResponseRedirect("/dashboard/backtest")
+                else:   
+                    return redirect("/login/")
+        return render(request, template_name, {"form":form})
+
+def user_logout(request):
+    if not request.user.is_authenticated:
+        return redirect("/dashboard/login/")
+    else:
+        logout(request)
+        return redirect("/dashboard/login/")
+
+
+class register_user(TemplateView):
+    template_name = 'data_plot/adduser.html'
+    def get(self, request):
+        if request.user.is_authenticated and request.user.is_superuser:
+            #data=request.GET
+            membership = '6m'
+            membership_plan = 'platinium'
+            plan_check = False
+            time_check = False
+            if membership == '1m' or membership == '3m' or membership == '6m' or membership == '7d':
+                plan_check = True
+            else:
+                plan_check = False
+            if membership_plan=='premium' or membership_plan == 'platinium' or membership_plan == 'trial':
+                time_check = True
+            else:
+                time_check = False
+
+            if plan_check == True and time_check == True:
+                form = UserRegistrationForm()
+                return render(self.request, self.template_name, {"form":form, 'plan':membership_plan, 'time':membership})
+            else:
+                return HttpResponseRedirect("/Error-404/")
+        else:
+            return HttpResponseRedirect("/dashboard/backtest/")
+
+    def post(self, request):
+        if request.user.is_authenticated and request.user.is_superuser:
+            template_name = 'data_plot/adduser.html'
+            #next = request.GET.get('next')
+            membership = '6m'
+            membership_plan = 'platinium'
+            membership_title=''
+            plan_check = False
+            time_check = False
+            if membership == '1m' or membership == '3m' or membership == '6m' or membership == '7d':
+                plan_check = True
+            else:
+                plan_check = False
+            if membership_plan=='premium' or membership_plan == 'platinium' or membership_plan == 'trial':
+                time_check = True
+            else:
+                time_check = False
+            
+            if plan_check == True and time_check == True:
+                form = UserRegistrationForm(request.POST)
+                if form.is_valid():
+                    datas={}
+                    datas['username']=form.cleaned_data['username']
+                    datas['email']=form.cleaned_data['email']
+                    datas['password1']=form.cleaned_data['password1']
+                    datas['first_name']=form.cleaned_data['first_name']
+                    datas['last_name']=form.cleaned_data['last_name']
+                    datas['m_plans']=plan
+                    datas['m_time'] = time
+                    datas['activation_key']= generate_activation_key(datas['username'])
+                    datas['link']="http://127.0.0.1:8000/user_registration/activate_account/"+datas['activation_key']
+                    datas['subject']='Quantorithm: Email Confirmation Token'
+                    saveData = form.save(datas)
+                    if saveData:
+                        return HttpResponseRedirect("dashboard/backtest")
+                else:     
+                    args =  {"form":form}
+                    return render(request, template_name, args)
+                
+            else:
+                return HttpResponseRedirect("/Error-404/")
+        else:
+            return HttpResponseRedirect("/dashboard/backtest/")
