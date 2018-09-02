@@ -286,7 +286,8 @@ def run_cerebro(strategy, current_rootDir, starting_cash, comission, strategyDir
     portfolioValue, trade_data, strategy_metrics, benchmark_metrics, strategyMovementDetails, benchmarkMovementDetails = process_data(df, portfolioValue, trades, operations)
     
     #create directory then save
-    os.makedirs(strategyDir)
+    if not os.path.isdir(strategyDir):
+        os.makedirs(strategyDir)
 
     portfolioValue.to_csv('{}/PortfolioValue.csv'.format(strategyDir))
     trade_data.to_csv('{}/trading_data.csv'.format(strategyDir))

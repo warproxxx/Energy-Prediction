@@ -3,3 +3,4 @@ __pycache__/
 *.egg-info/
 .installed.cfg
 *.egg
+algorithm/models/{}/{}/forwardtest/*
