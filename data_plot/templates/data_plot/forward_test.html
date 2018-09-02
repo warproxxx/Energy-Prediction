@@ -22,11 +22,15 @@
     <!-- Custom CSS -->
     <link href="{% static 'data_plot/dist/css/sb-admin-2.css' %}" rel="stylesheet">
 
-    <!-- Morris Charts CSS -->
-    <link href="{% static 'data_plot/vendor/morrisjs/morris.css' %}" rel="stylesheet">
 
     <!-- Custom Fonts -->
     <link href="{% static 'data_plot/vendor/font-awesome/css/font-awesome.min.css' %}" rel="stylesheet" type="text/css">
+	
+	<link href="{% static 'data_plot/vendor/datatables-plugins/dataTables.bootstrap.css' %}" rel="stylesheet">
+
+    <!-- DataTables Responsive CSS -->
+    <link href="{% static 'data_plot/vendor/datatables-responsive/dataTables.responsive.css' %}" rel="stylesheet">
+	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
 
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -71,7 +75,6 @@
 		.nopadding-bottom {
 		   padding-bottom: 0 !important;
 		}
-		
 		.padding-10px {
 		   padding: 10px !important;
 		}
@@ -168,112 +171,97 @@
         <div id="page-wrapper">
             <div class="row">
                 <div class="col-lg-12">
-                    <h1 class="page-header">Dashboard</h1>
+                    <h1 class="page-header">Dashboard <button class="btn btn-info" data-toggle="modal" data-target="#aboutModel"> <i class="fa fa-book" aria-hidden="true"></i> About Model</button></h1>
                 </div>
                 <!-- /.col-lg-12 -->
             </div>
 			<div class="row">
 				<div class="col-lg-12 col-md-12 nopadding">
+					<div class="panel-group" id="accordion">
 						<div class="panel panel-default">
-							<div class="panel-heading" style="padding-bottom:43px;">
-								<form action="" method="post" enctype='multipart/form-data'>{% csrf_token %}
-									<div class="col-lg-2 col-md-2 nopadding">
-										<span style="font-size:23px"><i class="fa fa-cog"></i> Options</span>
-									</div>
-									<div class="col-lg-2 col-md-2 nopadding">
-										{{ form.location|add_class:"form-control form-control-sm"|attr:"placeholder:Select Location" }}
-									</div>
-									<div class="col-lg-2 col-md-2 nopadding-right nopadding-top nopadding-bottom">
-										{{ form.algorithm|add_class:"form-control form-control-sm"|attr:"placeholder:Select Algorithm" }}
-									</div>
-									<div class="col-lg-2 col-md-2 nopadding-right nopadding-top nopadding-bottom">
-										<input type = "submit" class="btn btn-primary" value= "View Analysis" id="viewAnalysis">
-									</div>
-								</form>
+							<div class="panel-heading">
+								<h4 class="panel-title">
+									<a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="false" class="collapsed"><span style="font-size:18px"><i class="fa fa-cog"></i> Dashboard Options </span><i class="fas fa-angle-down"></i></a>
+								</h4>
+							</div>
+							<div id="collapseOne" class="panel-collapse collapse" aria-expanded="false" style="height: 0px;">
+								<div class="panel-body">
+									<form action="" method="post" enctype='multipart/form-data'>{% csrf_token %}
+										<div class="col-lg-12 col-md-12">
+										</div>
+										<div class="col-lg-3 col-md-3">
+											<label class="control-label">Select Location</label>
+											{{ form.location|add_class:"form-control form-control-sm"|attr:"placeholder:Select Location" }}
+										</div>
+										<div class="col-lg-3 col-md-3">
+											<label class="control-label">Select Algorithm</label>
+											{{ form.algorithm|add_class:"form-control form-control-sm"|attr:"placeholder:Select Algorithm" }}
+										</div>
+										<div class="col-lg-2 col-md-2">
+											<label class="control-label" style="color:#fcfcfc">submit</label>
+											<input type = "submit" class="btn btn-primary form-control form-control-sm" value= "View Analysis" id="viewAnalysis">
+										</div>
+									</form>	
+								</div>
 							</div>
 						</div>
 					</div>
-				</div>
-			 <!-- /.row -->
-            <div class="row">
-                <div class="col-lg-12 col-md-12 nopadding">
-					<div class="panel panel-default">
-						<div class="panel-heading">
-						 <i class="fa fa-question-circle"></i> About Model
-						</div>
-						<div class="panel-body no-padding">
-							{% if about %}
-								{% for key, value in about.items %} 
-								  {% if key == 'title' %}
-										<h4><b>{{value}}</b></h4>
-								  {% elif  key == 'description' %}
-										<p>{{ value }}</p>
-								  {% elif  key == 'pros' %}
-										<h4>Pros</h4>
-										<ol>
-										{% for pros in value %} 
-											<li>{{ pros }}</li>
-										{% endfor %}
-										</ol>
 
-								  {% elif  key == 'cons' %}
-									<h4>Cons</h4>
-									<ol>
-									{% for cons in value %} 
-										<li>{{ cons }}</li>
-									{% endfor %}
-									</ol>
-								  {% endif %}
-								{% endfor %}
-							{% endif %}
-						</div>
 					</div>
 				</div>
-			</div>
-			 <!-- /.row -->
+
             <div class="row">
                 <div class="col-lg-12 col-md-12 nopadding">
 					<div class="col-lg-12 col-md-12 nopadding">
 						<div class="panel panel-default">
 							<div class="panel-heading">
 								<i class="fa fa-bar-chart-o fa-fw"></i> Backtest Result
+								<div class="pull-right">
+									<button type="button" class="btn btn-default btn-xs " data-toggle="modal" data-target="#backtestchartExplanation"><i class="fa fa-question-circle" aria-hidden="true"></i> About</button>
+								</div>
 							</div>
 							<!-- /.panel-heading -->
-							<div class="panel-body no-padding">
-								<div class="col-lg-12 col-md-12 nopadding">
-									<div class="panel panel-default">
-										<div class="panel-heading" style="padding-bottom:43px;">
-												<div class="col-lg-12 col-md-12 nopadding">
-													<span style="font-size:23px"><i class="fa fa-cog"></i> Back test logic Controls</span>
-												</div>
-										</div>
-										<div class="panel-body">
-											<form action="" method="post" enctype='multipart/form-data'>{% csrf_token %}
-
-												<div class="col-lg-3 col-md-3">
-													{{ logic_form.starting_cash|add_class:"form-control form-control-sm"|attr:"placeholder:Starting Cash" }}
-												</div>
-												<div class="col-lg-3 col-md-3 ">
-													<input type="text" class="form-control form-control-sm" value="0.1" disabled="">
-													{{ logic_form.test_type|add_class:"form-control form-control-sm"|attr:"value:backtest"}}
-												</div>
-												<div class="col-lg-3 col-md-3 ">
-													{{ logic_form.strategy_type|add_class:"form-control form-control-sm"|attr:"placeholder:Strategy Type" }}
-												</div>
-												<div class="col-lg-2 col-md-2 nopadding-right nopadding-top nopadding-bottom">
-													<input type = "submit" class="btn btn-primary" value= "View Testing" id="viewAnalysis">
-												</div>
-											</form>
-										</div>
+							<div class="panel-body" style="background-color:#fcfcfc;">
+								
+								<form action="" class="nopadding" method="post" enctype='multipart/form-data'>{% csrf_token %}
+								
+	
+									<div class="col-lg-3 col-md-3">
+										<label class="control-label">Strating Cash</label>
+										{{ logic_form.starting_cash|add_class:"form-control form-control-sm"|attr:"placeholder:Starting Cash" }}
 									</div>
-								</div>
+									<div class="col-lg-3 col-md-3 ">
+										<label class="control-label">Comission Percentage</label>
+										<input type="text" class="form-control form-control-sm" value="0.1" disabled="">
+										{{ logic_form.test_type|add_class:"form-control form-control-sm"|attr:"value:backtest"}}
+									</div>
+									<div class="col-lg-2 col-md-2 ">
+										<label class="control-label">Strategy</label>
+										{{ logic_form.strategy_type|add_class:"form-control form-control-sm"|attr:"placeholder:Strategy Type" }}
+									</div>
+									<div class="col-lg-2 col-md-2">
+										<label class="control-label" style="color:#fcfcfc">submit</label>
+										<input type = "submit" class="btn btn-primary form-control form-control-sm" value= "View Testing" id="viewAnalysis">
+									</div>
+									<div class="col-lg-2 col-md-2">
+									</div>
+								</form>
+								<br>
+								<br>
+
+							</div>
+							<div class="panel-body">
 								<div id="backTestChart" class="bg-white c-bg col-xs-12 col-sm-12 col-md-12 col-lg-12 nopadding" style="height: 500px;">			  
 								</div>
 							</div>
+							
 							<div class="panel-body">
 								<div class="panel panel-default">
 									<div class="panel-heading">
 										Risk Metrics
+										<div class="pull-right">
+											<button type="button" class="btn btn-default btn-xs " data-toggle="modal" data-target="#riskmetricsExplanation"><i class="fa fa-question-circle" aria-hidden="true"></i> About</button>
+										</div>
 									</div>
 									<div class="panel-body">
 										<div class="col-lg-12 nopadding">
@@ -283,7 +271,9 @@
 												</li>
 												<li class=""><a href="#benchmark_metrics" data-toggle="tab" aria-expanded="false">Benckmark Metrics</a>
 												</li>
-												<li class=""><a href="#strategy_metrics" data-toggle="tab" aria-expanded="false">Strategy Metrics</a>
+												<li class=""><a href="#strategyMovement" data-toggle="tab" aria-expanded="false">Strategy Movement</a>
+												</li>
+												<li class=""><a href="#sp_Movement" data-toggle="tab" aria-expanded="false">S&P Movement</a>
 												</li>
 											</ul>
 
@@ -339,42 +329,85 @@
 														</table>
 													</div>
 												</div>
-												<div class="tab-pane fade" id="strategy_metrics">
-													<div class="table-responsive padding-10px">
-														<table class="table table-bordered">
+												<div class="tab-pane fade" id="strategyMovement">
+													<div class="panel-body">
+														<div id="dataTables-example_wrapper" class="dataTables_wrapper form-inline dt-bootstrap no-footer" style="height:500px; overflow:scroll;">
+														<table class="table table-bordered dataTable no-footer table-hover dtr-inline" id="dataTables-example" role="grid" aria-describedby="dataTables-example_info" style="width: 100%; font-size:12px;" width="100%;">
+															<thead>
+																<tr role="row">
+																	<th>Index</th>
+																	<th>Time</th>
+																	<th>Return</th>
+																	<th>Drawdown</th>
+																</tr>
+															</thead>
 															<tbody>
-															{% if strategy_metrics %}
-															<tr>
-																{% for key, value in strategy_metrics.items%} 											
-																		
-																			<td style="background-color:#f9f9f9;">{{ key }}</td>
-																			<td>{{ value }}</td>
-																		
+															{% for row in strategyMovementDetails %}
+															
 
-																	 {% if forloop.counter == 2 or forloop.counter == 4 or forloop.counter == 6 or forloop.counter == 8 or forloop.counter == 10 %}
-																		</tr>
-																		<tr>
-																	 {% endif %}
+																<tr role="row">	
+																	 {% for sub_row in row %}
+																		<td style="padding:3px">{{sub_row}}</td>
+																	{% endfor %}
+																			
+																		
+																	</tr>
 																{% endfor %}
-															</tr>
-															{% else %}
-															<p class="text-danger">No data found</p>
-															{% endif %}
 															</tbody>
 														</table>
 													</div>
+													 
+														<!-- /.table-responsive -->
+													</div>
 												</div>
+												<div class="tab-pane fade" id="sp_Movement">
+													<div class="panel-body">
+														<div id="dataTables-example_wrapper" class="dataTables_wrapper form-inline dt-bootstrap no-footer" style="height:500px; overflow:scroll;">
+														<table class="table table-bordered dataTable no-footer table-hover dtr-inline" id="dataTables-example" role="grid" aria-describedby="dataTables-example_info" style="width: 100%; font-size:12px;" width="100%;">
+															<thead>
+																<tr role="row">
+																	<th>Index</th>
+																	<th>Time</th>
+																	<th>Return</th>
+																	<th>Drawdown</th>
+																</tr>
+															</thead>
+															<tbody>
+															{% for row in s_pMovementDetails %}
+															
+
+																<tr role="row">	
+																	 {% for sub_row in row %}
+																		<td style="padding:3px">{{sub_row}}</td>
+																	{% endfor %}
+																			
+																		
+																	</tr>
+																{% endfor %}
+															</tbody>
+														</table>
+													</div>
+													 
+														<!-- /.table-responsive -->
+													</div>
+												</div>
+												<!-- /.end tab -->
 											</div>
 										</div>									
 									</div>								
 								</div>
 							</div>
 							<!-- /.panel-body -->
+
 							<div class="panel-body">
-							 <div class="panel panel-default">
+							<div class="panel panel-default">
 							 
 									<div class="panel-heading">
 										Model Performance
+										<div class="pull-right">
+											<button type="button" class="btn btn-default btn-xs " data-toggle="modal" data-target="#modelperformanceExplanation"><i class="fa fa-question-circle" aria-hidden="true"></i> About</button>
+										</div>
+										
 									</div>
 									<div class="panel-body">
 										<div class="col-md-12 col-lg-12">
@@ -447,16 +480,21 @@
             <!-- /.row -->
             <div class="row">
                 <div class="col-lg-12 col-md-12 nopadding">
-
-					<div class="col-lg-12 col-md-102 nopadding">
+					<div class="col-lg-12 col-md-12 nopadding">
 						<div class="panel panel-default">
 							<div class="panel-heading">
-								<i class="fa fa-bar-chart-o fa-fw"></i> Test Set Chart
+								<i class="fa fa-bar-chart-o fa-fw"></i>Test Set Chart
+								<div class="pull-right">
+									<button type="button" class="btn btn-default btn-xs " data-toggle="modal" data-target="#ttchartExplanation"><i class="fa fa-question-circle" aria-hidden="true"></i> About</button>
+								</div>
 							</div>
 							<!-- /.panel-heading -->
 							<div class="panel-body nopadding">
-								<div id="testSetChart" class="bg-white c-bg col-xs-12 col-sm-12 col-md-12 col-lg-12 no-padding nopadding" style="height: 400px;">			  
+								<div class="col-lg-12 col-md-12 nopadding">
+									<div id="testSetChart" class="bg-white c-bg col-xs-12 col-sm-12 col-md-12 col-lg-12 no-padding nopadding" style="height: 400px;">			  
+									</div>
 								</div>
+								
 							</div>
 							<!-- /.panel-body -->
 						</div>
@@ -466,6 +504,9 @@
 						<div class="panel panel-default">
 							<div class="panel-heading">
 								<i class="fa fa-bar-chart-o fa-fw"></i> Bidirectional Accuracy
+								<div class="pull-right">
+									<button type="button" class="btn btn-default btn-xs " data-toggle="modal" data-target="#bdChartExplanation"><i class="fa fa-question-circle" aria-hidden="true"></i> About</button>
+								</div>
 							</div>
 							<!-- /.panel-heading -->
 							<div class="panel-body nopadding">
@@ -485,30 +526,343 @@
 
     </div>
     <!-- /#wrapper -->
+	
+	 <!-- #About the model -->
+	<div class="modal fade in" id="aboutModel" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+					<h4 class="modal-title" id="myModalLabel">About Model</h4>
+				</div>
+				<div class="modal-body">
+							{% if about %}
+								{% for key, value in about.items %} 
+								  {% if key == 'title' %}
+										<h4><b>{{value}}</b></h4>
+								  {% elif  key == 'description' %}
+										<p>{{ value }}</p>
+								  {% elif  key == 'pros' %}
+										<h4>Pros</h4>
+										<ol>
+										{% for pros in value %} 
+											<li>{{ pros }}</li>
+										{% endfor %}
+										</ol>
+
+								  {% elif  key == 'cons' %}
+									<h4>Cons</h4>
+									<ol>
+									{% for cons in value %} 
+										<li>{{ cons }}</li>
+									{% endfor %}
+									</ol>
+								  {% endif %}
+								{% endfor %}
+							{% endif %}
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+				</div>
+			</div>
+			<!-- /.modal-content -->
+		</div>
+		<!-- /.modal-dialog -->
+	</div>
+	<!-- /#About the model -->
+	
+	 <!-- #About the model -->
+	<div class="modal fade in" id="backtestchartExplanation" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+					<h4 class="modal-title" id="myModalLabel">About Backtest chart</h4>
+				</div>
+				<div class="modal-body">
+							{% if bt_chart_explanation %}
+								{% for key, value in bt_chart_explanation.items %} 
+								  {% if key == 'title' %}
+										<h4><b>{{value}}</b></h4>
+								  {% elif  key == 'description' %}
+										<p>{{ value }}</p>
+								  {% elif  key == 'pros' %}
+										<h4>Pros</h4>
+										<ol>
+										{% for pros in value %} 
+											<li>{{ pros }}</li>
+										{% endfor %}
+										</ol>
+
+								  {% elif  key == 'cons' %}
+									<h4>Cons</h4>
+									<ol>
+									{% for cons in value %} 
+										<li>{{ cons }}</li>
+									{% endfor %}
+									</ol>
+								  {% endif %}
+								{% endfor %}
+							{% endif %}
+							
+							{% if strategy_explanation %}
+								{% for key, value in strategy_explanation.items %} 
+								  {% if key == 'title' %}
+										<h4><b>{{value}}</b></h4>
+								  {% elif  key == 'description' %}
+										<p>{{ value }}</p>
+								  {% elif  key == 'pros' %}
+										<h4>Pros</h4>
+										<ol>
+										{% for pros in value %} 
+											<li>{{ pros }}</li>
+										{% endfor %}
+										</ol>
+
+								  {% elif  key == 'cons' %}
+									<h4>Cons</h4>
+									<ol>
+									{% for cons in value %} 
+										<li>{{ cons }}</li>
+									{% endfor %}
+									</ol>
+								  {% endif %}
+								{% endfor %}
+							{% endif %}
+							
+							{% if portfolio_chart_explanation %}
+								{% for key, value in portfolio_chart_explanation.items %} 
+								  {% if key == 'title' %}
+										<h4><b>{{value}}</b></h4>
+								  {% elif  key == 'description' %}
+										<p>{{ value }}</p>
+								  {% elif  key == 'pros' %}
+										<h4>Pros</h4>
+										<ol>
+										{% for pros in value %} 
+											<li>{{ pros }}</li>
+										{% endfor %}
+										</ol>
+
+								  {% elif  key == 'cons' %}
+									<h4>Cons</h4>
+									<ol>
+									{% for cons in value %} 
+										<li>{{ cons }}</li>
+									{% endfor %}
+									</ol>
+								  {% endif %}
+								{% endfor %}
+							{% endif %}
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+				</div>
+			</div>
+			<!-- /.modal-content -->
+		</div>
+		<!-- /.modal-dialog -->
+	</div>
+	<!-- /#About the model -->
+	
+ <!-- #About the model -->
+	<div class="modal fade in" id="riskmetricsExplanation" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+					<h4 class="modal-title" id="myModalLabel">About Risk Metrics</h4>
+				</div>
+				<div class="modal-body">
+							{% if risk_explanation %}
+								{% for key, value in risk_explanation.items %} 
+								  {% if key == 'title' %}
+										<h4><b>{{value}}</b></h4>
+								  {% elif  key == 'description' %}
+										<p>{{ value }}</p>
+								  {% elif  key == 'pros' %}
+										<h4>Pros</h4>
+										<ol>
+										{% for pros in value %} 
+											<li>{{ pros }}</li>
+										{% endfor %}
+										</ol>
+
+								  {% elif  key == 'cons' %}
+									<h4>Cons</h4>
+									<ol>
+									{% for cons in value %} 
+										<li>{{ cons }}</li>
+									{% endfor %}
+									</ol>
+								  {% endif %}
+								{% endfor %}
+							{% endif %}
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+				</div>
+			</div>
+			<!-- /.modal-content -->
+		</div>
+		<!-- /.modal-dialog -->
+	</div>
+	<!-- /#About the model -->	
+	
+		
+ <!-- #About the model -->
+	<div class="modal fade in" id="modelperformanceExplanation" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+					<h4 class="modal-title" id="myModalLabel">About Model Performance</h4>
+				</div>
+				<div class="modal-body">
+							{% if model_performance_explanation %}
+								{% for key, value in model_performance_explanation.items %} 
+								  {% if key == 'title' %}
+										<h4><b>{{value}}</b></h4>
+								  {% elif  key == 'description' %}
+										<p>{{ value }}</p>
+								  {% elif  key == 'pros' %}
+										<h4>Pros</h4>
+										<ol>
+										{% for pros in value %} 
+											<li>{{ pros }}</li>
+										{% endfor %}
+										</ol>
+
+								  {% elif  key == 'cons' %}
+									<h4>Cons</h4>
+									<ol>
+									{% for cons in value %} 
+										<li>{{ cons }}</li>
+									{% endfor %}
+									</ol>
+								  {% endif %}
+								{% endfor %}
+							{% endif %}
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+				</div>
+			</div>
+			<!-- /.modal-content -->
+		</div>
+		<!-- /.modal-dialog -->
+	</div>
+	<!-- /#About the model -->	 
+	<!-- #About the model -->
+	<div class="modal fade in" id="ttchartExplanation" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+					<h4 class="modal-title" id="myModalLabel">About Training and Test chart</h4>
+				</div>
+				<div class="modal-body">
+							{% if tt_chart_explanation %}
+								{% for key, value in tt_chart_explanation.items %} 
+								  {% if key == 'title' %}
+										<h4><b>{{value}}</b></h4>
+								  {% elif  key == 'description' %}
+										<p>{{ value }}</p>
+								  {% elif  key == 'pros' %}
+										<h4>Pros</h4>
+										<ol>
+										{% for pros in value %} 
+											<li>{{ pros }}</li>
+										{% endfor %}
+										</ol>
+
+								  {% elif  key == 'cons' %}
+									<h4>Cons</h4>
+									<ol>
+									{% for cons in value %} 
+										<li>{{ cons }}</li>
+									{% endfor %}
+									</ol>
+								  {% endif %}
+								{% endfor %}
+							{% endif %}
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+				</div>
+			</div>
+			<!-- /.modal-content -->
+		</div>
+		<!-- /.modal-dialog -->
+	</div>
+	<!-- /#About the model -->	
+		<!-- #About the model -->
+	<div class="modal fade in" id="bdChartExplanation" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+					<h4 class="modal-title" id="myModalLabel">About Bidirectional Chart</h4>
+				</div>
+				<div class="modal-body">
+							{% if bd_chart_explanation %}
+								{% for key, value in bd_chart_explanation.items %} 
+								  {% if key == 'title' %}
+										<h4><b>{{value}}</b></h4>
+								  {% elif  key == 'description' %}
+										<p>{{ value }}</p>
+								  {% elif  key == 'pros' %}
+										<h4>Pros</h4>
+										<ol>
+										{% for pros in value %} 
+											<li>{{ pros }}</li>
+										{% endfor %}
+										</ol>
+
+								  {% elif  key == 'cons' %}
+									<h4>Cons</h4>
+									<ol>
+									{% for cons in value %} 
+										<li>{{ cons }}</li>
+									{% endfor %}
+									</ol>
+								  {% endif %}
+								{% endfor %}
+							{% endif %}
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+				</div>
+			</div>
+			<!-- /.modal-content -->
+		</div>
+		<!-- /.modal-dialog -->
+	</div>
+	<!-- /#About the model -->	
+				
+
+				
 
     <!-- jQuery -->
-    <script src="{% static 'data_plot/vendor/jquery/jquery.min.js' %}"></script>
-
     <!-- Bootstrap Core JavaScript -->
+    <script src="{% static 'data_plot/vendor/jquery/jquery.min.js' %}"></script>
     <script src="{% static 'data_plot/vendor/bootstrap/js/bootstrap.min.js' %}"></script>
 
     <!-- Metis Menu Plugin JavaScript -->
     <script src="{% static 'data_plot/vendor/metisMenu/metisMenu.min.js' %}"></script>
 
-    <!-- Morris Charts JavaScript -->
-    <script src="{% static 'data_plot/vendor/raphael/raphael.min.js' %}"></script>
-
-
     <!-- Custom Theme JavaScript -->
     <script src="{% static 'data_plot/dist/js/sb-admin-2.js' %}"></script>
-	<script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
-		
+	
 
 </body>
 
 </html>
 
+
+
  <script type="text/javascript">
+
  
  //create data table on loaded data
 var bt_dataTable = anychart.data.table();
@@ -542,8 +896,6 @@ var sell_datatable = anychart.data.table();
 
 
 <script>
-
-$('#id_test_type').val('{{ test_type }}');
 
 anychart.onDocumentReady(function () {
 	
@@ -635,19 +987,19 @@ anychart.onDocumentReady(function () {
     portfolio.addField('value', 1);
 	
 	var series_benchmark= chart.plot(1).line(benchmark);
-    series_benchmark.name("Benchmark");
+    series_benchmark.name("S&P500 Buy and Hold");
 	series_benchmark.stroke("2 #800000");
 	
     // set the UK series
     var series_positions = chart.plot(1).line(portfolio);
-    series_positions.name("Portfolio Value");
+    series_positions.name("Trading Portfolio Value");
 
 	series_positions.stroke("2 #32CD32");
     // hatch fill
     //series_uk.hatchFill("diagonal-cross");
 
     chart.title('Back Testing');
-    
+	
     // y-axis labels formatting
     chart.plot(0).yAxis().labels().format(function (){
       return this.value/1;
@@ -659,6 +1011,12 @@ anychart.onDocumentReady(function () {
 
     chart.container('backTestChart');
     chart.draw();
+	// create range selector
+    var rangeSelector = anychart.ui.rangeSelector();
+    // init range selector
+    rangeSelector.render(chart);
+	
+	chart.selectRange("ytd");
 });
 </script>
 
@@ -666,13 +1024,7 @@ anychart.onDocumentReady(function () {
  <script type="text/javascript">
  
  // create data table on loaded data
-var training_dataTable = anychart.data.table();
 var test_dataTable = anychart.data.table();
-
-{% if training %}
-	var j_data_training = {{ training|safe }};
-	training_dataTable.addData(j_data_training);
-{% endif %}
 
 {% if test %}
 	var j_data_test = {{ test|safe }};
@@ -682,56 +1034,6 @@ var test_dataTable = anychart.data.table();
 </script>
 <script>
 
-//**********************training set chart plotting************************************
-
-anychart.onDocumentReady(function() {
-anychart.licenseKey("songzcorp-7ce21725-824e1b3b");
-
-    // create stock chart
-    var chart = anychart.stock();
-
-		
-	var credits = chart.credits();
-	credits.enabled(false);
-	
-    // set chart title
-    chart.title('Training Set');
-
-    // create plot on the chart
-    var plot = chart.plot(0);
-
-    // create plot series with mapped data
-    plot.line(training_dataTable.mapAs({
-      'value': 1
-    })).name('Actual Price');
-	
-	plot.line(training_dataTable.mapAs({
-      'value': 2
-    })).name('Predicted Price');
-
-    // create scroller series with mapped data
-    chart.scroller().line(training_dataTable.mapAs({
-      'value': 0
-    }));
-
-	
-	
-
-    // set container id for the chart
-    chart.container('trainSetChart');
-    // initiate chart drawing
-    chart.draw();
-
-
-    // create range selector
-    var rangeSelector = anychart.ui.rangeSelector();
-    // init range selector
-    rangeSelector.render(chart);
-	
-});
-</script>
-
-<script>
 
 //**********************test set chart plotting************************************
 
@@ -838,3 +1140,6 @@ anychart.licenseKey("songzcorp-7ce21725-824e1b3b");
     rangeSelector.render(chart);
 	
 });
+
+</script>
+
