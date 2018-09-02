@@ -217,7 +217,7 @@
 							<div class="panel-heading">
 								<i class="fa fa-bar-chart-o fa-fw"></i> Backtest Result
 								<div class="pull-right">
-									<button type="button" class="btn btn-default btn-xs " data-toggle="modal" data-target="#backtestchartinfo"><i class="fa fa-question-circle" aria-hidden="true"></i> About</button>
+									<button type="button" class="btn btn-default btn-xs " data-toggle="modal" data-target="#backtestchartExplanation"><i class="fa fa-question-circle" aria-hidden="true"></i> About</button>
 								</div>
 							</div>
 							<!-- /.panel-heading -->
@@ -259,6 +259,9 @@
 								<div class="panel panel-default">
 									<div class="panel-heading">
 										Risk Metrics
+										<div class="pull-right">
+											<button type="button" class="btn btn-default btn-xs " data-toggle="modal" data-target="#riskmetricsExplanation"><i class="fa fa-question-circle" aria-hidden="true"></i> About</button>
+										</div>
 									</div>
 									<div class="panel-body">
 										<div class="col-lg-12 nopadding">
@@ -401,6 +404,10 @@
 							 
 									<div class="panel-heading">
 										Model Performance
+										<div class="pull-right">
+											<button type="button" class="btn btn-default btn-xs " data-toggle="modal" data-target="#modelperformanceExplanation"><i class="fa fa-question-circle" aria-hidden="true"></i> About</button>
+										</div>
+										
 									</div>
 									<div class="panel-body">
 										<div class="col-md-12 col-lg-12">
@@ -473,35 +480,25 @@
             <!-- /.row -->
             <div class="row">
                 <div class="col-lg-12 col-md-12 nopadding">
-					<div class="col-lg-6 col-md-6 nopadding">
+					<div class="col-lg-12 col-md-12 nopadding">
 						<div class="panel panel-default">
 							<div class="panel-heading">
-								<i class="fa fa-bar-chart-o fa-fw"></i> Train Set Chart
+								<i class="fa fa-bar-chart-o fa-fw"></i> Training and Test Set Chart
 								<div class="pull-right">
-									<button type="button" class="btn btn-default btn-xs " data-toggle="modal" data-target="#trainingsetchartinfo"><i class="fa fa-question-circle" aria-hidden="true"></i> About</button>
+									<button type="button" class="btn btn-default btn-xs " data-toggle="modal" data-target="#ttchartExplanation"><i class="fa fa-question-circle" aria-hidden="true"></i> About</button>
 								</div>
 							</div>
 							<!-- /.panel-heading -->
 							<div class="panel-body nopadding">
-								<div id="trainSetChart" class="bg-white c-bg col-xs-12 col-sm-12 col-md-12 col-lg-12 no-padding nopadding" style="height: 400px;">			  
+								<div class="col-lg-6 col-md-6 nopadding">
+									<div id="trainSetChart" class="bg-white c-bg col-xs-12 col-sm-12 col-md-12 col-lg-12 no-padding nopadding" style="height: 400px;">			  
+									</div>
 								</div>
-							</div>
-							<!-- /.panel-body -->
-						</div>
-						<!-- /.panel -->
-					</div>
-					<div class="col-lg-6 col-md-6 nopadding">
-						<div class="panel panel-default">
-							<div class="panel-heading">
-								<i class="fa fa-bar-chart-o fa-fw"></i> Test Set Chart
-								<div class="pull-right">
-									<button type="button" class="btn btn-default btn-xs " data-toggle="modal" data-target="#testsetchartinfo"><i class="fa fa-question-circle" aria-hidden="true"></i> About</button>
+								<div class="col-lg-6 col-md-6 nopadding">
+									<div id="testSetChart" class="bg-white c-bg col-xs-12 col-sm-12 col-md-12 col-lg-12 no-padding nopadding" style="height: 400px;">			  
+									</div>
 								</div>
-							</div>
-							<!-- /.panel-heading -->
-							<div class="panel-body nopadding">
-								<div id="testSetChart" class="bg-white c-bg col-xs-12 col-sm-12 col-md-12 col-lg-12 no-padding nopadding" style="height: 400px;">			  
-								</div>
+								
 							</div>
 							<!-- /.panel-body -->
 						</div>
@@ -512,7 +509,7 @@
 							<div class="panel-heading">
 								<i class="fa fa-bar-chart-o fa-fw"></i> Bidirectional Accuracy
 								<div class="pull-right">
-									<button type="button" class="btn btn-default btn-xs " data-toggle="modal" data-target="#bidirectionalchartinfo"><i class="fa fa-question-circle" aria-hidden="true"></i> About</button>
+									<button type="button" class="btn btn-default btn-xs " data-toggle="modal" data-target="#bdChartExplanation"><i class="fa fa-question-circle" aria-hidden="true"></i> About</button>
 								</div>
 							</div>
 							<!-- /.panel-heading -->
@@ -577,8 +574,278 @@
 		<!-- /.modal-dialog -->
 	</div>
 	<!-- /#About the model -->
+	
+	 <!-- #About the model -->
+	<div class="modal fade in" id="backtestchartExplanation" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+					<h4 class="modal-title" id="myModalLabel">About Backtest chart</h4>
+				</div>
+				<div class="modal-body">
+							{% if bt_chart_explanation %}
+								{% for key, value in bt_chart_explanation.items %} 
+								  {% if key == 'title' %}
+										<h4><b>{{value}}</b></h4>
+								  {% elif  key == 'description' %}
+										<p>{{ value }}</p>
+								  {% elif  key == 'pros' %}
+										<h4>Pros</h4>
+										<ol>
+										{% for pros in value %} 
+											<li>{{ pros }}</li>
+										{% endfor %}
+										</ol>
+
+								  {% elif  key == 'cons' %}
+									<h4>Cons</h4>
+									<ol>
+									{% for cons in value %} 
+										<li>{{ cons }}</li>
+									{% endfor %}
+									</ol>
+								  {% endif %}
+								{% endfor %}
+							{% endif %}
 							
+							{% if strategy_explanation %}
+								{% for key, value in strategy_explanation.items %} 
+								  {% if key == 'title' %}
+										<h4><b>{{value}}</b></h4>
+								  {% elif  key == 'description' %}
+										<p>{{ value }}</p>
+								  {% elif  key == 'pros' %}
+										<h4>Pros</h4>
+										<ol>
+										{% for pros in value %} 
+											<li>{{ pros }}</li>
+										{% endfor %}
+										</ol>
+
+								  {% elif  key == 'cons' %}
+									<h4>Cons</h4>
+									<ol>
+									{% for cons in value %} 
+										<li>{{ cons }}</li>
+									{% endfor %}
+									</ol>
+								  {% endif %}
+								{% endfor %}
+							{% endif %}
 							
+							{% if portfolio_chart_explanation %}
+								{% for key, value in portfolio_chart_explanation.items %} 
+								  {% if key == 'title' %}
+										<h4><b>{{value}}</b></h4>
+								  {% elif  key == 'description' %}
+										<p>{{ value }}</p>
+								  {% elif  key == 'pros' %}
+										<h4>Pros</h4>
+										<ol>
+										{% for pros in value %} 
+											<li>{{ pros }}</li>
+										{% endfor %}
+										</ol>
+
+								  {% elif  key == 'cons' %}
+									<h4>Cons</h4>
+									<ol>
+									{% for cons in value %} 
+										<li>{{ cons }}</li>
+									{% endfor %}
+									</ol>
+								  {% endif %}
+								{% endfor %}
+							{% endif %}
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+				</div>
+			</div>
+			<!-- /.modal-content -->
+		</div>
+		<!-- /.modal-dialog -->
+	</div>
+	<!-- /#About the model -->
+	
+ <!-- #About the model -->
+	<div class="modal fade in" id="riskmetricsExplanation" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+					<h4 class="modal-title" id="myModalLabel">About Risk Metrics</h4>
+				</div>
+				<div class="modal-body">
+							{% if risk_explanation %}
+								{% for key, value in risk_explanation.items %} 
+								  {% if key == 'title' %}
+										<h4><b>{{value}}</b></h4>
+								  {% elif  key == 'description' %}
+										<p>{{ value }}</p>
+								  {% elif  key == 'pros' %}
+										<h4>Pros</h4>
+										<ol>
+										{% for pros in value %} 
+											<li>{{ pros }}</li>
+										{% endfor %}
+										</ol>
+
+								  {% elif  key == 'cons' %}
+									<h4>Cons</h4>
+									<ol>
+									{% for cons in value %} 
+										<li>{{ cons }}</li>
+									{% endfor %}
+									</ol>
+								  {% endif %}
+								{% endfor %}
+							{% endif %}
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+				</div>
+			</div>
+			<!-- /.modal-content -->
+		</div>
+		<!-- /.modal-dialog -->
+	</div>
+	<!-- /#About the model -->	
+	
+		
+ <!-- #About the model -->
+	<div class="modal fade in" id="modelperformanceExplanation" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+					<h4 class="modal-title" id="myModalLabel">About Model Performance</h4>
+				</div>
+				<div class="modal-body">
+							{% if model_performance_explanation %}
+								{% for key, value in model_performance_explanation.items %} 
+								  {% if key == 'title' %}
+										<h4><b>{{value}}</b></h4>
+								  {% elif  key == 'description' %}
+										<p>{{ value }}</p>
+								  {% elif  key == 'pros' %}
+										<h4>Pros</h4>
+										<ol>
+										{% for pros in value %} 
+											<li>{{ pros }}</li>
+										{% endfor %}
+										</ol>
+
+								  {% elif  key == 'cons' %}
+									<h4>Cons</h4>
+									<ol>
+									{% for cons in value %} 
+										<li>{{ cons }}</li>
+									{% endfor %}
+									</ol>
+								  {% endif %}
+								{% endfor %}
+							{% endif %}
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+				</div>
+			</div>
+			<!-- /.modal-content -->
+		</div>
+		<!-- /.modal-dialog -->
+	</div>
+	<!-- /#About the model -->	 
+	<!-- #About the model -->
+	<div class="modal fade in" id="ttchartExplanation" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+					<h4 class="modal-title" id="myModalLabel">About Training and Test chart</h4>
+				</div>
+				<div class="modal-body">
+							{% if tt_chart_explanation %}
+								{% for key, value in tt_chart_explanation.items %} 
+								  {% if key == 'title' %}
+										<h4><b>{{value}}</b></h4>
+								  {% elif  key == 'description' %}
+										<p>{{ value }}</p>
+								  {% elif  key == 'pros' %}
+										<h4>Pros</h4>
+										<ol>
+										{% for pros in value %} 
+											<li>{{ pros }}</li>
+										{% endfor %}
+										</ol>
+
+								  {% elif  key == 'cons' %}
+									<h4>Cons</h4>
+									<ol>
+									{% for cons in value %} 
+										<li>{{ cons }}</li>
+									{% endfor %}
+									</ol>
+								  {% endif %}
+								{% endfor %}
+							{% endif %}
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+				</div>
+			</div>
+			<!-- /.modal-content -->
+		</div>
+		<!-- /.modal-dialog -->
+	</div>
+	<!-- /#About the model -->	
+		<!-- #About the model -->
+	<div class="modal fade in" id="bdChartExplanation" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+					<h4 class="modal-title" id="myModalLabel">About Bidirectional Chart</h4>
+				</div>
+				<div class="modal-body">
+							{% if bd_chart_explanation %}
+								{% for key, value in bd_chart_explanation.items %} 
+								  {% if key == 'title' %}
+										<h4><b>{{value}}</b></h4>
+								  {% elif  key == 'description' %}
+										<p>{{ value }}</p>
+								  {% elif  key == 'pros' %}
+										<h4>Pros</h4>
+										<ol>
+										{% for pros in value %} 
+											<li>{{ pros }}</li>
+										{% endfor %}
+										</ol>
+
+								  {% elif  key == 'cons' %}
+									<h4>Cons</h4>
+									<ol>
+									{% for cons in value %} 
+										<li>{{ cons }}</li>
+									{% endfor %}
+									</ol>
+								  {% endif %}
+								{% endfor %}
+							{% endif %}
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+				</div>
+			</div>
+			<!-- /.modal-content -->
+		</div>
+		<!-- /.modal-dialog -->
+	</div>
+	<!-- /#About the model -->	
+				
+
+				
 
     <!-- jQuery -->
     <!-- Bootstrap Core JavaScript -->

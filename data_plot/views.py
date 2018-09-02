@@ -81,6 +81,38 @@ def dashboard_data(request, method, al, lc, form, logic_form, test_type, datas):
         f_metrics = json.load(aa)
     forward_metrics = json.loads(f_metrics)
 
+    #chart details and guide
+    strategy_explanation =''
+    with open("algorithm/explanations/backtest_algorithm/"+datas["strategy_type"]+".json") as json_file:
+        strategy_explanation = json.load(json_file)
+    
+    bt_chart_explanation =''    #backtest chart explanation
+    with open("algorithm/explanations/backtest_chart.json") as json_file:
+        bt_chart_explanation = json.load(json_file)
+    
+    bd_chart_explanation =''    #bidirectional chart explanation
+    with open("algorithm/explanations/bidirectional_accuracy_chart.json") as json_file:
+        bd_chart_explanation = json.load(json_file)
+
+    tt_chart_explanation =''    #training and test set chart explanation
+    with open("algorithm/explanations/training_test_set_chart.json") as json_file:
+        tt_chart_explanation = json.load(json_file)
+
+    portfolio_chart_explanation =''    #portfolio movement chart explanation
+    with open("algorithm/explanations/portfolio_movement_chart.json") as json_file:
+        portfolio_chart_explanation = json.load(json_file)
+
+    model_performance_explanation =''    #model performance explanation
+    with open("algorithm/explanations/model_performance.json") as json_file:
+        model_performance_explanation = json.load(json_file)
+
+    risk_explanation =''    #risk metrics explanation
+    with open("algorithm/explanations/risk_metrics.json") as json_file:
+        risk_explanation = json.load(json_file)
+
+    #End chart details and guide
+
+
     portfolioValue, trade_data, strategy_metrics, benchmark_metrics, strategyMovementDetails, benchmarkMovementDetails = perform_backtest(lc, al, test_type, datas['starting_cash'], datas['comission_percentage'], datas['strategy_type'])
         
     bt_metrics = strategy_metrics #remove this one later. It is useless
@@ -112,6 +144,8 @@ def dashboard_data(request, method, al, lc, form, logic_form, test_type, datas):
     s_pMovementDetails = benchmarkMovementDetails.values.tolist()
     strategyMovementDetails = strategyMovementDetails.values.tolist()
 
+    
+
 
     context = {
         'trade_data':trade_data,
@@ -133,6 +167,14 @@ def dashboard_data(request, method, al, lc, form, logic_form, test_type, datas):
         "strategy_metrics":strategy_metrics,
         "strategyMovementDetails":strategyMovementDetails,
         "s_pMovementDetails":s_pMovementDetails,
+        "strategy_explanation":strategy_explanation,
+        "bt_chart_explanation":bt_chart_explanation,
+        "bd_chart_explanation":bd_chart_explanation,
+        "tt_chart_explanation":tt_chart_explanation,
+        "portfolio_chart_explanation":portfolio_chart_explanation,
+        "model_performance_explanation":model_performance_explanation,
+        "risk_explanation":risk_explanation,
+        
     }
 
     template_name = ''
