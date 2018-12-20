@@ -1,5 +1,7 @@
 # Energy Price Prediction - A full algotrading system
 
+![Screenshot](https://i.imgur.com/w8NhHkC.png)
+
 A live version can be found at http://52.11.89.192:8000/dashboard/
 
 This is a fully functional algorithmic system that extracts live and historic energy data, cleans it, runs machine learning model to train and perform prediction on future (forward testing) and past (backtesting) data.
